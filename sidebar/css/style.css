@@ -53,7 +53,10 @@ h1, h2, h3, h4, h5,
   -o-transition: all 0.3s;
   transition: all 0.3s;
   position: relative;
-  flex-grow: 1; }
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; }
   #sidebar .h6 {
     color: #fff; }
   #sidebar.active {
@@ -74,6 +77,12 @@ h1, h2, h3, h4, h5,
       display: block;
       padding: 10px 30px;
       background: #E74C3C; }
+  #sidebar ul.main-menu {
+    flex: 2;
+  }
+  #sidebar ul.second-menu {
+    margin: 0;
+  }
   #sidebar ul.components {
     padding: 0; }
   #sidebar ul li {
@@ -263,6 +272,12 @@ a[data-toggle="collapse"] {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 5px #bbbbbb;
+    transition: all .2s ease-in-out;
+}
+.ad-element:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #777777;
+  cursor: pointer;
 }
 .ad-element img {
     max-height: 150px;
@@ -291,6 +306,7 @@ a[data-toggle="collapse"] {
     font-weight: 700;
     font-size: 1.5em;
     margin: 0;
+    color: #333;
 }
 .ad-address-sub {
     font-size: 1em;
