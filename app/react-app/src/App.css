@@ -141,3 +141,34 @@ cursor: pointer;
 .annonce-infos span img {
   margin-right: 5px;
 }
+
+.pageTitle {
+  font-weight: 900;
+  font-size: 2em;
+  margin: 0;
+  color: #052040;
+}
+
+.action {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-Direction: column;
+  align-items: center;
+}
+
+.action-buttons {
+  margin-top: 1em;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: auto;
+
+}
+
+.other-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}

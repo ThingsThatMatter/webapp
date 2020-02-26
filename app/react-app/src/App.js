@@ -10,6 +10,12 @@ import { Layout } from 'antd';
 
 
 import Home from './screens/Home';
+import Offres from './screens/Offres';
+import RendezVous from './screens/RendezVous';
+import Questions from './screens/Questions';
+import AdDesc from './screens/AdDesc';
+
+
 
 // import wishlist from './wishlist.reducer';
 // import token from './token.reducer';
@@ -32,6 +38,10 @@ function App() {
       <Router>
         <Switch>
           <Route component={Home} path="/" exact />
+          <Route component={Offres} path="/offres"  />
+          <Route component={RendezVous} path="/rendezvous"  />
+          <Route component={Questions} path="/questions"  />
+          <Route component={AdDesc} path="/addesc"  />
         </Switch>
       </Router>
 

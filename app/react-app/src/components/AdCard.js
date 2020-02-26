@@ -1,11 +1,22 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { Col } from 'antd';
+import {Redirect} from 'react-router-dom';
+
 
 function AdCard() {
+
+  const [redir, setRedir] = useState(false)
+
+  if(redir === true) {
+    return <Redirect to="addesc"/>
+  }
+
+
+
   return (
     
     <Col xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
-      <div className="annonce-element">
+      <div className="annonce-element" onClick={() => setRedir(true) }>
         <img className="annonce-image" src="house.jpeg" />
         <div className="annonce-text">
             <div className="annonce-price-container">
