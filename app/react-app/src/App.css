@@ -13,6 +13,37 @@
   }
 }
 
+.logo img {
+  border-radius: 50%;
+}
+.logo {
+  padding: 30px;
+}
+
+.sidebar {
+  min-width: 300px;
+  max-width: 300px;
+  color: #fff;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  position: relative;
+  flex-grow: 1 !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.main-content {
+  width: 100%;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  flex-grow: 5;
+  overflow: auto;
+}
+
 .App-header {
   background-color: #282c34;
   min-height: 100vh;
@@ -35,4 +66,78 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+
+.annonce-element {
+  margin: 15px 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #bbbbbb;
+  transition: all .2s ease-in-out;
+}
+.annonce-element:hover {
+transform: scale(1.02);
+box-shadow: 0 0 10px #777777;
+cursor: pointer;
+}
+.annonce-element img {
+  max-height: 150px;
+  object-fit: cover;
+}
+.annonce-text {
+  padding: 1em;
+}
+.annonce-element .annonce-price-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.annonce-price-container span.annonce-price {
+  font-weight: 700;
+  font-size: 1em;
+  color: #888;
+}
+.annonce-price-container .annonce-state.open {
+  width: 15px;
+  height: 15px;
+  background-color: #41bb41;
+  border-radius: 50%;
+}
+.annonce-address-title {
+  font-weight: 700;
+  font-size: 1.5em;
+  margin: 0;
+  color: #333;
+}
+.annonce-address-sub {
+  font-size: 1em;
+  color: #888;
+  margin: 0 0 10px 0;
+}
+.annonce-infos {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f1f1f1;
+  padding: 1em;
+}
+.annonce-infos span {
+  font-weight: 700;
+}
+.annonce-infos span span {
+  font-weight: 300;
+  color: #999;
+}
+.annonce-infos span {
+  align-items: center;
+  font-weight: 700;
+  display: flex;
+}
+.annonce-infos span img {
+  margin-right: 5px;
 }
