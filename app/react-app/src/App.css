@@ -230,3 +230,11 @@ cursor: pointer;
 .section-text p {
   padding: 0.25%;
 }
+
+
+  .ant-collapse-header{
+    font-weight: 700;
+    font-size: 1.5em;
+    color: #052040;
+  }
+ 

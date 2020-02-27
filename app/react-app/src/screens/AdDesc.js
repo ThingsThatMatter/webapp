@@ -177,14 +177,14 @@ function AdDesc() {
                 
                 <h1 style={{marginTop: "30px"}} className='pageTitle'>Questions fréquentes</h1>
 
-                <Collapse bordered={false} defaultActiveKey={['1']}>
-                    <Panel style={panelStyle} header="This is panel header 1" key="1">
+                <Collapse style={{marginBottom: 20}} bordered={false} defaultActiveKey={['1']}>
+                    <Panel style={panelStyle} header="Qu'est ce qu'un m2 ? " key="1">
                     <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
-                    <Panel style={panelStyle} header="This is panel header 2" key="2">
+                    <Panel style={panelStyle} header="Ceci est une question longue très longue ? " key="2">
                     <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
-                    <Panel style={panelStyle} header="This is panel header 3" key="3">
+                    <Panel style={panelStyle} header="Ceci est une question longue très longue ? " key="3">
                      <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
                 </Collapse>
@@ -217,6 +217,7 @@ function AdDesc() {
     borderRadius: 4,
     border: 0,
     overflow: 'hidden',
+    marginBottom: 10,
   }
 
  
