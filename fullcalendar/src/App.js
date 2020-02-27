@@ -9,18 +9,10 @@ import './App.css'
 function App() {
 
   //var calendar = useRef(null)
-  const [myEvents, setMyEvents] = useState([{
-    title:'test',
-    start:'2020-02-27'
-  },
-  {
-    title:'test',
-    start:'2020-02-26',
-    backgroundColor: 'red'
-  }]) 
+  const [myEvents, setMyEvents] = useState([]) 
 
   const newEvent = (info) => {
-    var eventsCopy = [...myEvents, {title: 'newRDV', start: info.dateStr}];
+    var eventsCopy = [...myEvents, {title: 'newRDV', start: info.startStr, end: info.endStr}];
     console.log(eventsCopy)
     setMyEvents(eventsCopy)
   }
@@ -33,7 +25,6 @@ function App() {
       locale= 'fr'
       firstDay= {1}
       hiddenDays={[0]}
-      themeSystem='bootstrap'
       
       header={{
         left: 'prev,next today',
@@ -42,10 +33,13 @@ function App() {
         }}
       
       selectable= {true}
-      select={ (info) => newEvent(info)}
+      // dateClick={ (info) => newEvent(info) }
+      select={ (info) => newEvent(info) }
       events={myEvents}
-      eventColor={'#378006'}
+      minTime={'08:00'}
+      maxTime={'18:00'}
       defaultTimedEventDuration={'00:30'}
+      eventColor={'#378006'}
       
       
 

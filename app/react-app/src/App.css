@@ -1,0 +1,232 @@
+.App {
+  text-align: center;
+}
+
+p {
+  margin: 0;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.logo img {
+  border-radius: 50%;
+}
+.logo {
+  padding: 30px;
+}
+
+.sidebar {
+  min-width: 300px;
+  max-width: 300px;
+  color: #fff;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  position: relative;
+  flex-grow: 1 !important;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.main-content {
+  width: 100%;
+  padding: 0;
+  min-height: 100vh;
+  -webkit-transition: all 0.3s;
+  -o-transition: all 0.3s;
+  transition: all 0.3s;
+  flex-grow: 5;
+  overflow: auto;
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+.annonce-element {
+  margin: 15px 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #bbbbbb;
+  transition: all .2s ease-in-out;
+}
+.annonce-element:hover {
+transform: scale(1.02);
+box-shadow: 0 0 10px #777777;
+cursor: pointer;
+}
+.annonce-element img {
+  max-height: 150px;
+  object-fit: cover;
+}
+.annonce-text {
+  padding: 1em;
+}
+.annonce-element .annonce-price-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.annonce-price-container span.annonce-price {
+  font-weight: 700;
+  font-size: 1em;
+  color: #888;
+}
+.annonce-price-container .annonce-state.open {
+  width: 15px;
+  height: 15px;
+  background-color: #41bb41;
+  border-radius: 50%;
+}
+.annonce-address-title {
+  font-weight: 700;
+  font-size: 1.5em;
+  margin: 0;
+  color: #333;
+}
+.annonce-address-sub {
+  font-size: 1em;
+  color: #888;
+  margin: 0 0 10px 0;
+}
+.annonce-infos {
+  display: flex;
+  justify-content: space-around;
+  background-color: #f1f1f1;
+  padding: 1em;
+}
+.annonce-infos span {
+  font-weight: 700;
+}
+.annonce-infos span span {
+  font-weight: 300;
+  color: #999;
+}
+.annonce-infos span {
+  align-items: center;
+  font-weight: 700;
+  display: flex;
+}
+.annonce-infos span img {
+  margin-right: 5px;
+}
+
+/* TITRES DE PAGES*/
+
+.pageTitle {
+  font-weight: 900;
+  font-size: 2em;
+  margin: 0;
+  color: #052040;
+  margin-bottom : 30px;
+}
+
+.pageSubTitle {
+  font-weight: 700;
+  font-size: 1.5em;
+  margin: 0;
+  color: #052040;
+  margin : 15px 0;
+}
+
+/* PAGE ANNONCE */
+
+.section {
+  background-color: #FFFFFF;
+  border-radius: 10px;
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
+  height: auto;
+
+}
+
+.row {
+  margin-top: 1em;
+  display: flex;
+  justify-content: space-between;
+  width: 70%;
+  margin-right: 15%;
+  margin-left: 15%;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
+  margin-top: 0;
+}
+
+.dark-row-radius {
+  background: #F7F8F9;
+  border-radius: 0px 0px 10px 10px;
+}
+
+.dark-row {
+  background: #F7F8F9;
+}
+
+.row-between {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 70%;
+  margin-right: 15%;
+  margin-left: 15%;
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+}
+
+/* IMAGE SLIDER (doc : https://www.npmjs.com/package/react-slideshow-image)  */
+
+.slide-container {
+  width: 70%;
+  margin : 0 15%;
+  margin-bottom: 2.5%;
+}
+
+.each-slide > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 300px;
+}
+
+.section-text {
+  padding: 2%;
+}
+
+.section-text p {
+  padding: 0.25%;
+}
