@@ -2,6 +2,10 @@
   text-align: center;
 }
 
+p {
+  margin: 0;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
@@ -142,33 +146,87 @@ cursor: pointer;
   margin-right: 5px;
 }
 
+/* TITRES DE PAGES*/
+
 .pageTitle {
   font-weight: 900;
   font-size: 2em;
   margin: 0;
   color: #052040;
+  margin-bottom : 30px;
 }
 
-.action {
+.pageSubTitle {
+  font-weight: 700;
+  font-size: 1.5em;
+  margin: 0;
+  color: #052040;
+  margin : 15px 0;
+}
+
+/* PAGE ANNONCE */
+
+.section {
   background-color: #FFFFFF;
   border-radius: 10px;
   box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  display: flex;
-  flex-Direction: column;
-  align-items: center;
+  height: auto;
+
 }
 
-.action-buttons {
+.row {
   margin-top: 1em;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
-  width: auto;
-
+  justify-content: space-between;
+  width: 70%;
+  margin-right: 15%;
+  margin-left: 15%;
+  padding-top: 2.5%;
+  padding-bottom: 2.5%;
+  margin-top: 0;
 }
 
-.other-actions {
+.dark-row-radius {
+  background: #F7F8F9;
+  border-radius: 0px 0px 10px 10px;
+}
+
+.dark-row {
+  background: #F7F8F9;
+}
+
+.row-between {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
+  justify-content: space-between;
+  align-items: center;
+  width: 70%;
+  margin-right: 15%;
+  margin-left: 15%;
+  padding-top: 1.5%;
+  padding-bottom: 1.5%;
+}
+
+/* IMAGE SLIDER (doc : https://www.npmjs.com/package/react-slideshow-image)  */
+
+.slide-container {
+  width: 70%;
+  margin : 0 15%;
+  margin-bottom: 2.5%;
+}
+
+.each-slide > div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  height: 300px;
+}
+
+.section-text {
+  padding: 2%;
+}
+
+.section-text p {
+  padding: 0.25%;
 }
