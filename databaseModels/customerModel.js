@@ -16,7 +16,12 @@ var adSchema = mongoose.Schema({
     offer: [
         {type: Schema.Types.ObjectId, ref: 'offer'}
     ],
-    visit: {start: Date, end: Date}
+    visit: [visitSchema]
+});
+
+var visitSchema = mongoose.Schema({
+    start: Date,
+    end: Date
 });
 
 var customerModel = mongoose.model('ad', customerSchema);
