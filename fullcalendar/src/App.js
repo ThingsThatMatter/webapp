@@ -33,6 +33,7 @@ function App() {
         }}
       
       selectable= {true}
+      navLinks= {true}
       // dateClick={ (info) => newEvent(info) }
       select={ (info) => newEvent(info) }
       events={myEvents}
