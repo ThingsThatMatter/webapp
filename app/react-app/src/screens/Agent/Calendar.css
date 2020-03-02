@@ -44,6 +44,38 @@ margin-bottom: 0.5em; }
     text-decoration: underline
   }
 
+/* Columns Header */
+.calendar-week-column-header {
+  margin: 0.5em auto 0.5em 1em;
+  margin-left: 1em;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  text-align: left;
+  line-height:1.1
+}
+  .calendar-week-column-header-text {
+    color:#6F6E6E;
+    font-weight:normal;
+    margin:0;
+    padding:0
+  }
+  .calendar-week-column-header-number {
+    color:#000;
+    font-weight:normal;
+    font-size:40px;
+    margin-left: 0.3em;
+  }
+.calendar-default-column-header {
+  color:#000;
+  font-weight:normal;
+  font-size: 16px;
+  margin:0;
+  padding:0
+
+}
+
 /* Modal */
 .input-modal {
   display: flex;
