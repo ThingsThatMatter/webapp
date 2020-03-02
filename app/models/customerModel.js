@@ -6,9 +6,7 @@ var customerSchema = mongoose.Schema({
     firstname: String,
     email: String,
     password: String,
-    ads: [
-        {type: Schema.Types.ObjectId, ref: 'ad'}
-    ]
+    ads: [{type: Schema.Types.ObjectId, ref: 'ad'}]
 });
 
 var customerModel = mongoose.model('customer', customerSchema);
