@@ -1,8 +1,8 @@
 var mongoose = require('./bdd');
 
 var offerSchema = mongoose.Schema({
-    creationDate: Date.now,
-    customer: {type: mongoose.Schema.Types.ObjectId, ref: 'customers'},
+    creationDate: Date,
+    customer: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     singleBuyer: Boolean,
     lastname1: String,
     firstname1: String,
