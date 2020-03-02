@@ -27,13 +27,13 @@ var adSchema = mongoose.Schema({
     dpe: String,
     ges: String,
     files: [String],
-    timeSlot: [timeSlotSchema],
     question: [questionSchema],
-    offer: [offerSchema],
-    visit: [visitSchema]
+    timeSlot: [timeSlotSchema],
+    offer: [offerSchema]
 });
 
 var timeSlotSchema = mongoose.Schema({
+    booked: Boolean,
     agent: [
         {type: Schema.Types.ObjectId, ref: 'agent'}
     ],
@@ -41,7 +41,7 @@ var timeSlotSchema = mongoose.Schema({
         {type: Schema.Types.ObjectId, ref: 'customer'}
     ],
     start: Date,
-    end: Date,
+    end: Date
 });
 
 var questionSchema = mongoose.Schema({
@@ -71,14 +71,6 @@ var offerSchema = mongoose.Schema({
     validityPeriod: Number,
     location: String,
     message: String
-});
-
-var visitSchema = mongoose.Schema({
-    customer: [
-        {type: Schema.Types.ObjectId, ref: 'customer'}
-    ],
-    start: Date,
-    end: Date
 });
 
 var adModel = mongoose.model('ad', adSchema);
