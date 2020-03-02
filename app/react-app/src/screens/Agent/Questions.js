@@ -1,10 +1,10 @@
 import React from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import { Layout} from 'antd';
 
 
 
-function Offres() {
+function Questions() {
     return (
   
         <Layout>
@@ -13,7 +13,7 @@ function Offres() {
             <Sidebar/>
 
             <Layout className='main-content'>
-            <p>Offres</p>
+            <p>Questions</p>
             </Layout>
             
         
@@ -23,4 +23,4 @@ function Offres() {
     );
   }
   
-  export default Offres;
+  export default Questions;

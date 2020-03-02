@@ -9,11 +9,12 @@ import logo from './logo.svg';
 import { Layout } from 'antd';
 
 
-import Home from './screens/Home';
-import Offres from './screens/Offres';
-import RendezVous from './screens/RendezVous';
-import Questions from './screens/Questions';
-import AdDesc from './screens/AdDesc';
+import Home from './screens/Agent/Home';
+import Offres from './screens/Agent/Offres';
+import RendezVous from './screens/Agent/RendezVous';
+import Questions from './screens/Agent/Questions';
+import AdDesc from './screens/Agent/AdDesc';
+import CreateFormOne from './screens/Agent/CreateForm1';
 
 
 
@@ -42,6 +43,7 @@ function App() {
           <Route component={RendezVous} path="/rendezvous"  />
           <Route component={Questions} path="/questions"  />
           <Route component={AdDesc} path="/addesc"  />
+          <Route component={CreateFormOne} path="/createform1"  />
         </Switch>
       </Router>
 

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../../components/Sidebar';
 import { Layout, Button, Switch, Badge, Collapse} from 'antd';
 import { Slide } from 'react-slideshow-image';
 
@@ -16,7 +16,7 @@ const slideImages = [
   const properties = {
     duration: 5000,
     transitionDuration: 500,
-    infinite: false,
+    infinite: true,
     indicators: true,
     arrows: true,
     onChange: (oldIndex, newIndex) => {

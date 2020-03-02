@@ -164,6 +164,16 @@ cursor: pointer;
   margin : 15px 0;
 }
 
+/* BOUTTONS (from Ant) */
+
+.button-success {
+  width: 90px;
+  height: 40px;
+  background: #0D6FDE;
+  border-radius: 7px;
+  margin-top: 20px;
+}
+
 /* PAGE ANNONCE */
 
 .section {
