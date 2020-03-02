@@ -6,24 +6,11 @@ var customerSchema = mongoose.Schema({
     firstname: String,
     email: String,
     password: String,
-    ads: [adSchema],
-});
-
-var adSchema = mongoose.Schema({
-    ad: [
+    ads: [
         {type: Schema.Types.ObjectId, ref: 'ad'}
-    ],
-    offer: [
-        {type: Schema.Types.ObjectId, ref: 'offer'}
-    ],
-    visit: [visitSchema]
+    ]
 });
 
-var visitSchema = mongoose.Schema({
-    start: Date,
-    end: Date
-});
-
-var customerModel = mongoose.model('ad', customerSchema);
+var customerModel = mongoose.model('customer', customerSchema);
 
 module.exports = customerModel;
