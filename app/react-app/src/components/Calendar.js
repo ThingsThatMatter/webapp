@@ -28,7 +28,7 @@ function Calendar() {
 
   useEffect( () => { async function changeTitle() {
     setTitle(calendar.current.calendar.view.title)
-  };
+  };fre
   changeTitle()
   }, []);
 

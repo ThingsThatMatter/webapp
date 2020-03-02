@@ -1,32 +1,12 @@
 var mongoose = require('./bdd');
 
-var timeSlotSchema = mongoose.Schema({
-    agent: {type: mongoose.Schema.Types.ObjectId, ref: 'agents'},
-    customer: [
-        {type: mongoose.Schema.Types.ObjectId, ref: 'customers'}
-    ],
-    start: Date,
-    end: Date,
-    group: Boolean,
-    maxVisitors: Number,
-    bookable: Boolean
-});
-
-var questionSchema = mongoose.Schema({
-    status: String,
-    question: String,
-    response: String
-});
-
 var adSchema = mongoose.Schema({
-    agents: [{type: mongoose.Schema.Types.ObjectId, ref: 'agents'}],
-    creationDate: Date,
+    creationDate: Date.now,
     onlineDate: Date,
     color: String,
-    draftStatus: Boolean,
     onlineStatus: Boolean,
+    offerStatus: Boolean,
     visitStatus: Boolean,
-    soldStatus: Boolean,
     price: Number,
     fees: Number,
     type: String,
@@ -47,12 +27,47 @@ var adSchema = mongoose.Schema({
     dpe: String,
     ges: String,
     files: [String],
-    timeSlot: [timeSlotSchema],
-    question: [questionSchema]
+    questions: [questionSchema],
+    timeSlots: [timeSlotSchema],
+    offers: [offerSchema]
 });
 
+var timeSlotSchema = mongoose.Schema({
+    booked: Boolean,
+    agent: {type: Schema.Types.ObjectId, ref: 'agent'},
+    customer: [{type: Schema.Types.ObjectId, ref: 'customer'}],
+    start: Date,
+    end: Date
+});
 
+var questionSchema = mongoose.Schema({
+    status: String,
+    question: String,
+    response: String,
+    customer: {type: Schema.Types.ObjectId, ref: 'customer'}
+});
 
-var adModel = mongoose.model('ads', adSchema);
+var offerSchema = mongoose.Schema({
+    creationDate: Date.now,
+    customer: {type: Schema.Types.ObjectId, ref: 'customer'},
+    singleBuyer: Boolean,
+    lastname1: String,
+    firstname1: String,
+    lastname2: String,
+    firstname2: String,
+    loan: Boolean,
+    loanAmount: Number,
+    contributionAmount: Number,
+    monthlyPay: Number,
+    notary: Boolean,
+    notaryName: String,
+    notaryAddress: String,
+    notaryEmail: String,
+    validityPeriod: Number,
+    location: String,
+    message: String
+});
+
+var adModel = mongoose.model('ad', adSchema);
 
 module.exports = adModel;
