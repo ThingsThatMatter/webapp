@@ -16,7 +16,7 @@ function Home() {
   const [redir, setRedir] = useState(false)
 
   if(redir === true) {
-    return <Redirect to="createform1"/>
+    return <Redirect to="/createform/step1"/>
   }
 
   return (

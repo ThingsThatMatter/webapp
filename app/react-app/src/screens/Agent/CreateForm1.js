@@ -2,29 +2,43 @@ import React, {useState} from 'react';
 import Sidebar from '../../components/Sidebar';
 import { Layout} from 'antd';
 import { Steps, Button, message, Input, Radio } from 'antd';
+import {Redirect} from 'react-router-dom';
+import {connect} from 'react-redux';
+
 
 const { Step } = Steps;
 const {Content} = Layout;
 
 
-function CreateFormOne() {
+function CreateFormOne(props) {
 
     const [street, setStreet] = useState("")
     const [postal, setPostal] = useState("")
     const [pref, setPref] = useState("")
 
 
+    const [redir, setRedir] = useState(false) 
+
+    const [formError, setFormError] = useState("")
+
     const [currentPage, setCurrentPage] = useState(0)
 
-    const next = () => {
-        setCurrentPage(currentPage ++)
+    
+    
+    const handleClick = () => {
+
+        props.nextStep();
+
+        if(street !== "" && postal !== "" & pref !== "") {
+            setRedir(true)
+        } else {
+            setFormError(<p style={{paddingTop : 20, color: "#E74A34", fontWeight: 700}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+        }
+        
     }
 
-    const prev = () => {
-
-        if(currentPage > 0) {
-            setCurrentPage(currentPage --)
-        }
+    if(redir === true) {
+        return <Redirect to="/createform/step2"/> // Triggered by button handleClick
     }
 
     console.log(street, postal, pref)
@@ -70,15 +84,12 @@ function CreateFormOne() {
                                 </Radio.Group>
                             </label>
                             
-                        </form>      
+                        </form>
 
-                        <Button type="primary" className="button-success">Suivant</Button>
-
+                        <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
+                        {formError}  
                     </div>
-              
-                
-                
-                   
+               
                 </Content>  
 
          </Layout>
@@ -89,4 +100,17 @@ function CreateFormOne() {
     );
   }
 
-  export default CreateFormOne;
+  function mapDispatchToProps(dispatch) {
+    return {
+
+      nextStep : function() { 
+          dispatch( {type: 'nextStep'} ) 
+      },
+      saveFormData : function() { 
+        dispatch( {type: 'saveFormData'} ) 
+    }
+
+    }
+  }
+
+  export default connect (null, mapDispatchToProps) (CreateFormOne);
