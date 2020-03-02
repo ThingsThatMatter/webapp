@@ -28,7 +28,9 @@ var adSchema = mongoose.Schema({
     ges: String,
     files: [String],
     timeSlot: [timeSlotSchema],
-    question: [questionSchema]
+    question: [questionSchema],
+    offer: [offerSchema],
+    visit: [visitSchema]
 });
 
 var timeSlotSchema = mongoose.Schema({
@@ -46,6 +48,37 @@ var questionSchema = mongoose.Schema({
     status: String,
     question: String,
     response: String
+});
+
+var offerSchema = mongoose.Schema({
+    creationDate: Date.now,
+    customer: [
+        {type: Schema.Types.ObjectId, ref: 'customer'}
+    ],
+    singleBuyer: Boolean,
+    lastname1: String,
+    firstname1: String,
+    lastname2: String,
+    firstname2: String,
+    loan: Boolean,
+    loanAmount: Number,
+    contributionAmount: Number,
+    monthlyPay: Number,
+    notary: Boolean,
+    notaryName: String,
+    notaryAddress: String,
+    notaryEmail: String,
+    validityPeriod: Number,
+    location: String,
+    message: String
+});
+
+var visitSchema = mongoose.Schema({
+    customer: [
+        {type: Schema.Types.ObjectId, ref: 'customer'}
+    ],
+    start: Date,
+    end: Date
 });
 
 var adModel = mongoose.model('ad', adSchema);
