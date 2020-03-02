@@ -164,6 +164,16 @@ cursor: pointer;
   margin : 15px 0;
 }
 
+/* formulaires */
+
+.formLabel {
+  font-weight: 700;
+}
+
+.ant-checkbox-group-item {
+  display: block;
+}
+
 /* BOUTTONS (from Ant) */
 
 .button-validate {
