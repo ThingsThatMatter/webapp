@@ -1,12 +1,13 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
 import { Layout} from 'antd';
-import { Steps, Button, message, Input, Radio, InputNumber } from 'antd';
+import { Steps, Button, message, Input, Radio, InputNumber, Checkbox } from 'antd';
 import {connect} from 'react-redux';
 
 
 const { Step } = Steps;
 const {Content} = Layout;
+const { TextArea } = Input;
 
 
 function CreateFormTwo(props) {
@@ -14,13 +15,26 @@ function CreateFormTwo(props) {
     const [type, setType] = useState("")
     const [area, setArea] = useState(0)
     const [rooms, setRooms] = useState(0)
+    const [avantages, setAvantages] = useState([])
+    const [title, setTitle] = useState("")
     const [currentPage, setCurrentPage] = useState(0)
 
+
+    const options = [
+        {label : "Ascenseur", value : "ascenseur"},
+        {label : "Balcon", value : "balcon"},
+        {label : "Terrasse", value : "terrasse"}
+    ]
+
+
+    
+
+
     useEffect(() => {
-        setCurrentPage(props.step)        // Gets current page number from redux sotre for steps display
+        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
       },[]);
 
-    console.log(type, area, rooms)
+    console.log(title)
 
     return (
 
@@ -46,22 +60,60 @@ function CreateFormTwo(props) {
 
                         <form>
                             
+                            <p className='formLabel'>Type de bien </p>
                             <label>
-                                <p>Type de bien </p>
-                                <Radio.Group value={type} onChange={(e) => setType(e.target.value)}>
-                                <Radio value="appartement" style={{paddingTop : "1%"}}>Appartement</Radio>
+                                <Radio.Group 
+                                value={type} 
+                                onChange={(e) => setType(e.target.value)} 
+                                style={{marginBottom: "3%"}}>
+                                <Radio 
+                                value="appartement" 
+                                style={{paddingTop : "1%"}}>
+                                Appartement</Radio>
                                 <br/>
-                                <Radio value="maison" style={{paddingTop : "1%"}}>Maison</Radio>
+                                <Radio 
+                                value="maison" 
+                                style={{paddingTop : "1%"}}>
+                                    Maison</Radio>
                                 </Radio.Group>
                             </label>
+
+                            <p className='formLabel'>Surface</p>
                             <label >
-                                <p>Surface</p>
-                                <Input onChange={(e) => setArea(e.target.value)} suffix="m2" value={area} style={{marginBottom: "3%"}} placeholder="75018"/>
+                                <InputNumber 
+                                min={1} 
+                                onChange={(e) => setArea(e)} 
+                                value={area} 
+                                style={{marginBottom: "3%"}} 
+                                placeholder="75 m2"/>
                             </label>
+                            <span style={{marginLeft: "1%"}}>m2</span>
+
+                            <p className='formLabel'>Nombre de pièces</p>
                             <label>
-                                <p>Nombre de pièces</p>
-                                <InputNumber onChange={(e) => setRooms(e.target.value)} value={rooms} style={{marginBottom: "3%"}} placeholder="75018"/>
+                                <InputNumber 
+                                min={1} 
+                                onChange={(e) => setRooms(e)} 
+                                value={rooms} 
+                                style={{marginBottom: "3%"}} 
+                                placeholder="75018"/>
                             </label>
+
+                            <p className='formLabel'>Avantages</p>
+                                <label>
+                                <Checkbox.Group options={options} onChange={(values) => setAvantages(values)}/>
+                                </label>
+                            
+                            <p className='formLabel'>Titre de l'annonce</p>
+                            <label >
+                                <Input onChange={(e) => setTitle(e.target.value)} value={title} style={{marginBottom: "3%"}} placeholder="8 rue constance"/>
+                            </label>
+
+                            <p className='formLabel'>Texte de l'annonce</p>
+                            <label >
+                                <TextArea rows={4} />
+                            </label>
+                            
                          
                             
                         </form>      

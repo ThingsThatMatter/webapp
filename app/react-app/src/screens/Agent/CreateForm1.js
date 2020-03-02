@@ -67,16 +67,18 @@ function CreateFormOne(props) {
 
                         <form>
                             
+                        <p className='formLabel'>Numéro et rue</p>
                             <label >
-                                Numéro et rue
                                 <Input onChange={(e) => setStreet(e.target.value)} value={street} style={{marginBottom: "3%"}} placeholder="8 rue constance"/>
                             </label>
+
+                            <p className='formLabel'>Code postal</p>
                             <label>
-                                Code postal
                                 <Input onChange={(e) => setPostal(e.target.value)} value={postal} style={{marginBottom: "3%"}} placeholder="75018"/>
                             </label>
+
+                            <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
                             <label>
-                                Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?
                                 <Radio.Group value={pref} onChange={(e) => setPref(e.target.value)}>
                                 <Radio value={true} style={{paddingTop : "1%"}}>Lieu exact</Radio>
                                 <br/>
@@ -102,7 +104,6 @@ function CreateFormOne(props) {
 
   function mapDispatchToProps(dispatch) {
     return {
-
       nextStep : function() { 
           dispatch( {type: 'nextStep'} ) 
       },
