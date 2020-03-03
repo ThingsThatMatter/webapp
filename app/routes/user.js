@@ -1,5 +1,6 @@
 var express = require('express');
 var router = express.Router();
+var mongoose = require('../models/bdd');
 
 var userModel = require('../models/userModel.js')
 var adModel = require('../models/adModel.js')
@@ -11,6 +12,8 @@ var uid2 = require("uid2");
 
 // var bcrypt = require('bcrypt');
 // const saltRounds = 10;
+
+const ObjectId = mongoose.Types.ObjectId;
 
 var adIdTest = '5e5cf133e1a25d0b8a9805bd';
 
@@ -59,7 +62,7 @@ router.get('/offers', async function(req, res, next) {
 });
 
 /* GET visites */
-router.get('/timeslots', async function(req, res, next) {
+router.get('/ad/visit', async function(req, res, next) {
 
   let userToFind = await userModel.findOne({ token:req.body.token });
 
@@ -73,11 +76,30 @@ router.get('/timeslots', async function(req, res, next) {
 });
 
 /* POST offer */
-router.put('/ad', async function(req, res, next) {
+router.put('/ad/offer', async function(req, res, next) {
+
+  let userToFind = await userModel.findOne({ token:req.body.token });
 
   let offer = {
-    user: req.body.user,
-    amount: req.body.amount
+    creationDate: req.body.creationDate,
+    user: userToFind._id,
+    singleBuyer: req.body.singleBuyer,
+    lastname1: req.body.lastname1,
+    firstname1: req.body.firstname1,
+    lastname2: req.body.lastname2,
+    firstname2: req.body.firstname2,
+    amount: req.body.amount,
+    loan: req.body.loan,
+    loanAmount: req.body.loanAmount,
+    contributionAmount: req.body.contributionAmount,
+    monthlyPay: req.body.monthlyPay,
+    notary: req.body.notary,
+    notaryName: req.body.notaryName,
+    notaryAddress: req.body.notaryAddress,
+    notaryEmail: req.body.notaryEmail,
+    validityPeriod: req.body.validityPeriod,
+    location: req.body.location,
+    message: req.body.message
   }
 
   let newOffer = await adModel.updateOne(
@@ -90,34 +112,15 @@ router.put('/ad', async function(req, res, next) {
 });
 
 /* POST visite */
-router.put('/ad', async function(req, res, next) {
+router.put('/ad/visit', async function(req, res, next) {
 
     let userToFind = await userModel.findOne({ token:req.body.token });
 
-    timeslotId = mongoose.Types.ObjectId( req.body.timeslot )
-
-    console.log( tags )
-
-    adModel.updateOne( 
-        { 'timeSlots._id': timeslotId },
-        { $pushAll: { 'timeSlots.$': userToFind._id } }
-    ).exec()
-    .then( function ( result ) { 
-        console.log( result )
-        resolve( result )
-        res.json(result);
-
-    }, function ( error ) {
-        if ( error ) return reject( error )
-    })
-
-
-
-  // let newVisit = await adModel.updateOne(
-  //     { _id: req.body.id, "timeSlots._id" : req.body.timeslot }, 
-  //     { $push: {"timeSlot.$.user":userToFind._id} }
-  // );
-
+    let newVisit = await adModel.updateOne(
+      { _id: req.body.ad, "timeSlots._id": req.body.timeslot }, 
+      { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : userToFind._id } }
+    )
+    res.json(newVisit)
 
 });
 
