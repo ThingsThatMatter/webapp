@@ -72,7 +72,7 @@ p {
   }
 }
 
-
+/* Annonce : card */
 .annonce-element {
   margin: 15px 0;
   padding: 0;
@@ -107,10 +107,16 @@ cursor: pointer;
   font-size: 1em;
   color: #888;
 }
-.annonce-price-container .annonce-state.open {
+.annonce-price-container .annonce-state.open-true {
   width: 15px;
   height: 15px;
   background-color: #41bb41;
+  border-radius: 50%;
+}
+.annonce-price-container .annonce-state.open-false {
+  width: 15px;
+  height: 15px;
+  background-color: #ff6b6b;
   border-radius: 50%;
 }
 .annonce-address-title {
@@ -182,6 +188,57 @@ cursor: pointer;
   background: #0D6FDE;
   border-radius: 7px;
   margin-top: 20px;
+}
+
+/* Page mes biens (pro) */
+
+.ads-list-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-add {
+  margin-bottom : 30px;
+  font-size: 18px;
+  color: #052040 !important;
+  font-weight: 600;
+  border:0
+}
+
+.filter-header {
+  border: 0;
+  border-radius: 10px;
+}
+.ant-collapse-borderless > .ant-collapse-item {
+  border-bottom: 0 !important
+}
+
+.ant-collapse-borderless > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+  border-top: 2px solid #f0f2f5
+}
+
+.filter-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 22px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 0.5em
+}
+
+.filter-radio-button {
+  font-size: 13px;
+  display: block;
+}
+.filter-radio-button-main {
+  font-size: 13px;
+  display: block;
+  font-weight: 500;
 }
 
 /* PAGE ANNONCE */
