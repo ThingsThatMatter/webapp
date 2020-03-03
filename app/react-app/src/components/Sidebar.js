@@ -1,6 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import { Layout, Menu, Icon } from 'antd';
+import { Layout, Menu } from 'antd';
+import {HomeOutlined, EuroCircleOutlined, CalendarOutlined, MailOutlined} from '@ant-design/icons'
+
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -26,28 +28,28 @@ function Sidebar() {
 
           <Menu.Item key="1">
             <Link to="/">
-            <Icon type="home" />
+            <HomeOutlined />
             <span className="nav-text">Biens</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="2">
             <Link to="/offres">
-            <Icon type="euro" />
+            <EuroCircleOutlined />
             <span className="nav-text">Offres</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="3">
             <Link to="/rendezvous">
-            <Icon type="calendar" />
+            <CalendarOutlined />
             <span className="nav-text">Rendez-vous</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="4">
             <Link to="/questions">
-            <Icon type="mail" />
+            <MailOutlined />
             <span className="nav-text">Messages</span>
             </Link>
           </Menu.Item>

@@ -1,9 +1,11 @@
 import React, {useState} from 'react';
-import { Layout, Icon, Row, Button } from 'antd';
+import { Layout, Row, Button } from 'antd';
 import {Redirect} from 'react-router-dom';
 
 import Sidebar from '../../components/Sidebar';
 import AdCard from '../../components/AdCard';
+import {PlusCircleOutlined} from '@ant-design/icons'
+
 
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -30,12 +32,19 @@ function Home() {
             <Content style={{ margin: '24px 16px 0' }}>
 
               <h1 className='pageTitle'>Mes biens</h1>
-              <Button onClick={() => setRedir(true)} type="primary" ghost style={buttonAdd}>Ajouter un bien<Icon type="plus-circle" /></Button>
+              <Button
+                onClick={() => setRedir(true)}
+                type="primary"
+                ghost
+                style={buttonAdd}
+              >
+                Ajouter un bien
+                <PlusCircleOutlined />
+              </Button>
 
-
-                <Row gutter={16}>
-                    <AdCard/><AdCard/><AdCard/><AdCard/>
-                </Row>
+              <Row gutter={16}>
+                  <AdCard/><AdCard/><AdCard/><AdCard/>
+              </Row>
 
             </Content>
         </Layout>
