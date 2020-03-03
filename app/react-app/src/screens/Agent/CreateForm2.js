@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, message, Input, Radio, InputNumber, Checkbox, Upload } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import { Layout, Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
 
 import {connect} from 'react-redux';
 
@@ -9,6 +9,8 @@ import {connect} from 'react-redux';
 const { Step } = Steps;
 const {Content} = Layout;
 const { TextArea } = Input;
+const { Dragger } = Upload;
+
 
 
 function CreateFormTwo(props) {
@@ -19,7 +21,11 @@ function CreateFormTwo(props) {
     const [avantages, setAvantages] = useState([])
     const [title, setTitle] = useState("")
     const [currentPage, setCurrentPage] = useState(0)
+    const[fileList, setFileList] = useState([])
 
+    useEffect(() => {
+        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
+      },[]);
 
     const options = [
         {label : "Ascenseur", value : "ascenseur"},
@@ -27,15 +33,8 @@ function CreateFormTwo(props) {
         {label : "Terrasse", value : "terrasse"}
     ]
 
+   
 
-    
-
-
-    useEffect(() => {
-        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
-      },[]);
-
-    console.log(title)
 
     return (
 
@@ -119,9 +118,33 @@ function CreateFormTwo(props) {
                             </label>
 
                             <p className='formLabel'>Photos (10 max)</p>
-                            <label >
-                               
-                            </label>
+                            <Dragger
+                            name= 'file'
+                            multiple= {true}
+                            showUploadList= {false}
+                            customRequest = {async (options) => {
+                                const data = new FormData()
+                                data.append('id', '007')
+                                data.append('file', options.file)
+                                let rawResponse = await fetch('/pro/upload', {
+                                    method : 'post',
+                                    body: data,
+                                })
+                                let response = await rawResponse.json()
+                                console.log(response)
+                                await setFileList([...fileList, <p>{response.name}</p>])
+                            }}
+                            >
+                                <p className="ant-upload-drag-icon">
+                                <InboxOutlined />
+                                </p>
+                                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                <p className="ant-upload-hint">
+                                Support for a single or bulk upload. Strictly prohibit from uploading company data or other
+                                band files
+                                </p>
+                            </Dragger>
+                            {fileList}
                             
                          
                             

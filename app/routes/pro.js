@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
+
 
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
+
 
 
 // var request = require('sync-request');
@@ -150,6 +153,31 @@ router.get('/offers', async function(req, res, next) {
 
 
   res.json(findAd);
+});
+
+// POST Upload images in form 
+
+router.post('/upload', async function(req, res, next) {
+
+  console.log("token", req.body)
+  console.log("fichier", req.files)
+  
+  var resultCopy = await req.files.file.mv(`./temp/${req.body.id}-${req.files.file.name}`);
+  
+  if(!resultCopy) {
+    res.json({result: true, name: req.files.file.name, message: `${req.files.file.name} uploaded!`} );       
+  } else {
+    res.json({result: false, name: req.files.file.name, message: `couldn't upload ${req.files.file.name}`} );
+  } 
+
+});
+
+router.delete('/upload', async function(req, res, next) {
+
+  console.log(req.files)
+
+  res.json("deleted")
+
 });
 
 

@@ -169,6 +169,7 @@ cursor: pointer;
 .formLabel {
   font-weight: 700;
   padding-top : 3%;
+  padding-bottom : 1%;
 }
 
 .ant-checkbox-group-item {

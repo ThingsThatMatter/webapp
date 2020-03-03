@@ -27,10 +27,10 @@ function CreateFormOne(props) {
     
     const handleClick = () => {
 
-        props.nextStep();
-
         if(street !== "" && postal !== "" & pref !== "") {
+            props.nextStep();
             setRedir(true)
+
         } else {
             setFormError(<p style={{paddingTop : 20, color: "#E74A34", fontWeight: 700}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }
