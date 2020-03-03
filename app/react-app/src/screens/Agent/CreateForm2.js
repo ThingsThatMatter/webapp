@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout} from 'antd';
-import { Steps, Button, message, Input, Radio, InputNumber, Checkbox } from 'antd';
+import { Layout, Steps, Button, message, Input, Radio, InputNumber, Checkbox, Upload } from 'antd';
+import { UploadOutlined } from '@ant-design/icons';
+
 import {connect} from 'react-redux';
 
 
@@ -56,7 +57,7 @@ function CreateFormTwo(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "4%"}}>
+                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
                             
@@ -65,7 +66,7 @@ function CreateFormTwo(props) {
                                 <Radio.Group 
                                 value={type} 
                                 onChange={(e) => setType(e.target.value)} 
-                                style={{marginBottom: "3%"}}>
+                                >
                                 <Radio 
                                 value="appartement" 
                                 style={{paddingTop : "1%"}}>
@@ -84,7 +85,6 @@ function CreateFormTwo(props) {
                                 min={1} 
                                 onChange={(e) => setArea(e)} 
                                 value={area} 
-                                style={{marginBottom: "3%"}} 
                                 placeholder="75 m2"/>
                             </label>
                             <span style={{marginLeft: "1%"}}>m2</span>
@@ -95,23 +95,32 @@ function CreateFormTwo(props) {
                                 min={1} 
                                 onChange={(e) => setRooms(e)} 
                                 value={rooms} 
-                                style={{marginBottom: "3%"}} 
                                 placeholder="75018"/>
                             </label>
 
                             <p className='formLabel'>Avantages</p>
                                 <label>
-                                <Checkbox.Group options={options} onChange={(values) => setAvantages(values)}/>
+                                <Checkbox.Group 
+                                options={options} 
+                                onChange={(values) => setAvantages(values)}/>
                                 </label>
                             
                             <p className='formLabel'>Titre de l'annonce</p>
                             <label >
-                                <Input onChange={(e) => setTitle(e.target.value)} value={title} style={{marginBottom: "3%"}} placeholder="8 rue constance"/>
+                                <Input 
+                                onChange={(e) => setTitle(e.target.value)} 
+                                value={title} 
+                                placeholder="8 rue constance"/>
                             </label>
 
                             <p className='formLabel'>Texte de l'annonce</p>
                             <label >
                                 <TextArea rows={4} />
+                            </label>
+
+                            <p className='formLabel'>Photos (10 max)</p>
+                            <label >
+                               
                             </label>
                             
                          

@@ -63,18 +63,18 @@ function CreateFormOne(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "4%"}}>
+                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
                             
                         <p className='formLabel'>Numéro et rue</p>
                             <label >
-                                <Input onChange={(e) => setStreet(e.target.value)} value={street} style={{marginBottom: "3%"}} placeholder="8 rue constance"/>
+                                <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance"/>
                             </label>
 
                             <p className='formLabel'>Code postal</p>
                             <label>
-                                <Input onChange={(e) => setPostal(e.target.value)} value={postal} style={{marginBottom: "3%"}} placeholder="75018"/>
+                                <Input onChange={(e) => setPostal(e.target.value)} value={postal} placeholder="75018"/>
                             </label>
 
                             <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
