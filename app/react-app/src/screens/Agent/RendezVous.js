@@ -30,6 +30,7 @@ function RendezVous() {
   const [properties, setProperties] = useState([])
   const [title, setTitle] = useState('')
   const [view, setView] = useState('Semaine')
+  const [displaySlots, setDisplaySlots] = useState(false)
 
   var calendar = useRef(null)
 
@@ -38,16 +39,27 @@ function RendezVous() {
       setTitle(calendar.current.calendar.view.title)
     };
     const dbFetch = async () => {
-      const timeslots = await fetch(`/pro/ad/timeslots?token=${tokenTest}`);
-      const body = await timeslots.json();
-      console.log(body.data)
+      const ads = await fetch(`/pro/ads?token=${tokenTest}`)
+      const body = await ads.json();
+      
+      let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0)
+      let timeslots = adsWithTimeslots.map( e => {
+        return (e.timeSlots.map( f => {
+          return {
+          ...f,
+          color : e.color,
+          title : e.title
+          }
+        }))
+      })
+      timeslots = timeslots.flat()
 
       /* Création de la liste de timeslot */
-      const events = body.data.map( e => {
+      const events = timeslots.map( e => {
         let backgroundColor;
         let textColor;
         let borderColor;
-        if (e.timeSlots.booked) {
+        if (e.booked) {
           backgroundColor = e.color
           textColor = "#FFF"
         } else {
@@ -57,41 +69,33 @@ function RendezVous() {
         }
         return {
           title: e.title,
-          start: e.timeSlots.start,
-          end: e.timeSlots.end,
+          start: e.start,
+          end: e.end,
           backgroundColor,
           textColor,
           borderColor,
           id: e._id,
           extendedProps: {
-              visitType: e.timeSlots.private
+              private: e.private
           }
         }
       })
     setMyEvents(events)
       
     /* Creation of properties list for modal */
-    let prop = body.data.map( e => {
+    let prop = body.data.ads.map( e => {
       return {
         name: e.title,
-        color: e.color
+        color: e.color,
+        id: e._id
       }
     })
-    function getUnique(arr, comp) { //Remove duplicates in table
-      const unique = arr
-           .map(e => e[comp])
-         // store the keys of the unique objects
-        .map((e, i, final) => final.indexOf(e) === i && i)
-        // eliminate the dead keys & store unique objects
-        .filter(e => arr[e]).map(e => arr[e]);
-       return unique;
-    }
-    setProperties(getUnique(prop, 'name'))
+    setProperties(prop)
 
     }
   changeTitle()
   dbFetch()
-  }, []);
+  }, [displaySlots]);
 
 
   /* View choice : day, week, month */
@@ -140,12 +144,12 @@ function RendezVous() {
   const [appointmentModalHour2, setAppointmentModalHour2] = useState(null)
   const [appointmentModalProperty, setAppointmentModalProperty] = useState(null)
   const [appointmentModalId, setAppointmentModalId] = useState(0)
-  const [appointmentModalVisitType, setAppointmentModalVisitType] = useState('Individuelle')
+  const [appointmentModalPrivate, setAppointmentModalPrivate] = useState(true)
 
   const propertiesOptions = properties.map( (e,i) => (
     <Option
       key={i}
-      value={e.name}
+      value={e.id}
     >
       <span className="dot" style={{
         backgroundColor: e.color,
@@ -203,45 +207,36 @@ function RendezVous() {
       return {
         start: start,
         end: moment(start).add(interval, 'm').toDate(),
-        private: appointmentModalVisitType
+        private: appointmentModalPrivate
         }
       })
       console.log(slots)
       slots = JSON.stringify(slots)
 
     //appel Base de données pour enregistrer les créneaux : simulation avec set time out
-    // if (appointmentModalMode === 'create') {
-    //   const postTimeslots = await fetch(`/pro/ad/${appointmentModalId}/timeslots`, {
-    //     method: 'POST',
-    //     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-    //     body: `id=${appointmentModalId}&token=${tokenTest}&timeslots=${slots}`
-    //   })
-    //   const body = await postTimeslots.json();
-    //   console.log(body.data)
-    // }
-
-
-  //   setTimeout(() => {
-  //     var eventsCopy=[...myEvents];
-  //     if (appointmentModalMode === "edit") {
-  //       eventsCopy = eventsCopy.filter( e => {
-  //         console.log(e.id)
-  //         console.log(appointmentModalId)
-  //         return (e.id != appointmentModalId) })
-  //     }
-  //     eventsCopy = eventsCopy.concat(slots)
-  //     setMyEvents(eventsCopy)
-
-  //     setAppointmentModalOkLoading(false);
-  //     setAppointmentModalVisible(false);
-  //     setAppointmentModalDate(null);
-  //     setAppointmentModalHour1(null);
-  //     setAppointmentModalHour2(null);
-  //     setAppointmentModalProperty(null);
-  //     setAppointmentModalId(null);
-  //     setAppointmentModalMode(null);
-  //     setAppointmentModalVisitType('Individuelle');
-  //   }, 2000)
+    if (appointmentModalMode === 'create') {
+      const postTimeslots = await fetch(`/pro/ad/${appointmentModalId}/timeslots`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+        body: `id=${appointmentModalId}&token=${tokenTest}&timeslot=${slots}`
+      })
+      const body = await postTimeslots.json();
+      console.log(body.data)
+      if (body.message === 'OK') {
+        setDisplaySlots(true)
+        setAppointmentModalOkLoading(false);
+        setAppointmentModalVisible(false);
+        setAppointmentModalOkLoading(false);
+        setAppointmentModalVisible(false);
+        setAppointmentModalDate(null);
+        setAppointmentModalHour1(null);
+        setAppointmentModalHour2(null);
+        setAppointmentModalProperty(null);
+        setAppointmentModalId(null);
+        setAppointmentModalMode(null);
+        setAppointmentModalPrivate(true);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -252,7 +247,7 @@ function RendezVous() {
     setAppointmentModalProperty(null);
     setAppointmentModalId(null);
     setAppointmentModalMode(null);
-    setAppointmentModalVisitType('Individuelle');
+    setAppointmentModalPrivate(true);
   }
 
   function confirm(e) {
@@ -265,7 +260,7 @@ function RendezVous() {
     setAppointmentModalProperty(null);
     setAppointmentModalId(null);
     setAppointmentModalMode(null);
-    setAppointmentModalVisitType('Individuelle');
+    setAppointmentModalPrivate(true);
   }
 
   const modalFooter =
@@ -412,7 +407,7 @@ function RendezVous() {
                 setAppointmentModalHour2(info.event.end.toTimeString().slice(0,5))
                 setAppointmentModalProperty(info.event.title)
                 setAppointmentModalId(info.event.id)
-                setAppointmentModalVisitType(info.event.extendedProps.visitType);
+                setAppointmentModalPrivate(info.event.extendedProps.private);
                 setAppointmentModalMode('edit')
                 setAppointmentModalVisible(true)
                 }}    
@@ -459,15 +454,10 @@ function RendezVous() {
                 <div className='input-modal'>
                     <p className="input-modal-label">Choix du bien</p>
                     <Select
-                        showSearch
                         style={{ width: '80%' }}
                         placeholder="Bien à faire visiter"
                         optionFilterProp="children"
-                        defaultValue= {appointmentModalProperty}
-                        onChange={value => setAppointmentModalProperty(value)}
-                        filterOption={(input, option) =>
-                        option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
+                        onChange={value => setAppointmentModalId(value)}
                     >
                         {propertiesOptions}
                     </Select>
@@ -475,9 +465,13 @@ function RendezVous() {
                 }
 
                 <div>
-                <Radio.Group onChange={(e) => setAppointmentModalVisitType(e.target.value)} value={appointmentModalVisitType}>
-                    <Radio value="Individuelle">Visite individuelle</Radio>
-                    <Radio value="Groupe">Visite en groupe</Radio>
+                <Radio.Group onChange={e => {
+                  setAppointmentModalPrivate(e.target.value)
+                }}
+                  value={appointmentModalPrivate} 
+                >
+                    <Radio value={true}>Visite individuelle</Radio>
+                    <Radio value={false}>Visite en groupe</Radio>
                 </Radio.Group>
                 </div>
             </Modal>

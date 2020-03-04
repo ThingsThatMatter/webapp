@@ -205,7 +205,7 @@ router.put('/ad/:id', async function(req, res, next) {
 
 });
 
-/* DELETE ad onlineStatus */
+/* DELETE ad */
 router.delete('/ad/:id', async function(req, res, next) {
 
   try {
@@ -241,7 +241,7 @@ router.delete('/ad/:id', async function(req, res, next) {
 
 
 /* UPDATE ad onlineStatus */
-router.put('/ad/online/:id', async function(req, res, next) {
+router.put('/ad/:id/online', async function(req, res, next) {
 
   try {
     let updateAd = await adModel.updateOne(
@@ -309,7 +309,7 @@ router.post('/ad/:id/timeslots', async function(req, res, next) {
       status = 200;
       response = {
         message: 'OK',
-        data: newTimeslot
+        data: allTimeslots
       }
     };
 
@@ -325,8 +325,8 @@ router.post('/ad/:id/timeslots', async function(req, res, next) {
 
 });
 
-/* GET timeslots */
-router.get('/ad/timeslots', async function(req, res, next) {
+/* GET timeslots (pour l'instant inutile) */
+router.get('/ads/timeslots', async function(req, res, next) {
 
   try {
 

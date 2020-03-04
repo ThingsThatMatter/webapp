@@ -13,7 +13,6 @@ import AdDesc from './screens/Agent/AdDesc';
 import CreateFormOne from './screens/Agent/CreateForm1';
 import CreateFormTwo from './screens/Agent/CreateForm2';
 import CreateFormThree from './screens/Agent/CreateForm3';
-import RendezVous from './screens/Agent/RendezVous';
 import {SignIn as agentSignIn} from './screens/Agent/SignIn'
 import {SignUp as agentSignUp} from './screens/Agent/SignUp'
 
