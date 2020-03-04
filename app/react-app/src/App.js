@@ -13,6 +13,9 @@ import AdDesc from './screens/Agent/AdDesc';
 import CreateFormOne from './screens/Agent/CreateForm1';
 import CreateFormTwo from './screens/Agent/CreateForm2';
 import CreateFormThree from './screens/Agent/CreateForm3';
+import CreateFormFour from './screens/Agent/CreateForm4';
+import CreateFormFive from './screens/Agent/CreateForm5';
+import CreateFormSix from './screens/Agent/CreateForm6';
 import Calendar from './screens/Agent/Calendar';
 import {SignIn as agentSignIn} from './screens/Agent/SignIn'
 import {SignUp as agentSignUp} from './screens/Agent/SignUp'
@@ -43,12 +46,12 @@ function App() {
           <Route component={AdDesc} path="/addesc"  />
           <Route component={CreateFormOne} path="/createform/step1"  />
           <Route component={CreateFormTwo} path="/createform/step2"  />
-<<<<<<< HEAD
           <Route component={CreateFormThree} path="/createform/step3"  />
-=======
+          <Route component={CreateFormFour} path="/createform/step4"  />
+          <Route component={CreateFormFive} path="/createform/step5"  />
+          <Route component={CreateFormSix} path="/createform/step6"  />
           <Route component={agentSignIn} path="/pro/signin" />
           <Route component={agentSignUp} path="/pro/signup" />
->>>>>>> 1c2a3890bd302668f7a21a341de3fbbbf024d903
         </Switch>
       </Router>
     </Provider>
