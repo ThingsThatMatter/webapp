@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var fs = require('fs');
+var mongoose = require('../models/bdd');
+
 
 
 var agentModel = require('../models/agentModel.js')
@@ -10,6 +12,9 @@ var adModel = require('../models/adModel.js')
 
 // var request = require('sync-request');
 var uid2 = require("uid2");
+
+const ObjectId = mongoose.Types.ObjectId;
+
 
 // var userModel = require('../models/users');
 
@@ -45,7 +50,7 @@ router.post('/sign-in', async function(req, res, next) {
       if (req.body.password === findAgent.password) {
         console.log(findAgent.email + ' : Mot de passe correct')
         res.json({
-          state: true, 
+          state: true,
           message: 'Authentification réussie',
           token: findAgent.token
         }); 
@@ -271,19 +276,28 @@ router.post('/ad/:id/timeslots', async function(req, res, next) {
   try {
 
     let findAgent = await agentModel.findOne({ token:req.body.token });
-    let timeslot = {
-      booked: false,
-      agent: findAgent._id,
-      start: req.body.start,
-      end: req.body.end,
-      private: req.body.private
-    }
-    let newTimeslot = await adModel.updateOne(
-        { _id: req.params.id }, 
-        { $push: { timeSlots: timeslot }, visitStatus: true }
-    );
 
-    console.log(newTimeslot)
+    let tableTimeslots = JSON.parse(req.body.timeslot);
+
+    let frontTimeslots = tableTimeslots.map(obj => {
+      return { 
+        booked: false,
+        start: obj.start,
+        end: obj.end,
+        private: obj.private,
+        agent: findAgent._id
+      }
+    });
+
+    let timeslotsFromBdd = await adModel.findById(req.params.id);
+    timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
+
+    let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+
+    let newTimeslot = await adModel.updateOne(
+        { _id: req.body.id }, 
+        { $set: { timeSlots: allTimeslots }, visitStatus: true }
+    );
 
     if(!newTimeslot) { 
       status = 401;
@@ -434,15 +448,22 @@ router.put('/offer/:id', async function(req, res, next) {
         details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       };
     } else {
-      let updateOffer = await adModel.updateOne(
+
+      let acceptedOffer = await adModel.updateOne(
         { _id: req.body.ad, "offers._id": req.params.id  }, 
-        { "offers.$.status": req.body.status }
+        { "offers.$.status": 'accepted' }
       );
+
+      let declinedOffers = await adModel.updateMany(
+        { _id: req.body.ad, "offers.status": 'pending' },
+        { $set: { "offers.$[elem].status" : 'declined' } },
+        { arrayFilters: [ { "elem.status": 'pending' } ] }
+      )
 
       status = 200;
       response = {
         message: 'OK',
-        data: updateOffer
+        data: declinedOffers
       }
     };
 
@@ -493,10 +514,13 @@ router.get('/ad/:id', async function(req, res, next) {
 // POST Upload images in form 
 router.post('/upload', async function(req, res, next) {
 
-  console.log("token", req.body)
-  console.log("fichier", req.files)
+  console.log("token :", req.body.token)
+  console.log("fichier :", req.files)
   
-  var resultCopy = await req.files.file.mv(`./temp/${req.body.id}-${req.files.file.name}`);
+  var resultCopy = await req.files.file.mv(`./temp/${req.body.token}-${req.files.file.name}`);
+
+  console.log(resultCopy)
+
   
   if(!resultCopy) {
     res.json({result: true, name: req.files.file.name, message: `${req.files.file.name} uploaded!`} );       
@@ -506,9 +530,11 @@ router.post('/upload', async function(req, res, next) {
 
 });
 
-router.delete('/upload', async function(req, res, next) {
+router.delete('/upload/:name', async function(req, res, next) {
 
-  console.log(req.files)
+  console.log(req.params)
+
+  fs.unlinkSync(`./temp/${req.params.name}`)
 
   res.json("deleted")
 

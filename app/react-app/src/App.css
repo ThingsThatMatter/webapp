@@ -245,7 +245,19 @@ cursor: pointer;
   background: #116BD9;
   border-color: #116BD9;
   border-radius: 7px;
-  margin-top: 20px;
+  margin: 5% 0;
+}
+
+.button-back {
+  width: 90px;
+  height: 40px;
+  color: #0D6FDE;
+  border : 1px solid #0D6FDE;
+  background: white;
+  border-radius: 7px;
+  margin-top: 5%;
+  margin-bottom: 5%;
+  margin-right: 3%;
 }
 
 /* Page mes biens (pro) */
