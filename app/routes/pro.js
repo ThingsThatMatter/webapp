@@ -19,15 +19,51 @@ var uid2 = require("uid2");
 let status;
 let response;
 
-var agentIdTest = '5e5cf8e567fc720dcbcaadb3';
-
-/* ProUser sign-in */
+/* PRO sign-in */
 router.post('/sign-in', async function(req, res, next) {
 
-  res.json('sign in');
+  if(req.body.email == '' || req.body.password == '') {
+
+    res.json({
+      state: false, 
+      message: 'Vérifiez les informations saisies'
+    });
+
+  } else {
+
+    let findAgent = await agentModel.findOne({ email:req.body.email });
+
+    if(findAgent == null) {
+
+      res.json({
+        state: false, 
+        message: 'Erreur d\'authentification'
+      }); 
+
+    } else {
+
+      if (req.body.password === findAgent.password) {
+        console.log(findAgent.email + ' : Mot de passe correct')
+        res.json({
+          state: true, 
+          message: 'Authentification réussie',
+          token: findAgent.token
+        }); 
+      } else {
+        console.log(findAgent.email + ' : Mauvais mot de passe')
+        res.json({
+          state: false, 
+          message: 'Erreur d\'authentification'
+        }); 
+      }
+      
+    }
+
+  }
+  
 });
 
-/* ProUser sign-up */
+/* PRO sign-up */
 router.post('/sign-up', async function(req, res, next) {
 
   let newAgent = new agentModel ({
@@ -52,45 +88,63 @@ router.post('/sign-up', async function(req, res, next) {
 /* POST ad */
 router.post('/ad', async function(req, res, next) {
 
-  let findAgent = await agentModel.findOne({ token:req.body.token });
+  try {
+    
+    let parseTimeslots = JSON.parse(req.body.timeSlots);
+    let findAgent = await agentModel.findOne({ token:req.body.token });
 
-  let newAd = new adModel ({
-    creationDate: req.body.creationDate,
-    onlineDate: req.body.onlineDate,
-    color: req.body.color,
-    onlineStatus: req.body.onlineStatus,
-    offerStatus: req.body.offerStatus,
-    visitStatus: req.body.visitStatus,
-    price: req.body.price,
-    fees: req.body.fees,
-    type: req.body.type,
-    title: req.body.title,
-    description: req.body.description,
-    address: req.body.address,
-    postcode: req.body.postcode,
-    city: req.body.city,
-    photos: req.body.photos,
-    video: req.body.video,
-    area: req.body.area,
-    rooms: req.body.rooms,
-    bedrooms: req.body.bedrooms,
-    elevator: req.body.elevator,
-    terrace: req.body.terrace,
-    balcony: req.body.balcony,
-    options: req.body.options,
-    dpe: req.body.dpe,
-    ges: req.body.ges,
-    files: req.body.files
-  });
+    let tempAd = new adModel ({
+      creationDate: new Date,
+      color: req.body.color,
+      onlineStatus: false,
+      offerStatus: false,
+      visitStatus: false,
+      price: req.body.price,
+      fees: req.body.fees,
+      type: req.body.type,
+      title: req.body.title,
+      description: req.body.description,
+      typeAddress: req.body.typeAddress,
+      address: req.body.address,
+      postcode: req.body.postcode,
+      city: req.body.city,
+      photos: req.body.photos,
+      video: req.body.video,
+      area: req.body.area,
+      rooms: req.body.rooms,
+      bedrooms: req.body.bedrooms,
+      elevator: req.body.elevator,
+      terrace: req.body.terrace,
+      balcony: req.body.balcony,
+      options: req.body.options,
+      dpe: req.body.dpe,
+      ges: req.body.ges,
+      files: req.body.files,
+      timeSlots: parseTimeslots
+    });
 
-  let ad = await newAd.save();
+    let newAd = await tempAd.save();
 
-  let adToAgent = await agentModel.updateOne(
-    { _id: findAgent._id }, 
-    { $push: { ads : ad._id } }
-  )
+    let adToAgent = await agentModel.updateOne(
+      { _id: findAgent._id }, 
+      { $push: { ads : newAd._id } }
+    )
 
-  res.json(ad);
+    status = 200;
+    response = {
+      message: 'OK',
+      data: newAd
+    }
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
 
 });
 
@@ -98,15 +152,12 @@ router.post('/ad', async function(req, res, next) {
 router.put('/ad/:id', async function(req, res, next) {
 
   try {
+    let parseTimeslots = JSON.parse(req.body.timeSlots);
+
     let updateAd = await adModel.updateOne(
       { _id: req.params.id }, 
       { 
-        creationDate: req.body.creationDate,
-        onlineDate: req.body.onlineDate,
         color: req.body.color,
-        onlineStatus: req.body.onlineStatus,
-        offerStatus: req.body.offerStatus,
-        visitStatus: req.body.visitStatus,
         price: req.body.price,
         fees: req.body.fees,
         type: req.body.type,
@@ -127,11 +178,74 @@ router.put('/ad/:id', async function(req, res, next) {
         dpe: req.body.dpe,
         ges: req.body.ges,
         files: req.body.files,
-        timeSlots: req.body.timeSlots
+        timeSlots: parseTimeslots
       }
     );
+    
+    status = 200;
+    response = {
+      message: 'OK',
+      data: updateAd
+    }
 
-    console.log(updateAd);
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+/* DELETE ad onlineStatus */
+router.delete('/ad/:id', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.body.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      let deleteAd = await adModel.deleteOne({ _id: req.params.id });
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: deleteAd
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+
+/* UPDATE ad onlineStatus */
+router.put('/ad/online/:id', async function(req, res, next) {
+
+  try {
+    let updateAd = await adModel.updateOne(
+      { _id: req.params.id }, 
+      { 
+        onlineStatus: req.body.onlineStatus,
+        onlineDate: new Date
+      }
+    );
     
     status = 200;
     response = {
@@ -165,7 +279,7 @@ router.put('/timeslot', async function(req, res, next) {
     }
     let newTimeslot = await adModel.updateOne(
         { _id: req.body.id }, 
-        { $push: { timeSlots: timeslot } }
+        { $push: { timeSlots: timeslot }, visitStatus: true }
     );
 
     console.log(newTimeslot)
@@ -240,7 +354,7 @@ router.get('/timeslots', async function(req, res, next) {
 router.get('/ads', async function(req, res, next) {
 
   try {
-    let adsFromAgent = await agentModel.findOne({ token:req.query.token })
+    let adsFromAgent = await agentModel.findOne({ token:req.query.token }) // authenticate user and return his ads
       .populate('ads')
       .exec()
     ;
@@ -269,32 +383,113 @@ router.get('/ads', async function(req, res, next) {
 
 });
 
-// GET Ad details
+// GET Ad offers
+router.get('/ad/offers', async function(req, res, next) {
 
-router.get('/ad', async function(req, res, next) {
+  try {
+    let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
 
-  let findUser = await agentModel.find({token : req.query.token})  // authenticate user
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      let offersFromAd = await adModel
+        .findOne({_id : req.query.ad})
+        .populate('offers.offer')
+        .exec()
+      ; // search ad and return its offers
 
+      status = 200;
+      response = {
+        message: 'OK',
+        data: offersFromAd.offers
+      }
+    };
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
-  let findAd = await adModel.findById(req.query.adId) // return add detail if user is authenticated
+  res.status(status).json(response);
+  
+});
 
-  res.json(findAd);
+/* PUT offer */
+router.put('/offer/:id', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.body.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      let updateOffer = await adModel.updateOne(
+        { _id: req.body.ad, "offers._id": req.params.id  }, 
+        { "offers.$.status": req.body.status }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: updateOffer
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
 
 });
-// GET ALL offers
 
-router.get('/offers', async function(req, res, next) {
+// GET Ad details
+router.get('/ad/:id', async function(req, res, next) {
 
-  let findUser = await agentModel.find({token : req.query.token}).populate('ads').exec() // authenticate user and return his ads
+  try {
+    let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
 
-  // boucler sur le tableau d'annonces 
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      let adForDetails = await adModel.findById(req.params.id); // Trouver les détails de l'annonce
+      status = 200;
+      response = {
+        message: 'OK',
+        data: adForDetails
+      }
+    };
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
+  res.status(status).json(response);
 
-  res.json(findAd);
 });
 
 // POST Upload images in form 
-
 router.post('/upload', async function(req, res, next) {
 
   console.log("token", req.body)

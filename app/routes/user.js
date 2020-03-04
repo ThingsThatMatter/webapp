@@ -81,7 +81,8 @@ router.put('/ad/offer', async function(req, res, next) {
   let userToFind = await userModel.findOne({ token:req.body.token });
 
   let offer = {
-    creationDate: req.body.creationDate,
+    creationDate: new Date,
+    status: 'pending',
     user: userToFind._id,
     singleBuyer: req.body.singleBuyer,
     lastname1: req.body.lastname1,
