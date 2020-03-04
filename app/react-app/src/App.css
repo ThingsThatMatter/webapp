@@ -72,6 +72,56 @@ p {
   }
 }
 
+/* Sign-in sign-up Agent */
+.pro-sign-content {
+  height: 100vh;
+  background-color: #052040;
+  color: #FFF
+}
+.pro-sign-content {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo-ttm-sign {
+  margin: 3em 1em 1em 1em;
+  font-size: 35px;
+}
+.pro-sign-box {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  /* height: 50%; */
+  padding: 2% 7%;
+  background-color: #f0f2f5;
+  border-radius: 5px;
+  box-shadow: 0 0 30px #000;
+}
+.pro-sign-box-title {
+  color: #052040;
+  margin-bottom:1em;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+}
+
+.ant-form-vertical .ant-form-item-label, .ant-col-24.ant-form-item-label, .ant-col-xl-24.ant-form-item-label {
+  padding: 0 0 5px;
+}
+
+.button-sign-validate {
+  margin: auto;
+  width:100% !important
+}
+
+.forgotten-password {
+  text-align: center;
+  color:#052040;
+  font-size: 13px;
+}
+
+
 /* Annonce : card */
 .annonce-element {
   margin: 15px 0;
@@ -185,9 +235,11 @@ cursor: pointer;
 /* BOUTTONS (from Ant) */
 
 .button-validate {
+  color: #FFF;
   width: 90px;
   height: 40px;
-  background: #0D6FDE;
+  background: #116BD9;
+  border-color: #116BD9;
   border-radius: 7px;
   margin-top: 20px;
 }

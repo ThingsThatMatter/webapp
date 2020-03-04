@@ -13,6 +13,8 @@ import AdDesc from './screens/Agent/AdDesc';
 import CreateFormOne from './screens/Agent/CreateForm1';
 import CreateFormTwo from './screens/Agent/CreateForm2';
 import Calendar from './screens/Agent/Calendar';
+import {SignIn as agentSignIn} from './screens/Agent/SignIn'
+import {SignUp as agentSignUp} from './screens/Agent/SignUp'
 
 import step from './reducers/step.reducer';
 
@@ -39,6 +41,8 @@ function App() {
           <Route component={AdDesc} path="/addesc"  />
           <Route component={CreateFormOne} path="/createform/step1"  />
           <Route component={CreateFormTwo} path="/createform/step2"  />
+          <Route component={agentSignIn} path="/pro/signin" />
+          <Route component={agentSignUp} path="/pro/signup" />
         </Switch>
       </Router>
     </Provider>
