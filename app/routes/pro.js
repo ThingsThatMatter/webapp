@@ -504,10 +504,13 @@ router.get('/ad/:id', async function(req, res, next) {
 // POST Upload images in form 
 router.post('/upload', async function(req, res, next) {
 
-  console.log("token", req.body)
-  console.log("fichier", req.files)
+  console.log("token :", req.body.token)
+  console.log("fichier :", req.files)
   
-  var resultCopy = await req.files.file.mv(`./temp/${req.body.id}-${req.files.file.name}`);
+  var resultCopy = await req.files.file.mv(`./temp/${req.body.token}-${req.files.file.name}`);
+
+  console.log(resultCopy)
+
   
   if(!resultCopy) {
     res.json({result: true, name: req.files.file.name, message: `${req.files.file.name} uploaded!`} );       
@@ -517,9 +520,11 @@ router.post('/upload', async function(req, res, next) {
 
 });
 
-router.delete('/upload', async function(req, res, next) {
+router.delete('/upload/:name', async function(req, res, next) {
 
-  console.log(req.files)
+  console.log(req.params)
+
+  fs.unlinkSync(`./temp/${req.params.name}`)
 
   res.json("deleted")
 

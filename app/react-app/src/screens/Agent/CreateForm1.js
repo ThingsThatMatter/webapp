@@ -1,7 +1,7 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
 import { Layout} from 'antd';
-import { Steps, Button, message, Input, Radio } from 'antd';
+import { Steps, Button, Input, Radio } from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 
@@ -23,13 +23,22 @@ function CreateFormOne(props) {
 
     const [currentPage, setCurrentPage] = useState(0)
 
-    
-    
+    const adID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+
+    useEffect(() => {
+        if (props.formData) {
+            setStreet(props.formData.address)
+            setPostal(props.formData.postCode)
+            setPref(props.formData.typeAddress)
+        }
+      },[]);
+
     const handleClick = () => {
 
-        if(street !== "" && postal !== "" & pref !== "") {
+        if(street !== "" && postal !== "" && pref !== "") {
+            props.saveFormData(street, postal, pref, adID);
             props.nextStep();
-            setRedir(true)
+            setRedir(true);
 
         } else {
             setFormError(<p style={{paddingTop : 20, color: "#E74A34", fontWeight: 700}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
@@ -41,7 +50,7 @@ function CreateFormOne(props) {
         return <Redirect to="/createform/step2"/> // Triggered by button handleClick
     }
 
-    console.log(street, postal, pref)
+    console.log(adID)
 
     return (
 
@@ -87,9 +96,9 @@ function CreateFormOne(props) {
                             </label>
                             
                         </form>
-
+                        {formError} 
                         <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
-                        {formError}  
+                         
                     </div>
                
                 </Content>  
@@ -102,16 +111,22 @@ function CreateFormOne(props) {
     );
   }
 
+  function mapStateToProps(state) {
+    return { 
+        formData: state.formData
+    }
+  }
+
   function mapDispatchToProps(dispatch) {
     return {
       nextStep : function() { 
-          dispatch( {type: 'nextStep'} ) 
+        dispatch( {type: 'nextStep'} ) 
       },
-      saveFormData : function() { 
-        dispatch( {type: 'saveFormData'} ) 
+      saveFormData : function(street, postal, pref, adID) { 
+        dispatch( {type: 'saveFormData', address: street, postCode: postal, typeAddress: pref, adID: adID } ) 
     }
 
     }
   }
 
-  export default connect (null, mapDispatchToProps) (CreateFormOne);
+  export default connect (mapStateToProps, mapDispatchToProps) (CreateFormOne);

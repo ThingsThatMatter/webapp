@@ -48,8 +48,29 @@ function Home() {
   } else if (offerStatus === 'N') {
     ads = adsList.filter( e => e.offerStatus === false )
   }
+
+  /* Price formatting */
+  const priceFormatter = new Intl.NumberFormat('fr', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    useGrouping: true
+  })
   
   /* Ad card rending */
+    //sort
+  ads = ads.sort((a,b) => {
+    const dateCreate = (date) => {
+      var year = date.slice(0,4)
+      var month = Number(date.slice(5,7))-1
+      var day = date.slice(8,10)
+      var hour = date.slice(11,13)
+      var min = date.slice(14,16)
+      return new Date(year, month, day, hour, min)
+    }
+    return (dateCreate(a.creationDate) - dateCreate(b.creationDate))
+  })
+    //rend
   ads = ads.map( (e,i) => {
     return (
       <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
@@ -57,7 +78,7 @@ function Home() {
           <img className="annonce-image" src={e.photos[0]} />
           <div className="annonce-text">
               <div className="annonce-price-container">
-                  <span className="annonce-price">{e.price} €</span>
+                  <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                   <span className={`annonce-state open-${e.onlineStatus}`}></span>
               </div>
               <p className="annonce-address-title">{e.address}</p>
