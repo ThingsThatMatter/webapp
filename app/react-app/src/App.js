@@ -12,7 +12,6 @@ import Questions from './screens/Agent/Questions';
 import AdDesc from './screens/Agent/AdDesc';
 import CreateFormOne from './screens/Agent/CreateForm1';
 import CreateFormTwo from './screens/Agent/CreateForm2';
-import Calendar from './screens/Agent/Calendar';
 import {SignIn as agentSignIn} from './screens/Agent/SignIn'
 import {SignUp as agentSignUp} from './screens/Agent/SignUp'
 
@@ -36,7 +35,7 @@ function App() {
         <Switch>
           <Route component={Home} path="/" exact />
           <Route component={Offres} path="/offres"  />
-          <Route component={Calendar} path="/rendezvous"  />
+          <Route component={RendezVous} path="/rendezvous"  />
           <Route component={Questions} path="/questions"  />
           <Route component={AdDesc} path="/addesc"  />
           <Route component={CreateFormOne} path="/createform/step1"  />

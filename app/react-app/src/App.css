@@ -115,6 +115,10 @@ p {
   width:100% !important
 }
 
+.sign-error-text {
+  color: #ff6b6b;
+}
+
 .forgotten-password {
   text-align: center;
   color:#052040;

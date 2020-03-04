@@ -266,7 +266,7 @@ router.put('/ad/online/:id', async function(req, res, next) {
 });
 
 /* POST timeslot */
-router.put('/timeslot', async function(req, res, next) {
+router.post('/ad/:id/timeslots', async function(req, res, next) {
 
   try {
 
@@ -275,10 +275,11 @@ router.put('/timeslot', async function(req, res, next) {
       booked: false,
       agent: findAgent._id,
       start: req.body.start,
-      end: req.body.end
+      end: req.body.end,
+      private: req.body.private
     }
     let newTimeslot = await adModel.updateOne(
-        { _id: req.body.id }, 
+        { _id: req.params.id }, 
         { $push: { timeSlots: timeslot }, visitStatus: true }
     );
 
@@ -311,7 +312,7 @@ router.put('/timeslot', async function(req, res, next) {
 });
 
 /* GET timeslots */
-router.get('/timeslots', async function(req, res, next) {
+router.get('/ad/timeslots', async function(req, res, next) {
 
   try {
 
