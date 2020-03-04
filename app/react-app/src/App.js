@@ -12,11 +12,13 @@ import Questions from './screens/Agent/Questions';
 import AdDesc from './screens/Agent/AdDesc';
 import CreateFormOne from './screens/Agent/CreateForm1';
 import CreateFormTwo from './screens/Agent/CreateForm2';
+import CreateFormThree from './screens/Agent/CreateForm3';
 import Calendar from './screens/Agent/Calendar';
 
 import step from './reducers/step.reducer';
+import formData from './reducers/formData.reducer';
 
-const store = createStore(combineReducers({step}))
+const store = createStore(combineReducers({step, formData}))
 
 // const PrivateRoute = ({ component: Component, ...rest }) => (
 //   <Route {...rest} render={(props) => (
@@ -39,6 +41,7 @@ function App() {
           <Route component={AdDesc} path="/addesc"  />
           <Route component={CreateFormOne} path="/createform/step1"  />
           <Route component={CreateFormTwo} path="/createform/step2"  />
+          <Route component={CreateFormThree} path="/createform/step3"  />
         </Switch>
       </Router>
     </Provider>
