@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs');
+
 
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
+
 
 
 // var request = require('sync-request');
@@ -19,7 +22,45 @@ let response;
 /* PRO sign-in */
 router.post('/sign-in', async function(req, res, next) {
 
-  res.json('sign in');
+  if(req.body.email == '' || req.body.password == '') {
+
+    res.json({
+      state: false, 
+      message: 'Vérifiez les informations saisies'
+    });
+
+  } else {
+
+    let findAgent = await agentModel.findOne({ email:req.body.email });
+
+    if(findAgent == null) {
+
+      res.json({
+        state: false, 
+        message: 'Erreur d\'authentification'
+      }); 
+
+    } else {
+
+      if (req.body.password === findAgent.password) {
+        console.log(findAgent.email + ' : Mot de passe correct')
+        res.json({
+          state: true, 
+          message: 'Authentification réussie',
+          token: findAgent.token
+        }); 
+      } else {
+        console.log(findAgent.email + ' : Mauvais mot de passe')
+        res.json({
+          state: false, 
+          message: 'Erreur d\'authentification'
+        }); 
+      }
+      
+    }
+
+  }
+  
 });
 
 /* PRO sign-up */
@@ -53,17 +94,17 @@ router.post('/ad', async function(req, res, next) {
     let findAgent = await agentModel.findOne({ token:req.body.token });
 
     let tempAd = new adModel ({
-      creationDate: req.body.creationDate,
-      onlineDate: req.body.onlineDate,
+      creationDate: new Date,
       color: req.body.color,
-      onlineStatus: req.body.onlineStatus,
-      offerStatus: req.body.offerStatus,
-      visitStatus: req.body.visitStatus,
+      onlineStatus: false,
+      offerStatus: false,
+      visitStatus: false,
       price: req.body.price,
       fees: req.body.fees,
       type: req.body.type,
       title: req.body.title,
       description: req.body.description,
+      typeAddress: req.body.typeAddress,
       address: req.body.address,
       postcode: req.body.postcode,
       city: req.body.city,
@@ -116,12 +157,7 @@ router.put('/ad/:id', async function(req, res, next) {
     let updateAd = await adModel.updateOne(
       { _id: req.params.id }, 
       { 
-        creationDate: req.body.creationDate,
-        onlineDate: req.body.onlineDate,
         color: req.body.color,
-        onlineStatus: req.body.onlineStatus,
-        offerStatus: req.body.offerStatus,
-        visitStatus: req.body.visitStatus,
         price: req.body.price,
         fees: req.body.fees,
         type: req.body.type,
@@ -164,6 +200,71 @@ router.put('/ad/:id', async function(req, res, next) {
 
 });
 
+/* DELETE ad onlineStatus */
+router.delete('/ad/:id', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.body.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      let deleteAd = await adModel.deleteOne({ _id: req.params.id });
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: deleteAd
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+
+/* UPDATE ad onlineStatus */
+router.put('/ad/online/:id', async function(req, res, next) {
+
+  try {
+    let updateAd = await adModel.updateOne(
+      { _id: req.params.id }, 
+      { 
+        onlineStatus: req.body.onlineStatus,
+        onlineDate: new Date
+      }
+    );
+    
+    status = 200;
+    response = {
+      message: 'OK',
+      data: updateAd
+    }
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
 /* POST timeslot */
 router.put('/timeslot', async function(req, res, next) {
 
@@ -178,7 +279,7 @@ router.put('/timeslot', async function(req, res, next) {
     }
     let newTimeslot = await adModel.updateOne(
         { _id: req.body.id }, 
-        { $push: { timeSlots: timeslot } }
+        { $push: { timeSlots: timeslot }, visitStatus: true }
     );
 
     console.log(newTimeslot)
@@ -319,6 +420,43 @@ router.get('/ad/offers', async function(req, res, next) {
   
 });
 
+/* PUT offer */
+router.put('/offer/:id', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.body.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      let updateOffer = await adModel.updateOne(
+        { _id: req.body.ad, "offers._id": req.params.id  }, 
+        { "offers.$.status": req.body.status }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: updateOffer
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
 // GET Ad details
 router.get('/ad/:id', async function(req, res, next) {
 
@@ -350,5 +488,30 @@ router.get('/ad/:id', async function(req, res, next) {
   res.status(status).json(response);
 
 });
+
+// POST Upload images in form 
+router.post('/upload', async function(req, res, next) {
+
+  console.log("token", req.body)
+  console.log("fichier", req.files)
+  
+  var resultCopy = await req.files.file.mv(`./temp/${req.body.id}-${req.files.file.name}`);
+  
+  if(!resultCopy) {
+    res.json({result: true, name: req.files.file.name, message: `${req.files.file.name} uploaded!`} );       
+  } else {
+    res.json({result: false, name: req.files.file.name, message: `couldn't upload ${req.files.file.name}`} );
+  } 
+
+});
+
+router.delete('/upload', async function(req, res, next) {
+
+  console.log(req.files)
+
+  res.json("deleted")
+
+});
+
 
 module.exports = router;
