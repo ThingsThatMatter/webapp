@@ -72,7 +72,57 @@ p {
   }
 }
 
+/* Sign-in sign-up Agent */
+.pro-sign-content {
+  height: 100vh;
+  background-color: #052040;
+  color: #FFF
+}
+.pro-sign-content {
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+}
+.logo-ttm-sign {
+  margin: 3em 1em 1em 1em;
+  font-size: 35px;
+}
+.pro-sign-box {
+  display:flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 50%;
+  /* height: 50%; */
+  padding: 2% 7%;
+  background-color: #f0f2f5;
+  border-radius: 5px;
+  box-shadow: 0 0 30px #000;
+}
+.pro-sign-box-title {
+  color: #052040;
+  margin-bottom:1em;
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+}
 
+.ant-form-vertical .ant-form-item-label, .ant-col-24.ant-form-item-label, .ant-col-xl-24.ant-form-item-label {
+  padding: 0 0 5px;
+}
+
+.button-sign-validate {
+  margin: auto;
+  width:100% !important
+}
+
+.forgotten-password {
+  text-align: center;
+  color:#052040;
+  font-size: 13px;
+}
+
+
+/* Annonce : card */
 .annonce-element {
   margin: 15px 0;
   padding: 0;
@@ -107,10 +157,16 @@ cursor: pointer;
   font-size: 1em;
   color: #888;
 }
-.annonce-price-container .annonce-state.open {
+.annonce-price-container .annonce-state.open-true {
   width: 15px;
   height: 15px;
   background-color: #41bb41;
+  border-radius: 50%;
+}
+.annonce-price-container .annonce-state.open-false {
+  width: 15px;
+  height: 15px;
+  background-color: #ff6b6b;
   border-radius: 50%;
 }
 .annonce-address-title {
@@ -179,9 +235,11 @@ cursor: pointer;
 /* BOUTTONS (from Ant) */
 
 .button-validate {
+  color: #FFF;
   width: 90px;
   height: 40px;
-  background: #0D6FDE;
+  background: #116BD9;
+  border-color: #116BD9;
   border-radius: 7px;
   margin: 5% 0;
 }
@@ -196,6 +254,57 @@ cursor: pointer;
   margin-top: 5%;
   margin-bottom: 5%;
   margin-right: 3%;
+}
+
+/* Page mes biens (pro) */
+
+.ads-list-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.button-add {
+  margin-bottom : 30px;
+  font-size: 18px;
+  color: #052040 !important;
+  font-weight: 600;
+  border:0
+}
+
+.filter-header {
+  border: 0;
+  border-radius: 10px;
+}
+.ant-collapse-borderless > .ant-collapse-item {
+  border-bottom: 0 !important
+}
+
+.ant-collapse-borderless > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+  border-top: 2px solid #f0f2f5
+}
+
+.filter-group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 22px;
+}
+
+.filter-label {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 0.5em
+}
+
+.filter-radio-button {
+  font-size: 13px;
+  display: block;
+}
+.filter-radio-button-main {
+  font-size: 13px;
+  display: block;
+  font-weight: 500;
 }
 
 /* PAGE ANNONCE */

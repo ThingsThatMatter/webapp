@@ -18,6 +18,7 @@ var questionSchema = mongoose.Schema({
 
 var offerSchema = mongoose.Schema({
     creationDate: Date,
+    status: String,
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     singleBuyer: Boolean,
     lastname1: String,
@@ -50,6 +51,7 @@ var adSchema = mongoose.Schema({
     type: String,
     title: String,
     description: String,
+    typeAddress: String,
     address: String,
     postcode: Number,
     city: String,
