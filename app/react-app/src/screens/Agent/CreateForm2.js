@@ -4,17 +4,12 @@ import { Layout, Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, mes
 import { InboxOutlined } from '@ant-design/icons';
 import {Redirect} from 'react-router-dom';
 import {DeleteOutlined} from '@ant-design/icons';
-
-
 import {connect} from 'react-redux';
-
 
 const { Step } = Steps;
 const {Content} = Layout;
 const { TextArea } = Input;
 const { Dragger } = Upload;
-
-
 
 function CreateFormTwo(props) {
 

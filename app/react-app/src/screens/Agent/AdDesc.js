@@ -5,13 +5,6 @@ import { Slide } from 'react-slideshow-image';
 
 const {Content} = Layout;
 const { Panel } = Collapse;
-
-
-const slideImages = [
-    '../house.jpeg',
-    '../house2.jpg',
-    '../house3.jpg',
-  ];
    
   const properties = {
     duration: 5000,
