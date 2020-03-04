@@ -271,23 +271,33 @@ router.put('/ad/online/:id', async function(req, res, next) {
 });
 
 /* POST timeslot */
-router.put('/ad/timeslot', async function(req, res, next) {
+router.post('/ad/:id/timeslots', async function(req, res, next) {
 
   try {
 
     let findAgent = await agentModel.findOne({ token:req.body.token });
-    let timeslot = {
-      booked: false,
-      agent: findAgent._id,
-      start: req.body.start,
-      end: req.body.end
-    }
+
+    let tableTimeslots = JSON.parse(req.body.timeslot);
+
+    let frontTimeslots = tableTimeslots.map(obj => {
+      return { 
+        booked: false,
+        start: obj.start,
+        end: obj.end,
+        private: obj.private,
+        agent: findAgent._id
+      }
+    });
+
+    let timeslotsFromBdd = await adModel.findById(req.params.id);
+    timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
+
+    let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+
     let newTimeslot = await adModel.updateOne(
         { _id: req.body.id }, 
-        { $push: { timeSlots: timeslot }, visitStatus: true }
+        { $set: { timeSlots: allTimeslots }, visitStatus: true }
     );
-
-    console.log(newTimeslot)
 
     if(!newTimeslot) { 
       status = 401;
