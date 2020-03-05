@@ -26,7 +26,7 @@ function CreateFormOne(props) {
     const adID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
     useEffect(() => {
-        if (props.formData) {
+        if (props.formData.address) {
             setStreet(props.formData.address)
             setPostal(props.formData.postCode)
             setPref(props.formData.typeAddress)
@@ -41,7 +41,7 @@ function CreateFormOne(props) {
             setRedir(true);
 
         } else {
-            setFormError(<p style={{paddingTop : 20, color: "#E74A34", fontWeight: 700}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+            setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }
         
     }
@@ -50,7 +50,8 @@ function CreateFormOne(props) {
         return <Redirect to="/createform/step2"/> // Triggered by button handleClick
     }
 
-    console.log(adID)
+    console.log("form 1", props.formData)
+    console.log(street, postal, pref)
 
     return (
 
@@ -67,7 +68,6 @@ function CreateFormOne(props) {
                             <Step title="Description" />
                             <Step title="Documents" />
                             <Step title="Prix/honnoraires" />
-                            <Step title="Plateformes" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>

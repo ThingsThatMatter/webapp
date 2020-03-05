@@ -329,7 +329,6 @@ function CreateFormFive(props) {
       props.nextStep();
       props.saveFormData(newEvents, adColor)
       setRedir(true)
-      console.log(newEvents)
   }
 
   const handleSkip = () => {
