@@ -407,7 +407,7 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
       timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
 
       let deleteTimeslot = await adModel.updateOne(
-          { _id: req.body.id }, 
+          { _id: req.params.id_ad }, 
           { $set: { timeSlots: timeslotsFromBdd } }
       );
 
