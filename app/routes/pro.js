@@ -154,13 +154,13 @@ router.post('/ad', async function(req, res, next) {
 });
 
 /* UPDATE ad */
-router.put('/ad/:id', async function(req, res, next) {
+router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
     let parseTimeslots = JSON.parse(req.body.timeSlots);
 
     let updateAd = await adModel.updateOne(
-      { _id: req.params.id }, 
+      { _id: req.params.id_ad }, 
       { 
         color: req.body.color,
         price: req.body.price,
@@ -206,7 +206,7 @@ router.put('/ad/:id', async function(req, res, next) {
 });
 
 /* DELETE ad */
-router.delete('/ad/:id', async function(req, res, next) {
+router.delete('/ad/:id_ad', async function(req, res, next) {
 
   try {
     let findAgent = await agentModel.findOne({ token:req.body.token });
@@ -218,7 +218,7 @@ router.delete('/ad/:id', async function(req, res, next) {
         details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       };
     } else {
-      let deleteAd = await adModel.deleteOne({ _id: req.params.id });
+      let deleteAd = await adModel.deleteOne({ _id: req.params.id_ad });
 
       status = 200;
       response = {
@@ -241,11 +241,11 @@ router.delete('/ad/:id', async function(req, res, next) {
 
 
 /* UPDATE ad onlineStatus */
-router.put('/ad/:id/online', async function(req, res, next) {
+router.put('/ad/:id_ad/online', async function(req, res, next) {
 
   try {
     let updateAd = await adModel.updateOne(
-      { _id: req.params.id }, 
+      { _id: req.params.id_ad }, 
       { 
         onlineStatus: req.body.onlineStatus,
         onlineDate: new Date
@@ -271,7 +271,7 @@ router.put('/ad/:id/online', async function(req, res, next) {
 });
 
 /* POST timeslot */
-router.post('/ad/:id/timeslots', async function(req, res, next) {
+router.post('/ad/:id_ad/timeslots', async function(req, res, next) {
 
   try {
 
@@ -289,13 +289,13 @@ router.post('/ad/:id/timeslots', async function(req, res, next) {
       }
     });
 
-    let timeslotsFromBdd = await adModel.findById(req.params.id);
+    let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
     timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
 
     let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
 
     let newTimeslot = await adModel.updateOne(
-        { _id: req.body.id }, 
+        { _id: req.params.id_ad }, 
         { $set: { timeSlots: allTimeslots }, visitStatus: true }
     );
 
@@ -363,7 +363,7 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next) {
 
 
       let newTimeslot = await adModel.updateOne(
-          { _id: req.body.id }, 
+          { _id: req.params.id_ad }, 
           { $set: { timeSlots: allTimeslots }, visitStatus: true }
       );
 
@@ -407,7 +407,7 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
       timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
 
       let deleteTimeslot = await adModel.updateOne(
-          { _id: req.body.id }, 
+          { _id: req.params.id_ad }, 
           { $set: { timeSlots: timeslotsFromBdd } }
       );
 
@@ -504,7 +504,7 @@ router.get('/ads', async function(req, res, next) {
 });
 
 // GET Ad offers
-router.get('/ad/offers', async function(req, res, next) {
+router.get('/ad/:id_ad/offers', async function(req, res, next) {
 
   try {
     let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
@@ -517,7 +517,7 @@ router.get('/ad/offers', async function(req, res, next) {
       };
     } else {
       let offersFromAd = await adModel
-        .findOne({_id : req.query.ad})
+        .findOne({_id : req.params.id_ad})
         .populate('offers.offer')
         .exec()
       ; // search ad and return its offers
@@ -541,7 +541,7 @@ router.get('/ad/offers', async function(req, res, next) {
 });
 
 /* PUT offer */
-router.put('/offer/:id', async function(req, res, next) {
+router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
 
   try {
     let findAgent = await agentModel.findOne({ token:req.body.token });
@@ -555,12 +555,12 @@ router.put('/offer/:id', async function(req, res, next) {
     } else {
 
       let acceptedOffer = await adModel.updateOne(
-        { _id: req.body.ad, "offers._id": req.params.id  }, 
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
         { "offers.$.status": 'accepted' }
       );
 
       let declinedOffers = await adModel.updateMany(
-        { _id: req.body.ad, "offers.status": 'pending' },
+        { _id: req.params.id_ad, "offers.status": 'pending' },
         { $set: { "offers.$[elem].status" : 'declined' } },
         { arrayFilters: [ { "elem.status": 'pending' } ] }
       )
@@ -585,7 +585,7 @@ router.put('/offer/:id', async function(req, res, next) {
 });
 
 // GET Ad details
-router.get('/ad/:id', async function(req, res, next) {
+router.get('/ad/:id_ad', async function(req, res, next) {
 
   try {
     let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
@@ -597,7 +597,7 @@ router.get('/ad/:id', async function(req, res, next) {
         details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       };
     } else {
-      let adForDetails = await adModel.findById(req.params.id); // Trouver les détails de l'annonce
+      let adForDetails = await adModel.findById(req.params.id_ad); // Trouver les détails de l'annonce
       status = 200;
       response = {
         message: 'OK',
