@@ -76,6 +76,11 @@ margin-bottom: 0.5em; }
 
 }
 
+/* Events */
+.calendar-event-noneditable {
+  cursor: default
+}
+
 /* Modal */
 .input-modal {
   display: flex;
@@ -88,8 +93,13 @@ margin-bottom: 0.5em; }
 
 .modal-footer-buttons {
   display:flex;
-  justify-content: space-between;
+  flex-direction: row;
+  justify-content: flex-end;
   align-items: center;
+}
+
+.modal-footer-button-delete {
+  margin-right: auto !important;
 }
 
 .add-slot-alert-fail-db {

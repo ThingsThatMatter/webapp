@@ -236,6 +236,17 @@ cursor: pointer;
   display: block;
 }
 
+.new-offer-step5-buttons-block {
+  display: flex;
+  align-items: center;
+}
+
+.new-offer-step5-skip {
+  color: #052040;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
 /* BOUTTONS (from Ant) */
 
 .button-validate {
@@ -245,7 +256,6 @@ cursor: pointer;
   background: #116BD9;
   border-color: #116BD9;
   border-radius: 7px;
-  margin: 5% 0;
 }
 
 .button-back {
@@ -255,9 +265,6 @@ cursor: pointer;
   border : 1px solid #0D6FDE;
   background: white;
   border-radius: 7px;
-  margin-top: 5%;
-  margin-bottom: 5%;
-  margin-right: 3%;
 }
 
 /* Page mes biens (pro) */

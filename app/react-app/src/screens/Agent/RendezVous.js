@@ -228,7 +228,6 @@ function RendezVous() {
         setDisplaySlots(!displaySlots)
         setAppointmentModalOkLoading(false)
         setAppointmentModalVisible(false)
-        setAppointmentModalVisible(false)
         setAppointmentModalEventDate(null)
         setAppointmentModalEventHour1(null)
         setAppointmentModalEventHour2(null)
@@ -253,7 +252,6 @@ function RendezVous() {
       if (body.message === 'OK') {
         setDisplaySlots(!displaySlots)
         setAppointmentModalOkLoading(false)
-        setAppointmentModalVisible(false)
         setAppointmentModalVisible(false)
         setAppointmentModalEventDate(null)
         setAppointmentModalEventHour1(null)
@@ -296,7 +294,6 @@ function RendezVous() {
       message.success('Créneau supprimé')
       setDisplaySlots(!displaySlots)
       setAppointmentModalVisible(false)
-      setAppointmentModalVisible(false)
       setAppointmentModalEventDate(null)
       setAppointmentModalEventHour1(null)
       setAppointmentModalEventHour2(null)
@@ -310,19 +307,6 @@ function RendezVous() {
       setFailMsgVisible(true)
       setAppointmentModalOkLoading(false)
     }
-
-    // setMyEvents(myEvents.filter( e => e.extendedProps.adId != appointmentModalEventPropertyId))
-    // message.success('Créneau supprimé')
-    // setAppointmentModalVisible(false)
-    // setAppointmentModalEventDate(null)
-    // setAppointmentModalEventHour1(null)
-    // setAppointmentModalEventHour2(null)
-    // setAppointmentModalEventProperty(null)
-    // setAppointmentModalEventPropertyId(null)
-    // setAppointmentModalEventId(null)
-    // setAppointmentModalMode(null)
-    // setAppointmentModalEventPrivate(true)
-    // setFailMsgVisible(false)
   }
 
   /* MODAL FOOTER */
@@ -345,7 +329,7 @@ function RendezVous() {
       <div className="modal-footer-buttons">
 
         {appointmentModalMode === "edit"
-          ? 
+          &&
             <Popconfirm
               title="Confirmer la suppression du créneau ?"
               onConfirm={confirm}
@@ -353,21 +337,18 @@ function RendezVous() {
               cancelText="Non"
               placement="bottomLeft"
             >
-              <Button className="button-delete">
+              <Button className="button-delete modal-footer-button-delete">
                 Supprimer
               </Button>
             </Popconfirm>
-          : <div></div>
         }
     
-        <div>
-          <Button className="button-cancel" onClick={handleCancel}>
+          <Button type="primary" className="button-back modal-footer-button-back" onClick={handleCancel}>
           Annuler
           </Button>
           <Button type= "primary" className="button-validate" loading={appointmentModalOkLoading} onClick={handleOk}>
             Valider
           </Button>
-        </div>
       </div>
     </div>
 
@@ -500,8 +481,10 @@ function RendezVous() {
                 footer= {modalFooter}
                 destroyOnClose= {true}
                 width= "50%"
-                closable={false}
+                closable={true}
+                maskl={true}
                 maskClosable={true}
+                onCancel={ () => setAppointmentModalVisible(false)}
             >
                 <div className='input-modal'>
                     <p className="input-modal-label">Date du RDV</p>
