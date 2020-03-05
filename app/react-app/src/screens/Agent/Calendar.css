@@ -86,7 +86,13 @@ margin-bottom: 0.5em; }
     margin: 0 1em
   }
 
-.modal-footer {
+.modal-footer-buttons {
   display:flex;
-  justify-content: space-between
+  justify-content: space-between;
+  align-items: center;
+}
+
+.add-slot-alert-fail-db {
+  text-align: left;
+  padding: 8px 15px !important;
 }
