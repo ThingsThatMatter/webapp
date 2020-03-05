@@ -16,7 +16,6 @@ import CreateFormThree from './screens/Agent/CreateForm3';
 import CreateFormFour from './screens/Agent/CreateForm4';
 import CreateFormFive from './screens/Agent/CreateForm5';
 import CreateFormSix from './screens/Agent/CreateForm6';
-import Calendar from './screens/Agent/Calendar';
 import {SignIn as agentSignIn} from './screens/Agent/SignIn'
 import {SignUp as agentSignUp} from './screens/Agent/SignUp'
 
@@ -41,7 +40,7 @@ function App() {
         <Switch>
           <Route component={Home} path="/" exact />
           <Route component={Offres} path="/offres"  />
-          <Route component={Calendar} path="/rendezvous"  />
+          <Route component={RendezVous} path="/rendezvous"  />
           <Route component={Questions} path="/questions"  />
           <Route component={AdDesc} path="/addesc"  />
           <Route component={CreateFormOne} path="/createform/step1"  />

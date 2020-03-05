@@ -6,6 +6,24 @@ function SignIn() {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
+    const [msgErrorSignin, setMsgErrorSignin] = useState()
+
+    const handleSubmitSignin = async () => {
+        const data = await fetch('/pro/sign-in', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+            body: `email=${email}&password=${password}`
+          })
+      
+          const body = await data.json()
+      
+          if(body.state == true){
+            //props.addToken(body.token)
+            
+          }  else {
+            setMsgErrorSignin(body.message)
+          }
+    } 
 
     return (
         <div className="pro-sign-layout">
@@ -43,8 +61,15 @@ function SignIn() {
                                 placeholder="Saisissez votre mot de passe"
                             />
                         </Form.Item>
+                        <p className="sign-error-text">{msgErrorSignin}</p>
                         <Form.Item >
-                            <Button type="primary" className="button-validate button-sign-validate">Connexion</Button>
+                            <Button 
+                                type="primary"
+                                className="button-validate button-sign-validate"
+                                onClick={() => handleSubmitSignin()}
+                            >
+                                Connexion
+                            </Button>
                         </Form.Item>
                     </Form>
                     <a

@@ -76,7 +76,7 @@ router.get('/ad/visit', async function(req, res, next) {
 });
 
 /* POST offer */
-router.put('/ad/offer', async function(req, res, next) {
+router.put('/ad/:id_ad/offer', async function(req, res, next) {
 
   let userToFind = await userModel.findOne({ token:req.body.token });
 
@@ -104,7 +104,7 @@ router.put('/ad/offer', async function(req, res, next) {
   }
 
   let newOffer = await adModel.updateOne(
-      { _id: req.body.id }, 
+      { _id: req.params.id_ad }, 
       { $push: { offers: offer } }
   );
 
