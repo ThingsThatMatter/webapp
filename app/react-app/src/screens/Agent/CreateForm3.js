@@ -4,15 +4,11 @@ import { Layout, Steps, Button, Upload, message } from 'antd';
 import { InboxOutlined } from '@ant-design/icons';
 import {Redirect} from 'react-router-dom';
 import {DeleteOutlined} from '@ant-design/icons';
-
 import {connect} from 'react-redux';
-
 
 const { Step } = Steps;
 const {Content} = Layout;
 const { Dragger } = Upload;
-
-
 
 function CreateFormThree(props) {
 
@@ -24,15 +20,19 @@ function CreateFormThree(props) {
 
     useEffect(() => {
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
+        if(props.formData.files) {
+            setFileList(props.formData.files)
+        }
       },[]);
 
     const handleClick = () => {
+            props.saveFormData(fileList)
             props.nextStep();
-            setRedir(true)     
+            setRedir(true)    
     }
 
     if(redir === true) {
-        return <Redirect to="/createform/step3"/> // Triggered by button-validate handleClick
+        return <Redirect to="/createform/step4"/> // Triggered by button-validate handleClick
     }
     if(backRedir === true) {
         return <Redirect to="/createform/step2"/> // Triggered by button-back handleClick
@@ -66,7 +66,7 @@ function CreateFormThree(props) {
                             <p className='formLabel'>Documents (10 max)</p>
                             <Dragger
                             name= 'file'
-                            accept= ".png,.jpeg"
+                            accept= ".png,.jpeg,.pdf"
                             multiple= {true}
                             showUploadList= {false}
                             action='/pro/upload'
@@ -146,8 +146,11 @@ function CreateFormThree(props) {
         previousStep : function() {
             dispatch( {type: 'prevStep'} )
         },
-        saveFormData : function() { 
-        dispatch( {type: 'saveFormData'} ) 
+        saveFormData : function(fileList) { 
+        dispatch( {
+            type: 'saveFormData',
+            files : fileList
+        } ) 
     }
 
     }

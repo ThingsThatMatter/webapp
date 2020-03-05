@@ -2,6 +2,7 @@ export default function(formData = {}, action) {
   
     if(action.type == 'saveFormData') {
       var newData = {
+        ...formData,
         address: action.address,
         postCode: action.postCode,
         typeAddress: action.typeAddress,
@@ -25,10 +26,25 @@ export default function(formData = {}, action) {
             ges : action.ges,
             dpe : action.dpe
         }
-
         return newData;
 
-    } else {
+    } else if(action.type == 'saveFormData3') {
+        var newData = {
+            ...formData,
+            files: action.files
+        }
+        return newData;
+
+    } else if(action.type == 'saveFormData4') {
+        var newData = {
+            ...formData,
+            feesPayer : action.feesPayer,
+            price: action.price,
+            fees: action.fees
+        }
+        return newData;
+    
+    }else {
       return formData;
     }
   }
