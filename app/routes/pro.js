@@ -332,40 +332,47 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next) {
 
     let findAgent = await agentModel.findOne({ token:req.body.token });
 
-    let tableTimeslots = JSON.parse(req.body.timeslot);
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
 
-    let frontTimeslots = tableTimeslots.map(obj => {
-      return { 
-        booked: false,
-        start: obj.start,
-        end: obj.end,
-        private: obj.private,
-        agent: findAgent._id
-      }
-    });
+      let tableTimeslots = JSON.parse(req.body.timeslot);
 
-    let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
-    timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
+      let frontTimeslots = tableTimeslots.map(obj => {
+        return { 
+          booked: false,
+          start: obj.start,
+          end: obj.end,
+          private: obj.private,
+          agent: findAgent._id
+        }
+      });
 
-
-    timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
-
-
-    let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+      let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
+      timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
 
 
-    let newTimeslot = await adModel.updateOne(
-        { _id: req.body.id }, 
-        { $set: { timeSlots: allTimeslots }, visitStatus: true }
-    );
+      timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
 
-    console.log(allTimeslots)
 
+      let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+
+
+      let newTimeslot = await adModel.updateOne(
+          { _id: req.body.id }, 
+          { $set: { timeSlots: allTimeslots }, visitStatus: true }
+      );
+      
       status = 200;
       response = {
         message: 'OK',
         data: allTimeslots
       }
+    };
 
   } catch(e) {
     status = 500;
@@ -393,22 +400,24 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
         details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       };
     } else {
+          
+      let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
+      timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
 
-    let deleteTimeslot = await adModel.updateOne(
-      { "_id": req.params.id_ad, "timeSlots._id": req.params.id_timeslot  },
-      { 
-          "$set": {
-              "timeSlots.$": newTimeslot
-          }
-      }
-    );
 
-      console.log(deleteTimeslot);
+      timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
+
+      let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+
+      let newTimeslot = await adModel.updateOne(
+          { _id: req.body.id }, 
+          { $set: { timeSlots: allTimeslots }, visitStatus: true }
+      );
 
       status = 200;
       response = {
         message: 'OK',
-        data: updateTimeslot
+        data: allTimeslots
       }
     };
 
