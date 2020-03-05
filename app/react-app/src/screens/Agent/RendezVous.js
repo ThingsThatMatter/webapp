@@ -221,14 +221,13 @@ function RendezVous() {
       const postTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslots`, {
         method: 'POST',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `id=${appointmentModalEventPropertyId}&token=${tokenTest}&timeslot=${slots}`
+        body: `token=${tokenTest}&timeslot=${slots}`
       })
       const body = await postTimeslots.json()
       if (body.message === 'OK') {
-        setDisplaySlots(true)
+        setDisplaySlots(!displaySlots)
         setAppointmentModalOkLoading(false)
         setAppointmentModalVisible(false)
-        setAppointmentModalOkLoading(false)
         setAppointmentModalVisible(false)
         setAppointmentModalEventDate(null)
         setAppointmentModalEventHour1(null)
@@ -243,18 +242,18 @@ function RendezVous() {
         setFailMsgVisible(true)
         setAppointmentModalOkLoading(false)
       }
-    } else if (setAppointmentModalMode === 'edit') {
+    } else if (appointmentModalMode === 'edit') {
       const updateTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
         method: 'PUT',
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `id=${appointmentModalEventPropertyId}&token=${tokenTest}&timeslot=${slots}`
+        body: `token=${tokenTest}&timeslot=${slots}`
       })
       const body = await updateTimeslots.json()
+      console.log(body)
       if (body.message === 'OK') {
-        setDisplaySlots(true)
+        setDisplaySlots(!displaySlots)
         setAppointmentModalOkLoading(false)
         setAppointmentModalVisible(false)
-        setAppointmentModalOkLoading(false)
         setAppointmentModalVisible(false)
         setAppointmentModalEventDate(null)
         setAppointmentModalEventHour1(null)
@@ -285,19 +284,45 @@ function RendezVous() {
     setFailMsgVisible(false)
   }
 
-  function confirm() {
-    setMyEvents(myEvents.filter( e => e.extendedProps.adId != appointmentModalEventPropertyId))
-    message.success('Créneau supprimé')
-    setAppointmentModalVisible(false)
-    setAppointmentModalEventDate(null)
-    setAppointmentModalEventHour1(null)
-    setAppointmentModalEventHour2(null)
-    setAppointmentModalEventProperty(null)
-    setAppointmentModalEventPropertyId(null)
-    setAppointmentModalEventId(null)
-    setAppointmentModalMode(null)
-    setAppointmentModalEventPrivate(true)
-    setFailMsgVisible(false)
+  async function confirm() {
+
+    const deleteTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
+      method: 'DELETE',
+      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+      body: `token=${tokenTest}`
+    })
+    const body = await deleteTimeslots.json()
+    if (body.message === 'OK') {
+      message.success('Créneau supprimé')
+      setDisplaySlots(!displaySlots)
+      setAppointmentModalVisible(false)
+      setAppointmentModalVisible(false)
+      setAppointmentModalEventDate(null)
+      setAppointmentModalEventHour1(null)
+      setAppointmentModalEventHour2(null)
+      setAppointmentModalEventProperty(null)
+      setAppointmentModalEventPropertyId(null)
+      setAppointmentModalEventId(null)
+      setAppointmentModalMode(null)
+      setAppointmentModalEventPrivate(true)
+      setFailMsgVisible(false)
+    } else {
+      setFailMsgVisible(true)
+      setAppointmentModalOkLoading(false)
+    }
+
+    // setMyEvents(myEvents.filter( e => e.extendedProps.adId != appointmentModalEventPropertyId))
+    // message.success('Créneau supprimé')
+    // setAppointmentModalVisible(false)
+    // setAppointmentModalEventDate(null)
+    // setAppointmentModalEventHour1(null)
+    // setAppointmentModalEventHour2(null)
+    // setAppointmentModalEventProperty(null)
+    // setAppointmentModalEventPropertyId(null)
+    // setAppointmentModalEventId(null)
+    // setAppointmentModalMode(null)
+    // setAppointmentModalEventPrivate(true)
+    // setFailMsgVisible(false)
   }
 
   /* MODAL FOOTER */
@@ -492,7 +517,7 @@ function RendezVous() {
                     <RangePicker
                         locale={locale}
                         format= 'HH:mm'
-                        minuteStep={15}
+                        minuteStep={30}
                         disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23]}
                         hideDisabledOptions={true}
                         placeholder={["Début", "Fin"]}
