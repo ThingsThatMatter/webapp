@@ -407,17 +407,15 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
 
       timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
 
-      let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
-
-      let newTimeslot = await adModel.updateOne(
+      let deleteTimeslot = await adModel.updateOne(
           { _id: req.body.id }, 
-          { $set: { timeSlots: allTimeslots }, visitStatus: true }
+          { $set: { timeSlots: timeslotsFromBdd } }
       );
 
       status = 200;
       response = {
         message: 'OK',
-        data: allTimeslots
+        data: deleteTimeslot
       }
     };
 
