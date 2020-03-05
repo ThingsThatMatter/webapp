@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, Input, Radio, InputNumber} from 'antd';
+import { Layout, Steps, Button} from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 
@@ -29,6 +29,7 @@ function CreateFormFive(props) {
         return <Redirect to="/createform/step4"/> // Triggered by button-back handleClick
     }
 
+    console.log("form 5", props.formData)
 
     return (
 
@@ -45,7 +46,6 @@ function CreateFormFive(props) {
                             <Step title="Description" />
                             <Step title="Documents" />
                             <Step title="Prix/honnoraires" />
-                            <Step title="Plateformes" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>
@@ -63,7 +63,10 @@ function CreateFormFive(props) {
                         >
                         Précédent</Button>  
 
-                        <Button type="primary" className="button-validate" onClick={() => setRedir(true)}>Suivant</Button>
+                        <Button type="primary" className="button-validate" onClick={() => {
+                            setRedir(true)
+                            props.nextStep()
+                            }}>Suivant</Button>
                         
                            
                 </Content>  
@@ -93,7 +96,7 @@ function CreateFormFive(props) {
       },
       saveFormData : function(feesPayer, price, fees) { 
         dispatch( {
-            type: 'saveFormData4',
+            type: 'saveFormData5',
             feesPayer : feesPayer,
             price: price,
             fees: fees

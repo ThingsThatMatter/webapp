@@ -13,7 +13,7 @@ const { Panel } = Collapse;
     indicators: true,
     arrows: true,
     onChange: (oldIndex, newIndex) => {
-      console.log(`slide transition from ${oldIndex} to ${newIndex}`);
+    //   console.log(`slide transition from ${oldIndex} to ${newIndex}`);
     }
   }
 
@@ -40,7 +40,12 @@ function AdDesc() {
 
                 <Content style={{ margin: '24px 16px 0' }}>
 
-                     <h1 className='pageTitle'>Appartement 8 rue Constance 75018</h1>  
+                     <h1 className='pageTitle'>Appartement 8 rue Constance 75018</h1>
+
+                     <div className='detail'>
+                     <p>APPARTEMENT</p>
+                     <p>8 rue constance 75018</p>
+                     </div>
 
                     {/* PARTIE ACTIONS */}
 
@@ -49,15 +54,15 @@ function AdDesc() {
                         <div className="row">
 
                             <Badge count={5}>
-                            <Button type="primary" ghost style={buttonAdd}>Offres </Button>
+                            <Button type="primary" ghost className="button-add">Offres </Button>
                             </Badge>
 
                             <Badge count={2}>
-                            <Button type="primary" ghost style={buttonAdd}>Visites</Button>            
+                            <Button type="primary" ghost className="button-add">Visites</Button>            
                             </Badge>
 
                             <Badge count={10}>
-                            <Button type="primary" ghost style={buttonAdd}>Questions</Button>
+                            <Button type="primary" ghost className="button-add">Questions</Button>
                             </Badge>
 
                         </div>
@@ -171,18 +176,16 @@ function AdDesc() {
                 <h1 style={{marginTop: "30px"}} className='pageTitle'>Questions fréquentes</h1>
 
                 <Collapse style={{marginBottom: 20}} bordered={false} defaultActiveKey={['1']}>
-                    <Panel style={panelStyle} header="Qu'est ce qu'un m2 ? " key="1">
+                    <Panel className="faq" header="Qu'est ce qu'un m2 ? " key="1">
                     <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
-                    <Panel style={panelStyle} header="Ceci est une question longue très longue ? " key="2">
+                    <Panel className="faq" header="Ceci est une question longue très longue ? " key="2">
                     <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
-                    <Panel style={panelStyle} header="Ceci est une question longue très longue ? " key="3">
+                    <Panel className="faq" header="Ceci est une question longue très longue ? " key="3">
                      <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
                 </Collapse>
-
-
                    
             </Content>  
 
@@ -194,25 +197,4 @@ function AdDesc() {
     );
   }
 
-  const buttonAdd = {
-    color: "#052040",
-    fontSize: "1.5em",
-    fontWeight: 600,
-    padding: 10,
-    borderColor: "#052040",
-    borderWidth : 2,
-    height: "auto",
-    borderRadius: "10px",
-  }
-
-  const panelStyle = {
-    background: '#f7f7f7',
-    borderRadius: 4,
-    border: 0,
-    overflow: 'hidden',
-    marginBottom: 10,
-  }
-
- 
-  
   export default AdDesc;

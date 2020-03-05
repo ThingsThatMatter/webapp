@@ -39,7 +39,7 @@ function CreateFormFour(props) {
             setRedir(true)
 
         } else {
-            setFormError(<p style={{paddingTop : 20, color: "#E74A34", fontWeight: 700}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+            setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }    
     }
 
@@ -50,6 +50,7 @@ function CreateFormFour(props) {
         return <Redirect to="/createform/step3"/> // Triggered by button-back handleClick
     }
 
+    console.log("form 4", props.formData)
 
     return (
 
@@ -66,7 +67,6 @@ function CreateFormFour(props) {
                             <Step title="Description" />
                             <Step title="Documents" />
                             <Step title="Prix/honnoraires" />
-                            <Step title="Plateformes" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>

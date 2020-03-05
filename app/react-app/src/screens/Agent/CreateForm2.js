@@ -16,6 +16,7 @@ function CreateFormTwo(props) {
     const [type, setType] = useState("")
     const [area, setArea] = useState(0)
     const [rooms, setRooms] = useState(0)
+    const [bedrooms, setBedrooms] = useState(0)
     const [avantages, setAvantages] = useState([])
     const [title, setTitle] = useState("")
     const [desc, setDesc] = useState("")
@@ -37,6 +38,7 @@ function CreateFormTwo(props) {
             setType(props.formData.type)
             setArea(props.formData.area)
             setRooms(props.formData.rooms)
+            setBedrooms(props.formData.bedrooms)
             setAvantages(props.formData.avantages)
             setTitle(props.formData.title)
             setDesc(props.formData.description)
@@ -56,13 +58,13 @@ function CreateFormTwo(props) {
      
     const handleClick = () => {
 
-        if(type !== "" && area !== 0 && rooms !== 0 && title !== "" && desc !== "" ) {
+        if(type !== "" && area !== 0 && rooms !== 0 && title !== "" && desc !== "" && fileList.length > 0  ) {
             props.nextStep();
-            props.saveFormData(type, area, rooms, avantages, title, desc, fileList, video, emission, conso)
+            props.saveFormData(type, area, rooms, bedrooms, avantages, title, desc, fileList, video, emission, conso)
             setRedir(true)
 
         } else {
-            setFormError(<p style={{paddingTop : 20, color: "#E74A34", fontWeight: 700}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+            setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }    
     }
 
@@ -74,6 +76,7 @@ function CreateFormTwo(props) {
     }
 
   
+    console.log("form 2", props.formData)
 
     return (
 
@@ -90,7 +93,6 @@ function CreateFormTwo(props) {
                             <Step title="Description" />
                             <Step title="Documents" />
                             <Step title="Prix/honnoraires" />
-                            <Step title="Plateformes" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>
@@ -135,6 +137,15 @@ function CreateFormTwo(props) {
                                 value={rooms} 
                                 placeholder="75018"/>
                             </label>
+                            
+                            <p className='formLabel'>Nombre de chambres</p>
+                            <label>
+                                <InputNumber
+                                min={0} 
+                                onChange={(e) => setBedrooms(e)} 
+                                value={bedrooms} 
+                                placeholder="75018"/>
+                            </label>
 
                             <p className='formLabel'>Avantages</p>
                                 <label>
@@ -150,7 +161,7 @@ function CreateFormTwo(props) {
                                 <Input 
                                 onChange={(e) => setTitle(e.target.value)} 
                                 value={title} 
-                                placeholder="8 rue constance"/>
+                                placeholder="Appartement de charme"/>
                             </label>
 
                             <p className='formLabel'>Texte de l'annonce</p>
@@ -158,11 +169,12 @@ function CreateFormTwo(props) {
                                 <TextArea 
                                 rows={4}
                                 onChange={(e) => setDesc(e.target.value)} 
-                                value={desc} 
+                                value={desc}
+                                placeholder="En plein coeur du 18ème arrondissement de Paris..."
                                 />
                             </label>
 
-                            <p className='formLabel'>Photos (10 max)</p>
+                            <p className='formLabel'>Photos</p>
                             <Dragger
                             name= 'file'
                             accept= ".png,.jpeg"
@@ -175,8 +187,8 @@ function CreateFormTwo(props) {
                                 const { status } = info.file;
                                 if (status !== 'uploading') {
                                 console.log(info.file);
-                                if(fileList.findIndex((e) => e.name === info.file.name) === -1){
-                                    setFileList([...fileList, info.file])
+                                if(fileList.findIndex((e) => e === info.file.name) === -1){
+                                    setFileList([...fileList, info.file.name])
                                 }
                                 
                                 }
@@ -189,17 +201,16 @@ function CreateFormTwo(props) {
                                 <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
                                 </p>
-                                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                <p className="ant-upload-text">Cliquez ou déposez des images pour les charger (10 max)</p>
                                 <p className="ant-upload-hint">
-                                Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-                                band files
+                                Format acceptés : png et jpeg
                                 </p>
                             </Dragger>
                             {fileList.map((e, i) => (
-                            <div>{e.name} <DeleteOutlined 
+                            <div>{e} <DeleteOutlined 
                             onClick={async () => {
-                                setFileList(fileList.filter((f) =>  f.name !== e.name ))
-                                await fetch(`/pro/upload/${props.formData.adID}-${e.name}`, {
+                                setFileList(fileList.filter((f) =>  f !== e ))
+                                await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
                                     method: "delete"
                                 })
                             }}
@@ -277,12 +288,13 @@ function CreateFormTwo(props) {
       previousStep : function() {
           dispatch( {type: 'prevStep'} )
       },
-      saveFormData : function(type, area, rooms, avantages, title, desc, fileList, video, emission, conso) { 
+      saveFormData : function(type, area, rooms, bedrooms, avantages, title, desc, fileList, video, emission, conso) { 
         dispatch( {
             type: 'saveFormData2',
             typeBien: type,
             area: area,
             rooms: rooms,
+            bedrooms: bedrooms,
             avantages: avantages,
             title: title,
             description: desc,
