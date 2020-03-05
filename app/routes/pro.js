@@ -366,7 +366,7 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next) {
           { _id: req.body.id }, 
           { $set: { timeSlots: allTimeslots }, visitStatus: true }
       );
-      
+
       status = 200;
       response = {
         message: 'OK',
@@ -403,7 +403,6 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
           
       let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
       timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
-
 
       timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
 
