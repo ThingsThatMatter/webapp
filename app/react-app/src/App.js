@@ -43,12 +43,9 @@ function App() {
           <Route component={AdDesc} path="/addesc"  />
           <Route component={CreateFormOne} path="/createform/step1"  />
           <Route component={CreateFormTwo} path="/createform/step2"  />
-<<<<<<< HEAD
           <Route component={CreateFormThree} path="/createform/step3"  />
-=======
           <Route component={agentSignIn} path="/pro/signin" />
           <Route component={agentSignUp} path="/pro/signup" />
->>>>>>> 1c2a3890bd302668f7a21a341de3fbbbf024d903
         </Switch>
       </Router>
     </Provider>
