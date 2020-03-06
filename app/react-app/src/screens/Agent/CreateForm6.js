@@ -184,7 +184,6 @@ function CreateFormSix(props) {
                                     {
                                     token : "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn",
                                     adID: props.formData.adID,
-                                    color : "#FFFFF",
                                     price: props.formData.price,
                                     fees: props.formData.fees,
                                     type: props.formData.type,
@@ -203,7 +202,8 @@ function CreateFormSix(props) {
                                     dpe: props.formData.dpe,
                                     ges: props.formData.ges,
                                     files: props.formData.files,
-                                    timeSlots: [{agent : "jack", creneau: "8h"}, {agent : "john", creneau: "10h"}]
+                                    color : props.formData.color,
+                                    timeSlots: props.formData.timeslots
                                     }
                                 )
                             })
