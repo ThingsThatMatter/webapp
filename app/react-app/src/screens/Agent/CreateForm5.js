@@ -351,7 +351,6 @@ function CreateFormFive(props) {
               <Step title="Description" />
               <Step title="Documents" />
               <Step title="Prix/honnoraires" />
-              <Step title="Plateformes" />
               <Step title="Créneaux" />
               <Step title="Récap" />
             </Steps>

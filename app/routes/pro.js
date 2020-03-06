@@ -97,11 +97,14 @@ router.post('/ad', async function(req, res, next) {
 
   // try {
 
+    let findAgent = await agentModel.findOne({ token:req.body.token });
 
     let adID = req.body.adID
-    let photos = req.body.photos
 
+    let photos = req.body.photos
     let photosUrl = []
+
+    console.log("nom des photos", photos)
     
     for(i=0; i<photos.length ; i++) {
 
@@ -110,16 +113,32 @@ router.post('/ad', async function(req, res, next) {
 
     }
 
-    console.log(photosUrl)
+    console.log("url de cloudinary", photosUrl)
 
-    for(i=0; i<photos.length ; i++) {
+    for(i=0; i < photos.length ; i++) {
 
       fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
 
     }
 
+    console.log("nom des fichiers", req.body.files)
+    let files = req.body.files
+    let filesUrl = []
+    
+    for(i=0; i < files.length ; i++) {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+      var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
+      filesUrl.push(resultCloudinary.url)
+
+    }
+
+    console.log("url des fichiers cloudinary", filesUrl)
+
+    for(i=0; i< files.length ; i++) {
+
+      fs.unlinkSync(`./temp/${adID}-${files[i]}`);
+
+    }
 
 
     let tempAd = new adModel ({
@@ -146,8 +165,8 @@ router.post('/ad', async function(req, res, next) {
       options: req.body.options,
       dpe: req.body.dpe,
       ges: req.body.ges,
-      files: req.body.files
-      // timeSlots: parseTimeslots
+      files: req.body.files,
+      timeSlots: req.body.timeslots
     });
 
     let newAd = await tempAd.save();
