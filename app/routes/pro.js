@@ -95,104 +95,100 @@ router.post('/sign-up', async function(req, res, next) {
 /* POST ad */
 router.post('/ad', async function(req, res, next) {
 
-  // try {
+  try {
 
     let findAgent = await agentModel.findOne({ token:req.body.token });
 
-    let adID = req.body.adID
+      let adID = req.body.adID
 
-    let photos = req.body.photos
-    let photosUrl = []
+      let photos = req.body.photos
+      let photosUrl = []
+  
+      
+      for(i=0; i<photos.length ; i++) {
+  
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
+        photosUrl.push(resultCloudinary.url)
+  
+      }
+  
+  
+      for(i=0; i < photos.length ; i++) {
+  
+        fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
+  
+      }
+  
+      let files = req.body.files
+      let filesUrl = []
+      
+      for(i=0; i < files.length ; i++) {
+  
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
+        filesUrl.push(resultCloudinary.url)
+  
+      }
+  
+      for(i=0; i< files.length ; i++) {
+  
+        fs.unlinkSync(`./temp/${adID}-${files[i]}`);
+  
+      }
+  
+      let tempAd = new adModel ({
+        creationDate: new Date,
+        color: req.body.color,
+        onlineStatus: true,
+        offerStatus: false,
+        visitStatus: false,
+        price: req.body.price,
+        fees: req.body.fees,
+        type: req.body.type,
+        title: req.body.title,
+        description: req.body.description,
+        typeAddress: req.body.typeAddress,
+        address: req.body.address,
+        postcode: req.body.postcode,
+        city: req.body.city,
+        photos: photosUrl,
+        video: req.body.video,
+        area: req.body.area,
+        rooms: req.body.rooms,
+        bedrooms: req.body.bedrooms,
+        advantages : req.body.advantages,
+        options: req.body.options,
+        dpe: req.body.dpe,
+        ges: req.body.ges,
+        files: req.body.files,
+        timeSlots: req.body.timeSlots
+      });
+  
+      let newAd = await tempAd.save();
+  
+  
+  
+  
+      let adToAgent = await agentModel.updateOne(
+        { _id: findAgent._id }, 
+        { $push: { ads : newAd._id } }
+      )
+  
+  
+      status = 200;
+      response = {
+        message: 'OK',
+        data: newAd
+      }
 
-    console.log("nom des photos", photos)
     
-    for(i=0; i<photos.length ; i++) {
-
-      var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
-      photosUrl.push(resultCloudinary.url)
-
     }
-
-    console.log("url de cloudinary", photosUrl)
-
-    for(i=0; i < photos.length ; i++) {
-
-      fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
-
-    }
-
-    console.log("nom des fichiers", req.body.files)
-    let files = req.body.files
-    let filesUrl = []
-    
-    for(i=0; i < files.length ; i++) {
-
-      var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
-      filesUrl.push(resultCloudinary.url)
-
-    }
-
-    console.log("url des fichiers cloudinary", filesUrl)
-
-    for(i=0; i< files.length ; i++) {
-
-      fs.unlinkSync(`./temp/${adID}-${files[i]}`);
-
-    }
-
-
-    let tempAd = new adModel ({
-      creationDate: new Date,
-      color: req.body.color,
-      onlineStatus: true,
-      offerStatus: false,
-      visitStatus: false,
-      price: req.body.price,
-      fees: req.body.fees,
-      type: req.body.type,
-      title: req.body.title,
-      description: req.body.description,
-      typeAddress: req.body.typeAddress,
-      address: req.body.address,
-      postcode: req.body.postcode,
-      city: req.body.city,
-      photos: photosUrl,
-      video: req.body.video,
-      area: req.body.area,
-      rooms: req.body.rooms,
-      bedrooms: req.body.bedrooms,
-      advantages : req.body.advantages,
-      options: req.body.options,
-      dpe: req.body.dpe,
-      ges: req.body.ges,
-      files: req.body.files,
-      timeSlots: req.body.timeslots
-    });
-
-    let newAd = await tempAd.save();
-
-
-
-
-    let adToAgent = await agentModel.updateOne(
-      { _id: findAgent._id }, 
-      { $push: { ads : newAd._id } }
-    )
-
-
-    status = 200;
+    catch(e) {
+    status = 500;
     response = {
-      message: 'OK',
-      data: newAd
-    }
-
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
   res.status(status).json(response);
 
