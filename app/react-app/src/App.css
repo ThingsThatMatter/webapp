@@ -125,9 +125,24 @@ p {
   font-size: 13px;
 }
 
+/* Modal */
+.input-modal {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em
+}
+  .input-modal-label {
+    margin: 0 1em
+  }
+
+.modal-footer {
+  display:flex;
+  justify-content: space-between;
+  padding: 0.6em;
+}
 
 /* Annonce : card */
-.annonce-element, .offre-element {
+.annonce-element {
   margin: 15px 0;
   padding: 0;
   overflow: hidden;
@@ -139,10 +154,7 @@ p {
   box-shadow: 0 0 5px #bbbbbb;
   transition: all .2s ease-in-out;
 }
-.offre-element {
-  justify-content: center;
-}
-.annonce-element:hover, .offre-element:hover {
+.annonce-element:hover {
 transform: scale(1.02);
 box-shadow: 0 0 10px #777777;
 cursor: pointer;
@@ -209,11 +221,44 @@ cursor: pointer;
   margin-right: 5px;
 }
 
-.offers-row {
+.unclickable {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.offers-section {
   border-bottom: 1px solid #d2d2d2;
   padding: 1em 0;
   margin: 1em 0;
 }
+
+.offers-row {
+  display: flex;
+  overflow-x: scroll;
+  padding: 1rem 0;
+}
+.offre-element {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: 450px;
+  margin-left: 1rem;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #bbbbbb;
+  transition: all .2s ease-in-out;
+  justify-content: center;
+}
+.offre-element:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #777777;
+  cursor: pointer;
+}
+
 
 .offre-amount {
   text-align: center;
@@ -283,24 +328,34 @@ p.offre-buyer-name {
 
 .button-validate {
   color: #FFF;
-  width: 90px;
-  height: 40px;
+  padding: 5px 12px;
   background: #116BD9;
   border-color: #116BD9;
-  border-radius: 7px;
-  margin: 5% 0;
+  height: auto;
+}
+
+.button-accept {
+  color: #FFF;
+  padding: 5px 12px;
+  background: #a4d45a;
+  border-color: #a4d45a;
+  height: auto;
+}
+
+.button-decline {
+  color: #FFF;
+  padding: 5px 12px;
+  background: #e86b43;
+  border-color: #e86b43;
+  height: auto;
 }
 
 .button-back {
-  width: 90px;
-  height: 40px;
-  color: #0D6FDE;
-  border : 1px solid #0D6FDE;
-  background: white;
-  border-radius: 7px;
-  margin-top: 5%;
-  margin-bottom: 5%;
-  margin-right: 3%;
+  color: #FFF;
+  padding: 5px 12px;
+  background: #116BD9;
+  border-color: #116BD9;
+  height: auto;
 }
 
 /* Page mes biens (pro) */

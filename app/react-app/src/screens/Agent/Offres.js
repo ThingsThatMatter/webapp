@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Layout, Row, Button, Col, Collapse, Radio, Carousel, Modal } from 'antd';
+import { Layout, Row, Button, Col, Collapse, Carousel, Modal } from 'antd';
 import {Redirect} from 'react-router-dom';
 
 import Sidebar from '../../components/Sidebar';
@@ -13,33 +13,21 @@ function Offres() {
 
     const [offersList, setOfferslist] = useState([])
 
+    const [displayOffers, setDisplayOffers] = useState(true)
+
     const [offerModalVisible, setOfferModalVisible] = useState(false)
     
-    const [offerModalProperties, setOfferModalProperties] = useState({
-        _id:'',
-        firstname1:'',
-        lastname1:'',
-        firstname2:'',
-        lastname2:'',
-        amount:'',
-        loanAmount:'',
-        contributionAmount:'',
-        monthlyPay:'',
-        notaryName:'',
-        notaryAddress:'',
-        notaryEmail:'',
-        validityPeriod:'',
-        creationDate:'',
-        message:''
-    })
+    const [offerModalProperties, setOfferModalProperties] = useState({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
 
     const [adModalProperties, setAdModalProperties] = useState({_id:''})
-
   
     /* Offre Cards */
     useEffect( () => {
         const dbFetch = async () => {
-            const ads = await fetch(`/pro/ads?token=${tokenTest}`)
+            const ads = await fetch(`/pro/ads`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+            })
             const body = await ads.json();
           
             let adsWithOffers = body.data.ads.filter( e => e.offers.length > 0);
@@ -48,36 +36,47 @@ function Offres() {
 
         }   
     dbFetch()
-    }, []);
+    }, [displayOffers]);
 
     let showModal = () => {
-    setOfferModalVisible(true)
+        setOfferModalVisible(true)
     };
 
     let hideModal = () => {
-    setOfferModalVisible(false)
+        setOfferModalVisible(false)
     };
 
+    // Accepter une offre d'achat
     const handleAcceptOffer = async () => {
         const dbFetch = async () => {
             const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}`, {
                 method: 'PUT',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: `token=${tokenTest}`
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
             })
             const body = await acceptOffer.json();
+        }   
+        dbFetch()
+        setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+        setOfferModalVisible(false)
+        setDisplayOffers(!displayOffers)
+    }
+
+    // Refuser une offre d'achat
+    const handleDeclineOffer = async () => {
+        const dbFetch = async () => {
+            const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+            })
+            const body = await declineOffer.json();
             console.log(body);
         }   
         dbFetch()
     }
 
-    const handleDeclineOffer = async () => {
-
-    }
-
     const modalFooter = 
         <div className="modal-footer">
-            <Button className="button-cancel" onClick={handleDeclineOffer}>
+            <Button className="button-decline" onClick={handleDeclineOffer}>
                 Refuser l'offre
             </Button>
             <Button type="primary" className="button-validate" onClick={handleAcceptOffer}>
@@ -96,16 +95,20 @@ function Offres() {
 
         let sortedOffers = offersList.map((e,i) => {
             return (
-            <div key={i} className='offers-row'>
+            <div key={i} className='offers-section'>
                 <h2 className='title'>{e.title} - {e.area}m<sup>2</sup> - {e.address} {e.postcode} {e.city} - {priceFormatter.format(e.price)}</h2>
                 
-                    <Row gutter={16}>
+                    <Row gutter={16} className="offers-row">
                         { e.offers.map( (f,i) => {
-                            let offerProperties = [];
                             let color;
-                            if(f.amount == e.price) {
+                            let unclickable;
+                            if(f.status === 'accepted') {
                                 color = '#6ce486';
                             }
+                            if(f.status === 'declined') {
+                                unclickable= 'unclickable';
+                            }
+                            console.log(f)
                         return (
                             <Col key = {i} 
                                 onClick={ () => { 
@@ -113,6 +116,7 @@ function Offres() {
                                     setOfferModalProperties(f)
                                     setAdModalProperties(e)
                                 }}
+                                className={unclickable}
                             >
                                 <div className="offre-element">
                                     <div className="offre-amount" style={{backgroundColor: color}}>
@@ -126,7 +130,7 @@ function Offres() {
                                         <p className="offre-loan"><span>Emprunt : </span>{priceFormatter.format(f.loanAmount)}</p>
                                     </div>
                                     <div className="offre-bottom">
-                                        <span className="offre-details">reçue le {f.creationDate}</span>
+                                        <span className="offre-details">reçue le {new Date(f.creationDate).toLocaleDateString('fr-FR')} à {new Date(f.creationDate).toLocaleTimeString('fr-FR')}</span>
                                     </div>
                                 </div>
                             </Col>
