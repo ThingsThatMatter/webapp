@@ -224,9 +224,9 @@ function CreateFormSix(props) {
 
                             if(response.message === "OK") {
 
-                                message.success({ content: `${props.formData.title} créé !`, key, duration: 2 });
-                                props.clear()
+                                message.success({ content: "annonce créée !", key, duration: 2 });
                                 setRedir(true)
+                                props.clear()
 
                             } else {
                                 message.error(response.details);
@@ -254,7 +254,7 @@ function CreateFormSix(props) {
   }
 
   function mapStateToProps(state) {
-    return { 
+    return {
         step : state.step,
         formData: state.formData
     }

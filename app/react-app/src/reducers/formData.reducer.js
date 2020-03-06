@@ -64,7 +64,9 @@ export default function(formData = {}, action) {
   
   } else if (action.type == 'clear') {
 
-      return formData
+      let newData = {}
+
+      return newData;
 
   } else {
       return formData;
