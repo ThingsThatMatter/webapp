@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd';
+import { Layout, Steps, Button, message } from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 import { Slide } from 'react-slideshow-image';
@@ -38,6 +38,14 @@ function CreateFormSix(props) {
         };
 
         setAvantages(tempTable)
+
+        // const getFiles = async() => {
+        //     const data = await fetch(`/pro/tempfiles?id=${props.formData.adID}&photos=${JSON.stringify(props.formData.photos)}&files=${JSON.stringify(props.formData.files)}`)
+        //     console.log("response: ", data)
+        //   }
+      
+        //   getFiles()  
+
 
     },[]);
        
@@ -176,7 +184,11 @@ function CreateFormSix(props) {
 
                         <Button type="primary" className="button-validate" 
                         onClick={async() => {
-                            // setRedir(true)
+
+                            const key = "updatable"
+
+                            message.loading({ content: 'Création en cours...', key });
+
                             let rawResponse = await fetch("/pro/ad", {
                                 method: 'post',
                                 headers: {'Content-Type': 'application/json'},
@@ -210,7 +222,15 @@ function CreateFormSix(props) {
 
                             let response = await rawResponse.json()
 
-                            console.log(response)
+                            if(response.message === "OK") {
+
+                                message.success({ content: `${props.formData.title} créé !`, key, duration: 2 });
+                                props.clear()
+                                setRedir(true)
+
+                            } else {
+                                message.error(response.details);
+                            }
 
                             }}>Suivant</Button>
                            
@@ -224,6 +244,15 @@ function CreateFormSix(props) {
     );
   }
 
+  function mapDispatchToProps(dispatch) {
+    return {
+      clear : function() { 
+        dispatch( {type: 'clear'} ) 
+      }
+
+    }
+  }
+
   function mapStateToProps(state) {
     return { 
         step : state.step,
@@ -233,5 +262,5 @@ function CreateFormSix(props) {
 
   export default connect(
     mapStateToProps, 
-    null
+    mapDispatchToProps
   )(CreateFormSix);
