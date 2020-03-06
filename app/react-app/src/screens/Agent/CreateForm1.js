@@ -61,7 +61,7 @@ function CreateFormOne(props) {
 
             <Layout className='main-content'>
 
-                <Content style={{ margin: '24px 16px 0' }}>
+                <Content style={{ margin: '2em 3em' }}>
 
                     <Steps progressDot current={currentPage}>
                             <Step title="Localisation" />

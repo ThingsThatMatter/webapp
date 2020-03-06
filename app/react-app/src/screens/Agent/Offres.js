@@ -186,7 +186,7 @@ function Offres() {
             <Sidebar/>
 
             <Layout className='main-content'>
-                <Content style={{ margin: '24px 16px 0' }}>
+                <Content style={{ margin: '2em 3em' }}>
                 <h1 className='pageTitle'>Les offres</h1>
 
                     {sortedOffers}
