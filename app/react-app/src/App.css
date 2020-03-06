@@ -135,16 +135,25 @@ p {
     margin: 0 1em
   }
 
-.modal-footer {
-  display:flex;
-  justify-content: space-between;
-  padding: 0.6em;
+.offer-modal p {
+  margin-bottom: 10px;
 }
 
+.offer-modal span {
+  font-weight: 700;
+  display: block;
+}
+
+.modal-footer {
+  padding: 0.6em;
+  text-align: center;
+}
+
+
 .modal-footer-buttons {
-  display:flex;
+  display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
 }
 
@@ -242,23 +251,39 @@ cursor: pointer;
   opacity: 0.5;
 }
 
-.offers-section {
+.offer-section {
   border-bottom: 1px solid #d2d2d2;
   padding: 1em 0;
   margin: 1em 0;
 }
 
-.offers-row {
-  display: flex;
-  overflow-x: scroll;
+
+.offer-carrousel {
   padding: 1rem 0;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.offer-carrousel::-webkit-scrollbar {
+  background-color: transparent;
+  height: 2vmin;
+}
+
+.offer-carrousel::-webkit-scrollbar-thumb {
+  background-color: #e7e7e7;
+  border-radius: 1vmin;
+}
+
+.offer-carrousel .ant-col {
+  flex: 1 0 250px;
+  margin-left: 1rem;
+  scroll-snap-align: start;
+  max-width: 250px;
 }
 
 .offre-element {
-  flex-grow: 1;
-  flex-shrink: 0;
-  flex-basis: 450px;
-  margin-left: 1rem;
   padding: 0;
   overflow: hidden;
   display: flex;
