@@ -14,6 +14,7 @@ function Offres() {
     const [offersList, setOfferslist] = useState([])
 
     const [displayOffers, setDisplayOffers] = useState(true)
+    const [offerStatus, setOfferStatus] = useState(null)
 
     const [offerModalVisible, setOfferModalVisible] = useState(false)
     
@@ -49,7 +50,7 @@ function Offres() {
     // Accepter une offre d'achat
     const handleAcceptOffer = async () => {
         const dbFetch = async () => {
-            const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}`, {
+            const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
             })
@@ -64,25 +65,45 @@ function Offres() {
     // Refuser une offre d'achat
     const handleDeclineOffer = async () => {
         const dbFetch = async () => {
-            const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}`, {
+            const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
                 method: 'PUT',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
             })
             const body = await declineOffer.json();
-            console.log(body);
+        }   
+        dbFetch()
+    }
+
+    // Annuler une offre d'achat
+    const handleCancelOffer = async () => {
+        const dbFetch = async () => {
+            const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}`, {
+                method: 'DELETE',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+            })
+            const body = await cancelOffer.json();
         }   
         dbFetch()
     }
 
     const modalFooter = 
-        <div className="modal-footer">
-            <Button className="button-decline" onClick={handleDeclineOffer}>
-                Refuser l'offre
-            </Button>
-            <Button type="primary" className="button-validate" onClick={handleAcceptOffer}>
-                Accepter l'offre
-            </Button>
+    <div className="modal-footer">
+        {offerStatus === true
+        ?
+        <Button className="button-decline" onClick={handleCancelOffer}>
+            Annuler l'offre
+        </Button>
+        :
+        <div className="modal-footer-buttons">
+        <Button className="button-decline" onClick={handleDeclineOffer}>
+            Refuser l'offre
+        </Button>
+        <Button type="primary" className="button-validate" onClick={handleAcceptOffer}>
+            Accepter l'offre
+        </Button>
         </div>
+        }
+    </div>
     
 
     /* Price formatting */
@@ -95,10 +116,10 @@ function Offres() {
 
         let sortedOffers = offersList.map((e,i) => {
             return (
-            <div key={i} className='offers-section'>
+            <div key={i} className='offer-section'>
                 <h2 className='title'>{e.title} - {e.area}m<sup>2</sup> - {e.address} {e.postcode} {e.city} - {priceFormatter.format(e.price)}</h2>
                 
-                    <Row gutter={16} className="offers-row">
+                    <Row gutter={16} className="offer-carrousel">
                         { e.offers.map( (f,i) => {
                             let color;
                             let unclickable;
@@ -115,6 +136,7 @@ function Offres() {
                                     showModal()
                                     setOfferModalProperties(f)
                                     setAdModalProperties(e)
+                                    {if(f.status === 'accepted') { setOfferStatus(true) } else { setOfferStatus(false) }}
                                 }}
                                 className={unclickable}
                             >
@@ -130,7 +152,7 @@ function Offres() {
                                         <p className="offre-loan"><span>Emprunt : </span>{priceFormatter.format(f.loanAmount)}</p>
                                     </div>
                                     <div className="offre-bottom">
-                                        <span className="offre-details">reçue le {new Date(f.creationDate).toLocaleDateString('fr-FR')} à {new Date(f.creationDate).toLocaleTimeString('fr-FR')}</span>
+                                        <span className="offre-details">reçue le {new Date(f.creationDate).toLocaleDateString('fr-FR')} <br/>à {new Date(f.creationDate).toLocaleTimeString('fr-FR')}</span>
                                     </div>
                                 </div>
                             </Col>
@@ -169,19 +191,25 @@ function Offres() {
                         onCancel={hideModal}
                     >
                         <div className="offer-modal">
-                            <p><span>Acheteur #1 :</span>{offerModalProperties.firstname1} {offerModalProperties.lastname1}</p>
-                            <p><span>Acheteur #2 :</span>{offerModalProperties.firstname2} {offerModalProperties.lastname2}</p>
-                            <p><span>Montant de l'offre :</span>{offerModalProperties.amount}</p>
-                            <p><span>Emprunt :</span>{offerModalProperties.loanAmount}</p>
-                            <p><span>Apport :</span>{offerModalProperties.contributionAmount}</p>
-                            <p><span>Salaire mensuel :</span>{offerModalProperties.monthlyPay}</p>
+                            <Row gutter={16}>
+                                <Col xs={12}>
+                                    <p><span>Acheteur #1 : </span>{offerModalProperties.firstname1} {offerModalProperties.lastname1}</p>
+                                    <p><span>Acheteur #2 : </span>{offerModalProperties.firstname2} {offerModalProperties.lastname2}</p>
+                                    <p><span>Montant de l'offre : </span>{priceFormatter.format(offerModalProperties.amount)}</p>
+                                    <p><span>Emprunt : </span>{priceFormatter.format(offerModalProperties.loanAmount)}</p>
+                                    <p><span>Apport : </span>{priceFormatter.format(offerModalProperties.contributionAmount)}</p>
+                                    <p><span>Salaire mensuel : </span>{priceFormatter.format(offerModalProperties.monthlyPay)} /mois</p>
+                                </Col>
+                                <Col xs={12}>
+                                    <p><span>Notaire acheteur : </span>{offerModalProperties.notaryName} à {offerModalProperties.notaryAddress}</p>
+                                    <p><span>Email notaire : </span>{offerModalProperties.notaryEmail}</p>
 
-                            <p><span>Notaire acheteur :</span>{offerModalProperties.notaryName} à {offerModalProperties.notaryAddress}</p>
-                            <p><span>Email notaire :</span>{offerModalProperties.notaryEmail}</p>
+                                    <p><span>Validité de l'offre : </span>{offerModalProperties.validityPeriod} jours</p>
+                                    <p>Fait à {offerModalProperties.location}, le {new Date(offerModalProperties.creationDate).toLocaleDateString('fr-FR')}</p>
 
-                            <p><span>Validité de l'offre :</span>{offerModalProperties.validityPeriod}</p>
-                            <p>Fait à {offerModalProperties.location}, le {offerModalProperties.creationDate}</p>
-                            <p><span>Message de l'acheteur :</span>{offerModalProperties.message}</p>
+                                    <p><span>Message de l'acheteur : </span>{offerModalProperties.message}</p>
+                                </Col>
+                            </Row>
                         </div>
                     </Modal>
                 </Content>         

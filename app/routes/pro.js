@@ -580,8 +580,8 @@ router.get('/ad/:id_ad/offers', async function(req, res, next) {
   
 });
 
-/* PUT offer */
-router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
+/* PUT accept offer */
+router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
 
   try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
@@ -604,6 +604,88 @@ router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
         { $set: { "offers.$[elem].status" : 'declined' } },
         { arrayFilters: [ { "elem.status": 'pending' } ] }
       )
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: declinedOffers
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+/* PUT decline offer */
+router.put('/ad/:id_ad/offer/:id_offer/decline', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let acceptedOffer = await adModel.updateOne(
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
+        { "offers.$.status": 'declined' }
+      );
+
+      let declinedOffers = await adModel.updateMany(
+        { _id: req.params.id_ad, "offers.status": 'declined' },
+        { $set: { "offers.$[elem].status" : 'pending' } },
+        { arrayFilters: [ { "elem.status": 'declined' } ] }
+      )
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: declinedOffers
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+/* DELETE accepted offer */
+router.delete('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let acceptedOffer = await adModel.update(
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
+        { "offers.$.status": 'canceled' }
+      );
 
       status = 200;
       response = {
