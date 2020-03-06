@@ -5,6 +5,8 @@ var mongoose = require('../models/bdd');
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
 var cloudinary = require('cloudinary').v2;
+const path = require('path');
+
 
 cloudinary.config({ 
   cloud_name: 'dp4mkibm2', 
@@ -106,34 +108,29 @@ router.post('/ad', async function(req, res, next) {
   
       
       for(i=0; i<photos.length ; i++) {
-  
         var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
         photosUrl.push(resultCloudinary.url)
-  
       }
-  
   
       for(i=0; i < photos.length ; i++) {
-  
         fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
-  
       }
+
+      console.log("photos uploaded to cloudinary", photosUrl)
   
       let files = req.body.files
       let filesUrl = []
       
       for(i=0; i < files.length ; i++) {
-  
         var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
         filesUrl.push(resultCloudinary.url)
-  
       }
   
       for(i=0; i< files.length ; i++) {
-  
         fs.unlinkSync(`./temp/${adID}-${files[i]}`);
-  
       }
+
+      console.log("files uploaded to cloudinary", filesUrl)
   
       let tempAd = new adModel ({
         creationDate: new Date,
@@ -166,12 +163,14 @@ router.post('/ad', async function(req, res, next) {
       let newAd = await tempAd.save();
   
   
-  
+      console.log("Ad added to DB", newAd)
   
       let adToAgent = await agentModel.updateOne(
         { _id: findAgent._id }, 
         { $push: { ads : newAd._id } }
       )
+
+      console.log("Ad id added to agent", adToAgent)
   
   
       status = 200;
@@ -184,6 +183,8 @@ router.post('/ad', async function(req, res, next) {
     }
     catch(e) {
     status = 500;
+
+    console.log(e)
     response = {
       message: 'Internal error',
       details: 'Le serveur a rencontré une erreur.'
@@ -658,8 +659,7 @@ router.get('/ad/:id_ad', async function(req, res, next) {
 // POST Upload images from form 
 router.post('/upload', async function(req, res, next) {
 
-  console.log("token :", req.body.token)
-  console.log("fichier :", req.files)
+  console.log("files uploaded in back-end temp folder :", req.body.token)
   
   var resultCopy = await req.files.file.mv(`./temp/${req.body.token}-${req.files.file.name}`);
   
@@ -671,8 +671,6 @@ router.post('/upload', async function(req, res, next) {
 
 });
 
-
-
 router.delete('/upload/:name', async function(req, res, next) {
 
   console.log(req.params)
@@ -680,6 +678,25 @@ router.delete('/upload/:name', async function(req, res, next) {
   fs.unlinkSync(`./temp/${req.params.name}`)
 
   res.json("deleted")
+
+});
+
+router.get('/tempfiles', async function(req, res, next) { // ne marche pas pour l'instant
+
+  console.log("début de la route")
+
+  let photos = JSON.parse(req.query.photos)
+  let files = JSON.parse(req.query.files)
+  let id = req.query.id
+
+  console.log("photos", photos)
+  console.log("files", files)
+
+  console.log("début du sendfile")
+
+  res.sendFile(path.join(__dirname, `./temp/${id}-${photos[0]}`));
+
+  console.log("fin du sendfile")
 
 });
 
