@@ -6,6 +6,8 @@ var agencyModel = require('../models/agencyModel.js')
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
 var cloudinary = require('cloudinary').v2;
+const path = require('path');
+
 
 var uid2 = require("uid2");
 const jwt = require('jsonwebtoken')
@@ -184,85 +186,99 @@ router.post('/sign-up', async function(req, res, next) {
 /* POST ad */
 router.post('/ad', async function(req, res, next) {
 
-  // try {
-
-
-    let adID = req.body.adID
-    let photos = req.body.photos
-
-    let photosUrl = []
-    
-    for(i=0; i<photos.length ; i++) {
-
-      var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
-      photosUrl.push(resultCloudinary.url)
-
-    }
-
-    console.log(photosUrl)
-
-    for(i=0; i<photos.length ; i++) {
-
-      fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
-
-    }
-
+  try {
 
     let findAgent = await agentModel.findOne({ token:req.body.token });
 
+      let adID = req.body.adID
 
-    let tempAd = new adModel ({
-      creationDate: new Date,
-      color: req.body.color,
-      onlineStatus: true,
-      offerStatus: false,
-      visitStatus: false,
-      price: req.body.price,
-      fees: req.body.fees,
-      type: req.body.type,
-      title: req.body.title,
-      description: req.body.description,
-      typeAddress: req.body.typeAddress,
-      address: req.body.address,
-      postcode: req.body.postcode,
-      city: req.body.city,
-      photos: photosUrl,
-      video: req.body.video,
-      area: req.body.area,
-      rooms: req.body.rooms,
-      bedrooms: req.body.bedrooms,
-      advantages : req.body.advantages,
-      options: req.body.options,
-      dpe: req.body.dpe,
-      ges: req.body.ges,
-      files: req.body.files
-      // timeSlots: parseTimeslots
-    });
+      let photos = req.body.photos
+      let photosUrl = []
+  
+      
+      for(i=0; i<photos.length ; i++) {
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
+        photosUrl.push(resultCloudinary.url)
+      }
+  
+      for(i=0; i < photos.length ; i++) {
+        fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
+      }
 
-    let newAd = await tempAd.save();
+      console.log("photos uploaded to cloudinary", photosUrl)
+  
+      let files = req.body.files
+      let filesUrl = []
+      
+      for(i=0; i < files.length ; i++) {
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
+        filesUrl.push(resultCloudinary.url)
+      }
+  
+      for(i=0; i< files.length ; i++) {
+        fs.unlinkSync(`./temp/${adID}-${files[i]}`);
+      }
 
+      console.log("files uploaded to cloudinary", filesUrl)
+  
+      let tempAd = new adModel ({
+        creationDate: new Date,
+        color: req.body.color,
+        onlineStatus: true,
+        offerStatus: false,
+        visitStatus: false,
+        price: req.body.price,
+        fees: req.body.fees,
+        type: req.body.type,
+        title: req.body.title,
+        description: req.body.description,
+        typeAddress: req.body.typeAddress,
+        address: req.body.address,
+        postcode: req.body.postcode,
+        city: req.body.city,
+        photos: photosUrl,
+        video: req.body.video,
+        area: req.body.area,
+        rooms: req.body.rooms,
+        bedrooms: req.body.bedrooms,
+        advantages : req.body.advantages,
+        options: req.body.options,
+        dpe: req.body.dpe,
+        ges: req.body.ges,
+        files: req.body.files,
+        timeSlots: req.body.timeSlots
+      });
+  
+      let newAd = await tempAd.save();
+  
+  
+      console.log("Ad added to DB", newAd)
+  
+      let adToAgent = await agentModel.updateOne(
+        { _id: findAgent._id }, 
+        { $push: { ads : newAd._id } }
+      )
 
+      console.log("Ad id added to agent", adToAgent)
+  
+  
+      status = 200;
+      response = {
+        message: 'OK',
+        data: newAd
+      }
 
-
-    let adToAgent = await agentModel.updateOne(
-      { _id: findAgent._id }, 
-      { $push: { ads : newAd._id } }
-    )
-
-
-    status = 200;
-    response = {
-      message: 'OK',
-      data: newAd
+    
     }
+    catch(e) {
+    status = 500;
 
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
+    console.log(e)
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
   res.status(status).json(response);
 
@@ -653,8 +669,20 @@ router.get('/ad/:id_ad/offers', async function(req, res, next) {
   
 });
 
-/* PUT offer */
-router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
+
+/* PUT TEST ALL PENDING */
+router.put('/ad/:id_ad/test', async function(req, res, next) {
+
+   let testOffers = await adModel.updateMany(
+      { _id: req.params.id_ad },
+      { $set: { "offers.status" : 'pending' } }
+    )
+
+  res.json('test');
+});
+
+/* PUT accept offer */
+router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
 
   try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
@@ -673,7 +701,7 @@ router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
       );
 
       let declinedOffers = await adModel.updateMany(
-        { _id: req.params.id_ad, "offers.status": 'pending' },
+        { _id: req.params.id_ad,"offers._id": req.params.id_offer },
         { $set: { "offers.$[elem].status" : 'declined' } },
         { arrayFilters: [ { "elem.status": 'pending' } ] }
       )
@@ -681,7 +709,7 @@ router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
       status = 200;
       response = {
         message: 'OK',
-        data: declinedOffers
+        data: acceptedOffer
       }
     };
 
@@ -692,6 +720,88 @@ router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
       details: 'Le serveur a rencontré une erreur.'
     };
   }
+
+  res.status(status).json(response);
+
+});
+
+/* PUT decline offer */
+router.put('/ad/:id_ad/offer/:id_offer/decline', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let declinedOffer = await adModel.updateOne(
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
+        { "offers.$.status": 'declined' }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: declinedOffer
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+/* CANCEL accepted offer */
+router.put('/ad/:id_ad/offer/:id_offer/cancel', async function(req, res, next) {
+
+  // try {
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+
+    if(findAgent.length === 0) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let cancelAcceptedOffer = await adModel.updateOne(
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
+        { "offers.$.status": 'declined' }
+      );
+
+      let cancelDeclinedOffer = await adModel.updateMany(
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer },
+        { $set: { "offers.$[elem].status" : 'pending' } },
+        { arrayFilters: [ { "elem.status": 'declined' } ] }
+      )
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: cancelAcceptedOffer
+      }
+    };
+
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
 
   res.status(status).json(response);
 
@@ -732,8 +842,7 @@ router.get('/ad/:id_ad', async function(req, res, next) {
 // POST Upload images from form 
 router.post('/upload', async function(req, res, next) {
 
-  console.log("token :", req.body.token)
-  console.log("fichier :", req.files)
+  console.log("files uploaded in back-end temp folder :", req.body.token)
   
   var resultCopy = await req.files.file.mv(`./temp/${req.body.token}-${req.files.file.name}`);
   
@@ -745,8 +854,6 @@ router.post('/upload', async function(req, res, next) {
 
 });
 
-
-
 router.delete('/upload/:name', async function(req, res, next) {
 
   console.log(req.params)
@@ -754,6 +861,25 @@ router.delete('/upload/:name', async function(req, res, next) {
   fs.unlinkSync(`./temp/${req.params.name}`)
 
   res.json("deleted")
+
+});
+
+router.get('/tempfiles', async function(req, res, next) { // ne marche pas pour l'instant
+
+  console.log("début de la route")
+
+  let photos = JSON.parse(req.query.photos)
+  let files = JSON.parse(req.query.files)
+  let id = req.query.id
+
+  console.log("photos", photos)
+  console.log("files", files)
+
+  console.log("début du sendfile")
+
+  res.sendFile(path.join(__dirname, `./temp/${id}-${photos[0]}`));
+
+  console.log("fin du sendfile")
 
 });
 

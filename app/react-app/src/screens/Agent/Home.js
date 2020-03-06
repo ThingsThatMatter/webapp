@@ -117,7 +117,7 @@ function Home() {
     <Layout>
       <Sidebar/>
       <Layout className='main-content'>
-        <Content style={{ margin: '24px 16px 0' }}>
+        <Content style={{ margin: '2em 3em' }}>
           <div className="ads-list-title">
             <h1 className='pageTitle'>Mes biens</h1>
             <Button

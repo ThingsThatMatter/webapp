@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd';
+import { Layout, Steps, Button, message } from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 import { Slide } from 'react-slideshow-image';
@@ -39,6 +39,14 @@ function CreateFormSix(props) {
 
         setAvantages(tempTable)
 
+        // const getFiles = async() => {
+        //     const data = await fetch(`/pro/tempfiles?id=${props.formData.adID}&photos=${JSON.stringify(props.formData.photos)}&files=${JSON.stringify(props.formData.files)}`)
+        //     console.log("response: ", data)
+        //   }
+      
+        //   getFiles()  
+
+
     },[]);
        
       const properties = {  // carroussel properties
@@ -69,7 +77,7 @@ function CreateFormSix(props) {
 
             <Layout className='main-content'>
 
-                <Content style={{ margin: '24px 16px 0' }}>
+                <Content style={{ margin: '2em 3em' }}>
 
                     <Steps progressDot current={currentPage}> 
                             <Step title="Localisation" />
@@ -176,7 +184,11 @@ function CreateFormSix(props) {
 
                         <Button type="primary" className="button-validate" 
                         onClick={async() => {
-                            // setRedir(true)
+
+                            const key = "updatable"
+
+                            message.loading({ content: 'Création en cours...', key });
+
                             let rawResponse = await fetch("/pro/ad", {
                                 method: 'post',
                                 headers: {'Content-Type': 'application/json'},
@@ -184,7 +196,6 @@ function CreateFormSix(props) {
                                     {
                                     token : "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn",
                                     adID: props.formData.adID,
-                                    color : "#FFFFF",
                                     price: props.formData.price,
                                     fees: props.formData.fees,
                                     type: props.formData.type,
@@ -203,14 +214,23 @@ function CreateFormSix(props) {
                                     dpe: props.formData.dpe,
                                     ges: props.formData.ges,
                                     files: props.formData.files,
-                                    timeSlots: [{agent : "jack", creneau: "8h"}, {agent : "john", creneau: "10h"}]
+                                    color : props.formData.color,
+                                    timeSlots: props.formData.timeslots
                                     }
                                 )
                             })
 
                             let response = await rawResponse.json()
 
-                            console.log(response)
+                            if(response.message === "OK") {
+
+                                message.success({ content: "annonce créée !", key, duration: 2 });
+                                setRedir(true)
+                                props.clear()
+
+                            } else {
+                                message.error(response.details);
+                            }
 
                             }}>Suivant</Button>
                            
@@ -224,8 +244,17 @@ function CreateFormSix(props) {
     );
   }
 
+  function mapDispatchToProps(dispatch) {
+    return {
+      clear : function() { 
+        dispatch( {type: 'clear'} ) 
+      }
+
+    }
+  }
+
   function mapStateToProps(state) {
-    return { 
+    return {
         step : state.step,
         formData: state.formData
     }
@@ -233,5 +262,5 @@ function CreateFormSix(props) {
 
   export default connect(
     mapStateToProps, 
-    null
+    mapDispatchToProps
   )(CreateFormSix);

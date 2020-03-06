@@ -24,6 +24,10 @@ p {
   padding: 30px;
 }
 
+.each-slide > div {
+  min-height: 600px;
+}
+
 .sidebar {
   min-width: 300px;
   max-width: 300px;
@@ -117,6 +121,7 @@ p {
 
 .sign-error-text {
   color: #ff6b6b;
+  margin-bottom: 20px;
 }
 
 .forgotten-password {
@@ -125,9 +130,49 @@ p {
   font-size: 13px;
 }
 
+/* Modal */
+.input-modal {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1em
+}
+  .input-modal-label {
+    margin: 0 1em
+  }
+
+.offer-modal p {
+  margin-bottom: 10px;
+}
+
+.offer-modal span {
+  font-weight: 700;
+  display: block;
+}
+
+.modal-footer {
+  padding: 0.6em;
+  text-align: center;
+}
+
+
+.modal-footer-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-footer-button-delete {
+  margin-right: auto !important;
+}
+
+.add-slot-alert-fail-db {
+  text-align: left;
+  padding: 8px 15px !important;
+}
 
 /* Annonce : card */
-.annonce-element, .offre-element {
+.annonce-element {
   margin: 15px 0;
   padding: 0;
   overflow: hidden;
@@ -139,10 +184,7 @@ p {
   box-shadow: 0 0 5px #bbbbbb;
   transition: all .2s ease-in-out;
 }
-.offre-element {
-  justify-content: center;
-}
-.annonce-element:hover, .offre-element:hover {
+.annonce-element:hover {
 transform: scale(1.02);
 box-shadow: 0 0 10px #777777;
 cursor: pointer;
@@ -209,11 +251,62 @@ cursor: pointer;
   margin-right: 5px;
 }
 
-.offers-row {
+.unclickable {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.offer-section {
   border-bottom: 1px solid #d2d2d2;
   padding: 1em 0;
   margin: 1em 0;
 }
+
+
+.offer-carrousel {
+  padding: 1rem 0;
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.offer-carrousel::-webkit-scrollbar {
+  background-color: transparent;
+  height: 2vmin;
+}
+
+.offer-carrousel::-webkit-scrollbar-thumb {
+  background-color: #e7e7e7;
+  border-radius: 1vmin;
+}
+
+.offer-carrousel .ant-col {
+  flex: 1 0 250px;
+  margin-left: 1rem;
+  scroll-snap-align: start;
+  max-width: 250px;
+}
+
+.offre-element {
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 0 5px #bbbbbb;
+  transition: all .2s ease-in-out;
+  justify-content: center;
+}
+
+.offre-element:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 10px #777777;
+  cursor: pointer;
+}
+
 
 .offre-amount {
   text-align: center;
@@ -256,7 +349,7 @@ p.offre-buyer-name {
   font-size: 2em;
   margin: 0;
   color: #052040;
-  margin-bottom : 3%;
+  margin-bottom : 30px;
 }
 
 .pageSubTitle {
@@ -264,7 +357,7 @@ p.offre-buyer-name {
   font-size: 1.5em;
   margin: 0;
   color: #052040;
-  margin : 1.5% 0;
+  margin : 15px 0;
 }
 
 /* formulaires */
@@ -279,35 +372,38 @@ p.offre-buyer-name {
   display: block;
 }
 
-.new-offer-step5-buttons-block {
-  display: flex;
-  align-items: center;
-}
-
-.new-offer-step5-skip {
-  color: #052040;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 /* BOUTTONS (from Ant) */
 
 .button-validate {
   color: #FFF;
-  width: 90px;
-  height: 40px;
+  padding: 5px 12px;
   background: #116BD9;
   border-color: #116BD9;
-  border-radius: 7px;
+  height: auto;
+}
+
+.button-accept {
+  color: #FFF;
+  padding: 5px 12px;
+  background: #a4d45a;
+  border-color: #a4d45a;
+  height: auto;
+}
+
+.button-decline {
+  color: #FFF;
+  padding: 5px 12px;
+  background: #e86b43;
+  border-color: #e86b43;
+  height: auto;
 }
 
 .button-back {
-  width: 90px;
-  height: 40px;
-  color: #0D6FDE;
-  border : 1px solid #0D6FDE;
-  background: white;
-  border-radius: 7px;
+  color: #FFF;
+  padding: 5px 12px;
+  background: #116BD9;
+  border-color: #116BD9;
+  height: auto;
 }
 
 /* Page mes biens (pro) */
@@ -319,14 +415,11 @@ p.offre-buyer-name {
 }
 
 .button-add {
-  color: #001428 !important;
-  font-size: 1.5em;
+  margin-bottom : 30px;
+  font-size: 18px;
+  color: #052040 !important;
   font-weight: 600;
-  padding: 10;
-  border-color: #001428 !important;
-  border-width : 2px;
-  height: auto;
-  border-radius: 10px;
+  border:0
 }
 
 .filter-header {
@@ -366,12 +459,6 @@ p.offre-buyer-name {
 
 /* PAGE ANNONCE */
 
-.detail {
-  margin-top: -2%;
-  margin-bottom: 2%;
-
-}
-
 .section {
   background-color: #FFFFFF;
   border-radius: 10px;
@@ -383,7 +470,6 @@ p.offre-buyer-name {
 .row {
   margin-top: 1em;
   display: flex;
-  flex-direction: row;
   justify-content: space-between;
   width: 70%;
   margin-right: 15%;
@@ -412,14 +498,6 @@ p.offre-buyer-name {
   margin-left: 15%;
   padding-top: 1.5%;
   padding-bottom: 1.5%;
-}
-
-.faq {
-  background: #f7f7f7;
-  border-radius: 4px;
-  border: 0;
-  overflow: hidden;
-  margin-bottom: 3%;
 }
 
 /* IMAGE SLIDER (doc : https://www.npmjs.com/package/react-slideshow-image)  */

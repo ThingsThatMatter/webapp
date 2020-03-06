@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
 import { Layout} from 'antd';
-import { Steps, Button, Input, Radio } from 'antd';
+import { Steps, Button, Input, Radio, InputNumber } from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 
@@ -61,7 +61,7 @@ function CreateFormOne(props) {
 
             <Layout className='main-content'>
 
-                <Content style={{ margin: '24px 16px 0' }}>
+                <Content style={{ margin: '2em 3em' }}>
 
                     <Steps progressDot current={currentPage}>
                             <Step title="Localisation" />
@@ -83,7 +83,7 @@ function CreateFormOne(props) {
 
                             <p className='formLabel'>Code postal</p>
                             <label>
-                                <Input onChange={(e) => setPostal(e.target.value)} value={postal} placeholder="75018"/>
+                                <InputNumber onChange={(e) => setPostal(e)} value={postal} placeholder="75018"/>
                             </label>
 
                             <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>

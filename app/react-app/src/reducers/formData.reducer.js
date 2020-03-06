@@ -62,7 +62,13 @@ export default function(formData = {}, action) {
         }
         return newData;
   
-  }else {
+  } else if (action.type == 'clear') {
+
+      let newData = {}
+
+      return newData;
+
+  } else {
       return formData;
     }
   }
