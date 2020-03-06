@@ -48,7 +48,10 @@ function CreateFormFive(props) {
     }
 
     const dbFetch = async () => {
-      const ads = await fetch(`/pro/ads?token=${tokenTest}`)
+      const ads = await fetch('/pro/ads', {
+        method: 'GET',
+        headers: {'token': tokenTest}
+      })
       const body = await ads.json()
       
       let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
@@ -471,7 +474,7 @@ function CreateFormFive(props) {
                 closable={true}
                 maskl={true}
                 maskClosable={true}
-                onCancel={ () => setAppointmentModalVisible(false)}
+                onCancel={handleCancel}
               >
                 <div className='input-modal'>
                     <p className="input-modal-label">Date du RDV</p>

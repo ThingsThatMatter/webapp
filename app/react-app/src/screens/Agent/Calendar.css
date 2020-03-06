@@ -80,29 +80,3 @@ margin-bottom: 0.5em; }
 .calendar-event-noneditable {
   cursor: default
 }
-
-/* Modal */
-.input-modal {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1em
-}
-  .input-modal-label {
-    margin: 0 1em
-  }
-
-.modal-footer-buttons {
-  display:flex;
-  flex-direction: row;
-  justify-content: flex-end;
-  align-items: center;
-}
-
-.modal-footer-button-delete {
-  margin-right: auto !important;
-}
-
-.add-slot-alert-fail-db {
-  text-align: left;
-  padding: 8px 15px !important;
-}

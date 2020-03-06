@@ -194,7 +194,7 @@ router.post('/ad', async function(req, res, next) {
 
 });
 
-/* UPDATE ad */
+/* UPDATE ad  */
 router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
@@ -248,7 +248,7 @@ router.put('/ad/:id_ad', async function(req, res, next) {
 router.delete('/ad/:id_ad', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -314,7 +314,7 @@ router.post('/ad/:id_ad/timeslots', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     let tableTimeslots = JSON.parse(req.body.timeslot);
 
@@ -369,7 +369,7 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -430,7 +430,7 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -474,7 +474,7 @@ router.get('/ads/timeslots', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.query.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
     let timeslotsFromAgent = await adModel.aggregate([
       { $unwind: "$timeSlots" },
       { $match: { 'timeSlots.agent' : findAgent._id } }
@@ -513,7 +513,7 @@ router.get('/ads/timeslots', async function(req, res, next) {
 router.get('/ads', async function(req, res, next) {
 
   try {
-    let adsFromAgent = await agentModel.findOne({ token:req.query.token }) // authenticate user and return his ads
+    let adsFromAgent = await agentModel.findOne({ token:req.headers.token }) // authenticate user and return his ads
       .populate('ads')
       .exec()
     ;
@@ -546,7 +546,7 @@ router.get('/ads', async function(req, res, next) {
 router.get('/ad/:id_ad/offers', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
+    let findAgent = await agentModel.find({token:req.headers.token}); // authenticate user
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -583,7 +583,7 @@ router.get('/ad/:id_ad/offers', async function(req, res, next) {
 router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -627,7 +627,7 @@ router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
 router.get('/ad/:id_ad', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
+    let findAgent = await agentModel.find({token:req.headers.token}); // authenticate user
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -670,6 +670,8 @@ router.post('/upload', async function(req, res, next) {
   } 
 
 });
+
+
 
 router.delete('/upload/:name', async function(req, res, next) {
 

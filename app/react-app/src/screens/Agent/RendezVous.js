@@ -40,7 +40,10 @@ function RendezVous() {
     }
 
     const dbFetch = async () => {
-      const ads = await fetch(`/pro/ads?token=${tokenTest}`)
+      const ads = await fetch('/pro/ads', {
+        method: 'GET',
+        headers: {'token': tokenTest}
+      })
       const body = await ads.json()
       
       let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
@@ -220,8 +223,11 @@ function RendezVous() {
     if (appointmentModalMode === 'create') {
       const postTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslots`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `token=${tokenTest}&timeslot=${slots}`
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': tokenTest
+        },
+        body: `timeslot=${slots}`
       })
       const body = await postTimeslots.json()
       if (body.message === 'OK') {
@@ -244,8 +250,11 @@ function RendezVous() {
     } else if (appointmentModalMode === 'edit') {
       const updateTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
         method: 'PUT',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `token=${tokenTest}&timeslot=${slots}`
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': tokenTest
+        },
+        body: `timeslot=${slots}`
       })
       const body = await updateTimeslots.json()
       console.log(body)
@@ -286,8 +295,10 @@ function RendezVous() {
 
     const deleteTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
       method: 'DELETE',
-      headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-      body: `token=${tokenTest}`
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'token': tokenTest
+      }
     })
     const body = await deleteTimeslots.json()
     if (body.message === 'OK') {
@@ -484,7 +495,7 @@ function RendezVous() {
                 closable={true}
                 maskl={true}
                 maskClosable={true}
-                onCancel={ () => setAppointmentModalVisible(false)}
+                onCancel={handleCancel}
             >
                 <div className='input-modal'>
                     <p className="input-modal-label">Date du RDV</p>
