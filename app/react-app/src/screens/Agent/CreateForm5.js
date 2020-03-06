@@ -556,24 +556,24 @@ function CreateFormFive(props) {
     }
   }
 
-  function mapDispatchToProps(dispatch) {
-    return {
-      nextStep : function() { 
-          dispatch( {type: 'nextStep'} ) 
-      },
-      previousStep : function() {
-          dispatch( {type: 'prevStep'} )
-      },
-      saveFormData : function(timeslots, color) { 
-        dispatch( {
-            type: 'saveFormData5',
-            timeslots : timeslots,
-            color: color
-        } ) } 
-    }
+function mapDispatchToProps(dispatch) {
+  return {
+    nextStep : function() { 
+        dispatch( {type: 'nextStep'} ) 
+    },
+    previousStep : function() {
+        dispatch( {type: 'prevStep'} )
+    },
+    saveFormData : function(timeslots, color) { 
+      dispatch( {
+          type: 'saveFormData5',
+          timeslots : timeslots,
+          color: color
+      } ) } 
   }
-    
-  export default connect(
-    mapStateToProps, 
-    mapDispatchToProps
-  )(CreateFormFive);
+}
+  
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+)(CreateFormFive);

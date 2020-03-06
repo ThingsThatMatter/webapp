@@ -17,6 +17,7 @@ function Home() {
   const [onlineStatus, setOnlineStatus] = useState("All")
   const [visitStatus, setVisitStatus] = useState("All")
   const [offerStatus, setOfferStatus] = useState("All")
+  const [filterChange, setFilterChange] = useState(false)
 
   /* Ad Cards */
   useEffect( () => {
@@ -34,23 +35,29 @@ function Home() {
   /* Filters */
   let ads = [...adsList]
 
-  if (onlineStatus === 'Y') {
-    ads = adsList.filter( e => e.onlineStatus === true )
-  } else if (onlineStatus === 'N') {
-    ads = adsList.filter( e => e.onlineStatus === false )
-  }
+  // useEffect(() => {
+  //   const filter () => {
+  //     if (onlineStatus === 'Y') {
+  //       ads = adsList.filter( e => e.onlineStatus === true )
+  //     } else if (onlineStatus === 'N') {
+  //       ads = adsList.filter( e => e.onlineStatus === false )
+  //     }
+    
+  //     if (visitStatus === 'Y') {
+  //       ads = adsList.filter( e => e.visitStatus === true )
+  //     } else if (visitStatus === 'N') {
+  //       ads = adsList.filter( e => e.visitStatus === false )
+  //     }
+    
+  //     if (offerStatus === 'Y') {
+  //       ads = adsList.filter( e => e.offerStatus === true )
+  //     } else if (offerStatus === 'N') {
+  //       ads = adsList.filter( e => e.offerStatus === false )
+  //     }
+  //   }
 
-  if (visitStatus === 'Y') {
-    ads = adsList.filter( e => e.visitStatus === true )
-  } else if (visitStatus === 'N') {
-    ads = adsList.filter( e => e.visitStatus === false )
-  }
+  // }[filterChange])
 
-  if (offerStatus === 'Y') {
-    ads = adsList.filter( e => e.offerStatus === true )
-  } else if (offerStatus === 'N') {
-    ads = adsList.filter( e => e.offerStatus === false )
-  }
 
   /* Price formatting */
   const priceFormatter = new Intl.NumberFormat('fr', {

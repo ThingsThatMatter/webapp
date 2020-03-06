@@ -1,29 +1,53 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
+import {Redirect} from 'react-router-dom'
 import {Form, Input, Button } from 'antd';
-import {Redirect} from 'react-router-dom';
+import {connect} from 'react-redux'
+import {useCookies} from 'react-cookie'
 
-function SignIn() {
+function SignIn(props) {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
     const [msgErrorSignin, setMsgErrorSignin] = useState()
+    const [toRedirect, setToRedirect] = useState(false)
+    const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
+    
+
+    // useEffect( () => {
+    //     console.log(props.token)
+    //     console.log(cookies.token)
+    //     const redirect = () => {
+    //         if(props.token !== '' || cookies.token !== ''){
+    //             return <Redirect to='/' />
+    //         }
+    //     }
+    //     redirect()
+    // }, [])
 
     const handleSubmitSignin = async () => {
-        const data = await fetch('/pro/sign-in', {
+        const checkAgent = await fetch('/pro/sign-in', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `email=${email}&password=${password}`
           })
       
-          const body = await data.json()
-      
-          if(body.state == true){
-            //props.addToken(body.token)
-            
-          }  else {
-            setMsgErrorSignin(body.message)
-          }
-    } 
+        const body = await checkAgent.json()
+        if (body.message === 'OK') {
+            setCookie('token', body.data.token, {path:'/'})
+            props.setToken(body.data.token)
+            setToRedirect(true)
+        } else {
+            setMsgErrorSignin(body.details)
+        }
+    }
+
+    if (toRedirect) { // if login OK (from form) redirect to home
+        return <Redirect to='/' /> 
+    } else {
+        if (typeof cookies.token !== 'undefined') {  //if landing on signin but has a valid token
+            props.setToken(cookies.token)
+            return <Redirect to='/' /> 
+        }
 
     return (
         <div className="pro-sign-layout">
@@ -79,7 +103,24 @@ function SignIn() {
                 </div>
             </div>
         </div>
-    )
+    )}
 }
 
-export {SignIn};
+function mapStateToProps(state) {
+    return { 
+        token : state.token
+    }
+}
+
+function mapDispatchToProps(dispatch){
+    return {
+        setToken: function(token){
+            dispatch({type: 'setToken', token})
+        }
+    }
+}
+  
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(SignIn)
