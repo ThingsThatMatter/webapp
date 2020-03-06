@@ -3,7 +3,7 @@ import { Layout, Row, Button, Col, Collapse, Carousel, Modal } from 'antd';
 import {Redirect} from 'react-router-dom';
 
 import Sidebar from '../../components/Sidebar';
-import {PlusCircleOutlined} from '@ant-design/icons'
+import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse;
 
 const { Content } = Layout;
@@ -33,7 +33,7 @@ function Offres() {
           
             let adsWithOffers = body.data.ads.filter( e => e.offers.length > 0);
     
-        setOfferslist(adsWithOffers)
+            setOfferslist(adsWithOffers)
 
         }   
     dbFetch()
@@ -49,14 +49,12 @@ function Offres() {
 
     // Accepter une offre d'achat
     const handleAcceptOffer = async () => {
-        const dbFetch = async () => {
-            const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
-            })
-            const body = await acceptOffer.json();
-        }   
-        dbFetch()
+        const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+        })
+        const body = await acceptOffer.json();
+
         setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
         setOfferModalVisible(false)
         setDisplayOffers(!displayOffers)
@@ -64,26 +62,28 @@ function Offres() {
 
     // Refuser une offre d'achat
     const handleDeclineOffer = async () => {
-        const dbFetch = async () => {
-            const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
-                method: 'PUT',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
-            })
-            const body = await declineOffer.json();
-        }   
-        dbFetch()
+        const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+        })
+        const body = await declineOffer.json();
+
+        setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+        setOfferModalVisible(false)
+        setDisplayOffers(!displayOffers)
     }
 
     // Annuler une offre d'achat
     const handleCancelOffer = async () => {
-        const dbFetch = async () => {
-            const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}`, {
-                method: 'DELETE',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
-            })
-            const body = await cancelOffer.json();
-        }   
-        dbFetch()
+        const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/cancel`, {
+            method: 'PUT',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+        })
+        const body = await cancelOffer.json();
+
+        setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+        setOfferModalVisible(false)
+        setDisplayOffers(!displayOffers)
     }
 
     const modalFooter = 
@@ -123,12 +123,24 @@ function Offres() {
                         { e.offers.map( (f,i) => {
                             let color;
                             let unclickable;
+                            let picto;
                             if(f.status === 'accepted') {
                                 color = '#6ce486';
                             }
                             if(f.status === 'declined') {
-                                unclickable= 'unclickable';
+                                color = '#e86b43';
+                                unclickable='unclickable';
+                            } else if(f.status === 'canceled') {
+                                color = '#e86b43';
+                                unclickable='unclickable';
+                            } 
+                            if(f.amount === e.price) {
+                                picto = <CheckCircleOutlined />;
                             }
+                            if(f.status === 'pending') {
+                                color = '#116BD9';
+                            }
+                            
                             console.log(f)
                         return (
                             <Col key = {i} 
@@ -142,7 +154,7 @@ function Offres() {
                             >
                                 <div className="offre-element">
                                     <div className="offre-amount" style={{backgroundColor: color}}>
-                                        <span className="annonce-price">{priceFormatter.format(f.amount)}</span>
+                                    {picto}<span className="annonce-price"> {priceFormatter.format(f.amount)}</span>
                                     </div>
                                     <div className="offre-buyer">
                                         <p className="offre-buyer-name">{f.firstname1} {f.lastname1}</p>

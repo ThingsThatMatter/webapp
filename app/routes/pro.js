@@ -579,6 +579,18 @@ router.get('/ad/:id_ad/offers', async function(req, res, next) {
   
 });
 
+
+/* PUT TEST ALL PENDING */
+router.put('/ad/:id_ad/test', async function(req, res, next) {
+
+   let testOffers = await adModel.updateMany(
+      { _id: req.params.id_ad },
+      { $set: { "offers.status" : 'pending' } }
+    )
+
+  res.json('test');
+});
+
 /* PUT accept offer */
 router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
 
@@ -599,7 +611,7 @@ router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
       );
 
       let declinedOffers = await adModel.updateMany(
-        { _id: req.params.id_ad, "offers.status": 'pending' },
+        { _id: req.params.id_ad,"offers._id": req.params.id_offer },
         { $set: { "offers.$[elem].status" : 'declined' } },
         { arrayFilters: [ { "elem.status": 'pending' } ] }
       )
@@ -607,7 +619,7 @@ router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
       status = 200;
       response = {
         message: 'OK',
-        data: declinedOffers
+        data: acceptedOffer
       }
     };
 
@@ -637,21 +649,15 @@ router.put('/ad/:id_ad/offer/:id_offer/decline', async function(req, res, next) 
       };
     } else {
 
-      let acceptedOffer = await adModel.updateOne(
+      let declinedOffer = await adModel.updateOne(
         { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
         { "offers.$.status": 'declined' }
       );
 
-      let declinedOffers = await adModel.updateMany(
-        { _id: req.params.id_ad, "offers.status": 'declined' },
-        { $set: { "offers.$[elem].status" : 'pending' } },
-        { arrayFilters: [ { "elem.status": 'declined' } ] }
-      )
-
       status = 200;
       response = {
         message: 'OK',
-        data: declinedOffers
+        data: declinedOffer
       }
     };
 
@@ -667,10 +673,10 @@ router.put('/ad/:id_ad/offer/:id_offer/decline', async function(req, res, next) 
 
 });
 
-/* DELETE accepted offer */
-router.delete('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
+/* CANCEL accepted offer */
+router.put('/ad/:id_ad/offer/:id_offer/cancel', async function(req, res, next) {
 
-  try {
+  // try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
@@ -681,25 +687,31 @@ router.delete('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
       };
     } else {
 
-      let acceptedOffer = await adModel.update(
+      let cancelAcceptedOffer = await adModel.updateOne(
         { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
-        { "offers.$.status": 'canceled' }
+        { "offers.$.status": 'declined' }
       );
+
+      let cancelDeclinedOffer = await adModel.updateMany(
+        { _id: req.params.id_ad, "offers._id": req.params.id_offer },
+        { $set: { "offers.$[elem].status" : 'pending' } },
+        { arrayFilters: [ { "elem.status": 'declined' } ] }
+      )
 
       status = 200;
       response = {
         message: 'OK',
-        data: declinedOffers
+        data: cancelAcceptedOffer
       }
     };
 
-  } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
-  }
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
 
   res.status(status).json(response);
 
