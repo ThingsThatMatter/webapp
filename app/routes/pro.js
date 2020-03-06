@@ -2,13 +2,15 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var mongoose = require('../models/bdd');
-
-
-
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
+var cloudinary = require('cloudinary').v2;
 
-
+cloudinary.config({ 
+  cloud_name: 'dp4mkibm2', 
+  api_key: '692324412372859', 
+  api_secret: 'IIAMf3ZmBfXycAVxnqGFpctM-YE' 
+});
 
 // var request = require('sync-request');
 var uid2 = require("uid2");
@@ -93,15 +95,37 @@ router.post('/sign-up', async function(req, res, next) {
 /* POST ad */
 router.post('/ad', async function(req, res, next) {
 
-  try {
+  // try {
+
+
+    let adID = req.body.adID
+    let photos = req.body.photos
+
+    let photosUrl = []
     
-    let parseTimeslots = JSON.parse(req.body.timeSlots);
+    for(i=0; i<photos.length ; i++) {
+
+      var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
+      photosUrl.push(resultCloudinary.url)
+
+    }
+
+    console.log(photosUrl)
+
+    for(i=0; i<photos.length ; i++) {
+
+      fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
+
+    }
+
+
     let findAgent = await agentModel.findOne({ token:req.body.token });
+
 
     let tempAd = new adModel ({
       creationDate: new Date,
       color: req.body.color,
-      onlineStatus: false,
+      onlineStatus: true,
       offerStatus: false,
       visitStatus: false,
       price: req.body.price,
@@ -113,27 +137,29 @@ router.post('/ad', async function(req, res, next) {
       address: req.body.address,
       postcode: req.body.postcode,
       city: req.body.city,
-      photos: req.body.photos,
+      photos: photosUrl,
       video: req.body.video,
       area: req.body.area,
       rooms: req.body.rooms,
       bedrooms: req.body.bedrooms,
-      elevator: req.body.elevator,
-      terrace: req.body.terrace,
-      balcony: req.body.balcony,
+      advantages : req.body.advantages,
       options: req.body.options,
       dpe: req.body.dpe,
       ges: req.body.ges,
-      files: req.body.files,
-      timeSlots: parseTimeslots
+      files: req.body.files
+      // timeSlots: parseTimeslots
     });
 
     let newAd = await tempAd.save();
+
+
+
 
     let adToAgent = await agentModel.updateOne(
       { _id: findAgent._id }, 
       { $push: { ads : newAd._id } }
     )
+
 
     status = 200;
     response = {
@@ -141,19 +167,19 @@ router.post('/ad', async function(req, res, next) {
       data: newAd
     }
 
-  } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
-  }
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
 
   res.status(status).json(response);
 
 });
 
-/* UPDATE ad */
+/* UPDATE ad  */
 router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
@@ -176,9 +202,7 @@ router.put('/ad/:id_ad', async function(req, res, next) {
         area: req.body.area,
         rooms: req.body.rooms,
         bedrooms: req.body.bedrooms,
-        elevator: req.body.elevator,
-        terrace: req.body.terrace,
-        balcony: req.body.balcony,
+        advantages: req.body.advantages,
         options: req.body.options,
         dpe: req.body.dpe,
         ges: req.body.ges,
@@ -209,7 +233,7 @@ router.put('/ad/:id_ad', async function(req, res, next) {
 router.delete('/ad/:id_ad', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -275,7 +299,7 @@ router.post('/ad/:id_ad/timeslots', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     let tableTimeslots = JSON.parse(req.body.timeslot);
 
@@ -330,7 +354,7 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -391,7 +415,7 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -435,7 +459,7 @@ router.get('/ads/timeslots', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.query.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
     let timeslotsFromAgent = await adModel.aggregate([
       { $unwind: "$timeSlots" },
       { $match: { 'timeSlots.agent' : findAgent._id } }
@@ -474,7 +498,7 @@ router.get('/ads/timeslots', async function(req, res, next) {
 router.get('/ads', async function(req, res, next) {
 
   try {
-    let adsFromAgent = await agentModel.findOne({ token:req.query.token }) // authenticate user and return his ads
+    let adsFromAgent = await agentModel.findOne({ token:req.headers.token }) // authenticate user and return his ads
       .populate('ads')
       .exec()
     ;
@@ -507,7 +531,7 @@ router.get('/ads', async function(req, res, next) {
 router.get('/ad/:id_ad/offers', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
+    let findAgent = await agentModel.find({token:req.headers.token}); // authenticate user
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -544,7 +568,7 @@ router.get('/ad/:id_ad/offers', async function(req, res, next) {
 router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -588,7 +612,7 @@ router.put('/ad/:id_ad/offer/:id_offer', async function(req, res, next) {
 router.get('/ad/:id_ad', async function(req, res, next) {
 
   try {
-    let findAgent = await agentModel.find({token : req.query.token}); // authenticate user
+    let findAgent = await agentModel.find({token:req.headers.token}); // authenticate user
 
     if(findAgent.length === 0) { 
       status = 401;
@@ -616,16 +640,13 @@ router.get('/ad/:id_ad', async function(req, res, next) {
 
 });
 
-// POST Upload images in form 
+// POST Upload images from form 
 router.post('/upload', async function(req, res, next) {
 
   console.log("token :", req.body.token)
   console.log("fichier :", req.files)
   
   var resultCopy = await req.files.file.mv(`./temp/${req.body.token}-${req.files.file.name}`);
-
-  console.log(resultCopy)
-
   
   if(!resultCopy) {
     res.json({result: true, name: req.files.file.name, message: `${req.files.file.name} uploaded!`} );       
@@ -634,6 +655,8 @@ router.post('/upload', async function(req, res, next) {
   } 
 
 });
+
+
 
 router.delete('/upload/:name', async function(req, res, next) {
 

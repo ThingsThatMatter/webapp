@@ -21,7 +21,10 @@ function Home() {
   /* Ad Cards */
   useEffect( () => {
     const adsFetch = async () => {
-      const ads = await fetch(`/pro/ads?token=${tokenTest}`);
+      const ads = await fetch('/pro/ads', {
+        method: 'GET',
+        headers: {'token': tokenTest}
+      })
       const body = await ads.json();
       setAdslist(body.data.ads)
     }

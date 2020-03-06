@@ -18,7 +18,8 @@ export default function(formData = {}, action) {
             type : action.typeBien,
             area : action.area,
             rooms : action.rooms,
-            avantages : action.avantages,
+            bedrooms : action.bedrooms,
+            advantages : action.avantages,
             title : action.title,
             description : action.description,
             photos : action.photos,
@@ -44,7 +45,24 @@ export default function(formData = {}, action) {
         }
         return newData;
     
-    }else {
+    } else if (action.type == 'saveFormData5') {
+        const timeslots = action.timeslots.map( e => {
+          const {start, end, priv} = e
+          return {
+            start: start,
+            end: end,
+            private: priv
+          }
+        })
+
+        var newData = {
+            ...formData,
+            timeslots,
+            color: action.color
+        }
+        return newData;
+  
+  }else {
       return formData;
     }
   }

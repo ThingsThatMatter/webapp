@@ -141,6 +141,22 @@ p {
   padding: 0.6em;
 }
 
+.modal-footer-buttons {
+  display:flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.modal-footer-button-delete {
+  margin-right: auto !important;
+}
+
+.add-slot-alert-fail-db {
+  text-align: left;
+  padding: 8px 15px !important;
+}
+
 /* Annonce : card */
 .annonce-element {
   margin: 15px 0;
@@ -237,6 +253,7 @@ cursor: pointer;
   overflow-x: scroll;
   padding: 1rem 0;
 }
+
 .offre-element {
   flex-grow: 1;
   flex-shrink: 0;
@@ -253,6 +270,7 @@ cursor: pointer;
   transition: all .2s ease-in-out;
   justify-content: center;
 }
+
 .offre-element:hover {
   transform: scale(1.02);
   box-shadow: 0 0 10px #777777;

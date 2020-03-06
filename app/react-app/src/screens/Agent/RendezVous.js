@@ -5,22 +5,22 @@ import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
 
 import {RightOutlined, LeftOutlined, DownOutlined} from '@ant-design/icons'
-import {Layout, Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Button, Popconfirm, message, Radio} from 'antd'
-import locale from 'antd/es/date-picker/locale/fr_FR';
+import {Layout, Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Button, Popconfirm, message, Radio, Alert} from 'antd'
+import locale from 'antd/es/date-picker/locale/fr_FR'
 import moment from 'moment'
-import 'moment/locale/fr';
+import 'moment/locale/fr'
 
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/Sidebar'
 
 import './Calendar.css'
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.css'
 
 
-const ts = require("time-slots-generator");
+const ts = require("time-slots-generator")
 
-const { RangePicker } = TimePicker;
-const { Option } = Select;
-const {Content} = Layout;
+const { RangePicker } = TimePicker
+const { Option } = Select
+const {Content} = Layout
 
 var tokenTest = "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn"
 
@@ -37,18 +37,23 @@ function RendezVous() {
   useEffect( () => {
     const changeTitle = async () => {
       setTitle(calendar.current.calendar.view.title)
-    };
+    }
+
     const dbFetch = async () => {
-      const ads = await fetch(`/pro/ads?token=${tokenTest}`)
-      const body = await ads.json();
+      const ads = await fetch('/pro/ads', {
+        method: 'GET',
+        headers: {'token': tokenTest}
+      })
+      const body = await ads.json()
       
-      let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0)
-      let timeslots = adsWithTimeslots.map( e => {
+      let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
+      let timeslots = adsWithTimeslots.map( e => { //create a table of timeslots with their title and color
         return (e.timeSlots.map( f => {
           return {
           ...f,
           color : e.color,
-          title : e.title
+          title : e.title,
+          adId: e._id
           }
         }))
       })
@@ -56,9 +61,9 @@ function RendezVous() {
 
       /* Création de la liste de timeslot */
       const events = timeslots.map( e => {
-        let backgroundColor;
-        let textColor;
-        let borderColor;
+        let backgroundColor
+        let textColor
+        let borderColor
         if (e.booked) {
           backgroundColor = e.color
           textColor = "#FFF"
@@ -76,7 +81,8 @@ function RendezVous() {
           borderColor,
           id: e._id,
           extendedProps: {
-              private: e.private
+              private: e.private,
+              adId: e.adId
           }
         }
       })
@@ -87,7 +93,7 @@ function RendezVous() {
       return {
         name: e.title,
         color: e.color,
-        id: e._id
+        adId: e._id
       }
     })
     setProperties(prop)
@@ -95,7 +101,7 @@ function RendezVous() {
     }
   changeTitle()
   dbFetch()
-  }, [displaySlots]);
+  }, [displaySlots])
 
 
   /* View choice : day, week, month */
@@ -105,8 +111,8 @@ function RendezVous() {
         key="0"
         onClick={ () => {
           const calendarApi = calendar.current.getApi()
-          calendarApi.changeView('timeGridWeek');
-          setView('Semaine');
+          calendarApi.changeView('timeGridWeek')
+          setView('Semaine')
         }}
       >
         Semaine
@@ -115,8 +121,8 @@ function RendezVous() {
         key="1"
         onClick={ () => {
           const calendarApi = calendar.current.getApi()
-          calendarApi.changeView('timeGridDay');
-          setView('Jour');
+          calendarApi.changeView('timeGridDay')
+          setView('Jour')
         }}
       >
         Jour
@@ -125,31 +131,34 @@ function RendezVous() {
         key="0"
         onClick={ () => {
           const calendarApi = calendar.current.getApi()
-          calendarApi.changeView('dayGridMonth');
-          setView('Mois');
+          calendarApi.changeView('dayGridMonth')
+          setView('Mois')
         }}
       >
         Mois
       </Menu.Item>
     </Menu>
-  );
+  )
 
   /*----------------------------------------------- MODAL ---------------------------------------------------*/
   const [appointmentModalVisible, setAppointmentModalVisible] = useState(false)
   const [appointmentModalMode, setAppointmentModalMode] = useState(null)
   const [appointmentModalOkLoading, setAppointmentModalOkLoading] =useState(false)
 
-  const [appointmentModalDate, setAppointmentModalDate] = useState(null)
-  const [appointmentModalHour1, setAppointmentModalHour1] = useState(null)
-  const [appointmentModalHour2, setAppointmentModalHour2] = useState(null)
-  const [appointmentModalProperty, setAppointmentModalProperty] = useState(null)
-  const [appointmentModalId, setAppointmentModalId] = useState(0)
-  const [appointmentModalPrivate, setAppointmentModalPrivate] = useState(true)
+  const [appointmentModalEventDate, setAppointmentModalEventDate] = useState(null)
+  const [appointmentModalEventHour1, setAppointmentModalEventHour1] = useState(null)
+  const [appointmentModalEventHour2, setAppointmentModalEventHour2] = useState(null)
+  const [appointmentModalEventProperty, setAppointmentModalEventProperty] = useState(null)
+  const [appointmentModalEventPropertyId, setAppointmentModalEventPropertyId] = useState(0)
+  const [appointmentModalEventPrivate, setAppointmentModalEventPrivate] = useState(true)
+  const [appointmentModalEventId, setAppointmentModalEventId] = useState(0)
+
+  const [failMsgVisible, setFailMsgVisible] = useState(false)
 
   const propertiesOptions = properties.map( (e,i) => (
     <Option
       key={i}
-      value={e.id}
+      value={e.adId}
     >
       <span className="dot" style={{
         backgroundColor: e.color,
@@ -163,28 +172,26 @@ function RendezVous() {
     </Option>
   ))
 
-  /* Modal Footer*/
-
   /* TimeSlot: Convert time to hour and minutes */
   function minToHandM(n) {
-    var num = n;
-    var hours = (num / 60);
-    var rhours = Math.floor(hours);
-    var minutes = (hours - rhours) * 60;
-    var rminutes = Math.round(minutes);
-    return {hour: rhours, minute: rminutes};
+    var num = n
+    var hours = (num / 60)
+    var rhours = Math.floor(hours)
+    var minutes = (hours - rhours) * 60
+    var rminutes = Math.round(minutes)
+    return {hour: rhours, minute: rminutes}
     }
 
   /* HANDLING BUTTONS */
   const handleOk = async () => {
-    setAppointmentModalOkLoading(true);
-    const year = appointmentModalDate.slice(0,4)
-    let month = Number(appointmentModalDate.slice(5,7))-1
-    const day = appointmentModalDate.slice(8,10)
-    const hour1 = appointmentModalHour1.slice(0,2)
-    const min1 = appointmentModalHour1.slice(3,5)
-    const hour2 = appointmentModalHour2.slice(0,2)
-    const min2 = appointmentModalHour2.slice(3,5)
+    setAppointmentModalOkLoading(true)
+    const year = appointmentModalEventDate.slice(0,4)
+    let month = Number(appointmentModalEventDate.slice(5,7))-1
+    const day = appointmentModalEventDate.slice(8,10)
+    const hour1 = appointmentModalEventHour1.slice(0,2)
+    const min1 = appointmentModalEventHour1.slice(3,5)
+    const hour2 = appointmentModalEventHour2.slice(0,2)
+    const min2 = appointmentModalEventHour2.slice(3,5)
 
     const date1 = new Date(year, month, day, hour1, min1)
     const date2 = new Date(year, month, day, hour2, min2)
@@ -200,94 +207,159 @@ function RendezVous() {
       endTime = Number(hour1)*60+Number(min1)
     }
       /* Warning: timeslots does not include bounds (so first slot is starTime minus the interval) */
-    var interval = 30;
+    var interval = 30
     var slots = ts.getTimeSlots([[0, startTime-interval], [endTime, 1450]], false, "half")
     slots = slots.map( e => {
       var start = new Date(year, month, day, minToHandM(e).hour, minToHandM(e).minute)
       return {
         start: start,
         end: moment(start).add(interval, 'm').toDate(),
-        private: appointmentModalPrivate
+        private: appointmentModalEventPrivate
         }
       })
-      console.log(slots)
       slots = JSON.stringify(slots)
 
-    //appel Base de données pour enregistrer les créneaux : simulation avec set time out
+    // DB Call to save timeslots
     if (appointmentModalMode === 'create') {
-      const postTimeslots = await fetch(`/pro/ad/${appointmentModalId}/timeslots`, {
+      const postTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslots`, {
         method: 'POST',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-        body: `id=${appointmentModalId}&token=${tokenTest}&timeslot=${slots}`
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': tokenTest
+        },
+        body: `timeslot=${slots}`
       })
-      const body = await postTimeslots.json();
-      console.log(body.data)
+      const body = await postTimeslots.json()
       if (body.message === 'OK') {
-        setDisplaySlots(true)
-        setAppointmentModalOkLoading(false);
-        setAppointmentModalVisible(false);
-        setAppointmentModalOkLoading(false);
-        setAppointmentModalVisible(false);
-        setAppointmentModalDate(null);
-        setAppointmentModalHour1(null);
-        setAppointmentModalHour2(null);
-        setAppointmentModalProperty(null);
-        setAppointmentModalId(null);
-        setAppointmentModalMode(null);
-        setAppointmentModalPrivate(true);
+        setDisplaySlots(!displaySlots)
+        setAppointmentModalOkLoading(false)
+        setAppointmentModalVisible(false)
+        setAppointmentModalEventDate(null)
+        setAppointmentModalEventHour1(null)
+        setAppointmentModalEventHour2(null)
+        setAppointmentModalEventProperty(null)
+        setAppointmentModalEventPropertyId(null)
+        setAppointmentModalEventId(null)
+        setAppointmentModalMode(null)
+        setAppointmentModalEventPrivate(true)
+        setFailMsgVisible(false)
+      } else {
+        setFailMsgVisible(true)
+        setAppointmentModalOkLoading(false)
+      }
+    } else if (appointmentModalMode === 'edit') {
+      const updateTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'token': tokenTest
+        },
+        body: `timeslot=${slots}`
+      })
+      const body = await updateTimeslots.json()
+      console.log(body)
+      if (body.message === 'OK') {
+        setDisplaySlots(!displaySlots)
+        setAppointmentModalOkLoading(false)
+        setAppointmentModalVisible(false)
+        setAppointmentModalEventDate(null)
+        setAppointmentModalEventHour1(null)
+        setAppointmentModalEventHour2(null)
+        setAppointmentModalEventProperty(null)
+        setAppointmentModalEventPropertyId(null)
+        setAppointmentModalEventId(null)
+        setAppointmentModalMode(null)
+        setAppointmentModalEventPrivate(true)
+        setFailMsgVisible(false)
+      } else {
+        setFailMsgVisible(true)
+        setAppointmentModalOkLoading(false)
       }
     }
-  };
+  }
 
   const handleCancel = () => {
-    setAppointmentModalVisible(false);
-    setAppointmentModalDate(null);
-    setAppointmentModalHour1(null);
-    setAppointmentModalHour2(null);
-    setAppointmentModalProperty(null);
-    setAppointmentModalId(null);
-    setAppointmentModalMode(null);
-    setAppointmentModalPrivate(true);
+    setAppointmentModalVisible(false)
+    setAppointmentModalEventDate(null)
+    setAppointmentModalEventHour1(null)
+    setAppointmentModalEventHour2(null)
+    setAppointmentModalEventProperty(null)
+    setAppointmentModalEventPropertyId(null)
+    setAppointmentModalEventId(null)
+    setAppointmentModalMode(null)
+    setAppointmentModalEventPrivate(true)
+    setFailMsgVisible(false)
   }
 
-  function confirm(e) {
-    setMyEvents(myEvents.filter( e => e.id != appointmentModalId))
-    message.success('Créneau supprimé');
-    setAppointmentModalVisible(false);
-    setAppointmentModalDate(null);
-    setAppointmentModalHour1(null);
-    setAppointmentModalHour2(null);
-    setAppointmentModalProperty(null);
-    setAppointmentModalId(null);
-    setAppointmentModalMode(null);
-    setAppointmentModalPrivate(true);
-  }
+  async function confirm() {
 
-  const modalFooter =
-    <div className="modal-footer">
-
-      {appointmentModalMode === "edit" ? 
-        <Popconfirm
-          title="Confirmer la suppression du créneau ?"
-          onConfirm={confirm}
-          okText="Oui"
-          cancelText="Non"
-          placement="bottomLeft"
-        >
-          <Button className="button-delete">
-            Supprimer
-          </Button>
-        </Popconfirm>
-        : <div></div>
+    const deleteTimeslots = await fetch(`/pro/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'token': tokenTest
       }
-  
+    })
+    const body = await deleteTimeslots.json()
+    if (body.message === 'OK') {
+      message.success('Créneau supprimé')
+      setDisplaySlots(!displaySlots)
+      setAppointmentModalVisible(false)
+      setAppointmentModalEventDate(null)
+      setAppointmentModalEventHour1(null)
+      setAppointmentModalEventHour2(null)
+      setAppointmentModalEventProperty(null)
+      setAppointmentModalEventPropertyId(null)
+      setAppointmentModalEventId(null)
+      setAppointmentModalMode(null)
+      setAppointmentModalEventPrivate(true)
+      setFailMsgVisible(false)
+    } else {
+      setFailMsgVisible(true)
+      setAppointmentModalOkLoading(false)
+    }
+  }
+
+  /* MODAL FOOTER */
+  const modalFooter =
+
+    <div>
       <div>
-        <Button className="button-cancel" onClick={handleCancel}>
-        Annuler
-        </Button>
-        <Button className="button-validate" loading={appointmentModalOkLoading} onClick={handleOk}>
-          Valider
-        </Button>
+        {failMsgVisible === true
+        &&
+          <Alert className="add-slot-alert-fail-db"
+            message="Erreur"
+            description="Votre créneau n'a pas été sauvegardé. Veuillez réessayer."
+            type="error"
+            closable
+            afterClose={ () => setFailMsgVisible(false) }
+          />
+        }
+      </div>
+
+      <div className="modal-footer-buttons">
+
+        {appointmentModalMode === "edit"
+          &&
+            <Popconfirm
+              title="Confirmer la suppression du créneau ?"
+              onConfirm={confirm}
+              okText="Oui"
+              cancelText="Non"
+              placement="bottomLeft"
+            >
+              <Button className="button-delete modal-footer-button-delete">
+                Supprimer
+              </Button>
+            </Popconfirm>
+        }
+    
+          <Button type="primary" className="button-back modal-footer-button-back" onClick={handleCancel}>
+          Annuler
+          </Button>
+          <Button type= "primary" className="button-validate" loading={appointmentModalOkLoading} onClick={handleOk}>
+            Valider
+          </Button>
       </div>
     </div>
 
@@ -301,7 +373,7 @@ function RendezVous() {
     '5' : 'Ven',
     '6' : 'Sam',
   }
-  const daysTranslate = (state) => daysInFrench[state];
+  const daysTranslate = (state) => daysInFrench[state]
 
 
   return (
@@ -317,8 +389,8 @@ function RendezVous() {
                     className="calendar-headerNavLeft-chevronIcon"
                     onClick={ () => {
                     const calendarApi = calendar.current.getApi()
-                    calendarApi.prev();
-                    setTitle(calendar.current.calendar.view.title);
+                    calendarApi.prev()
+                    setTitle(calendar.current.calendar.view.title)
                     }}
                 />
 
@@ -330,8 +402,8 @@ function RendezVous() {
                     className="calendar-headerNavLeft-chevronIcon"
                     onClick={ () => {
                     const calendarApi = calendar.current.getApi()
-                    calendarApi.next();
-                    setTitle(calendar.current.calendar.view.title);
+                    calendarApi.next()
+                    setTitle(calendar.current.calendar.view.title)
                     }}
                 />
                 </div>
@@ -395,41 +467,42 @@ function RendezVous() {
                 navLinks= {true}
                 navLinkDayClick="timeGridDay"
                 select={(info) => {
-                setAppointmentModalDate(info.start.toISOString().slice(0,10))
-                setAppointmentModalHour1(info.start.toTimeString().slice(0,5))
-                setAppointmentModalHour2(info.end.toTimeString().slice(0,5))
-                setAppointmentModalMode("create")
-                setAppointmentModalVisible(true)
+                  setAppointmentModalEventDate(info.start.toISOString().slice(0,10))
+                  setAppointmentModalEventHour1(info.start.toTimeString().slice(0,5))
+                  setAppointmentModalEventHour2(info.end.toTimeString().slice(0,5))
+                  setAppointmentModalMode("create")
+                  setAppointmentModalVisible(true)
                 }}
-                eventClick= { (info) => { console.log(info)
-                setAppointmentModalDate(info.event.start.toISOString().slice(0,10))
-                setAppointmentModalHour1(info.event.start.toTimeString().slice(0,5))
-                setAppointmentModalHour2(info.event.end.toTimeString().slice(0,5))
-                setAppointmentModalProperty(info.event.title)
-                setAppointmentModalId(info.event.id)
-                setAppointmentModalPrivate(info.event.extendedProps.private);
-                setAppointmentModalMode('edit')
-                setAppointmentModalVisible(true)
+                eventClick= { (info) => {
+                  setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
+                  setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
+                  setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
+                  setAppointmentModalEventProperty(info.event.title)
+                  setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
+                  setAppointmentModalEventPrivate(info.event.extendedProps.private)
+                  setAppointmentModalEventId(info.event.id)
+                  setAppointmentModalMode('edit')
+                  setAppointmentModalVisible(true)
                 }}    
             />
 
             <Modal
-                title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalProperty}` : "Nouveau Rendez-Vous"}
+                title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}
                 visible={appointmentModalVisible}
                 footer= {modalFooter}
                 destroyOnClose= {true}
                 width= "50%"
-                closable={false}
+                closable={true}
+                maskl={true}
                 maskClosable={true}
+                onCancel={handleCancel}
             >
                 <div className='input-modal'>
                     <p className="input-modal-label">Date du RDV</p>
                     <DatePicker
-                        locale={locale}
-                        defaultValue={moment(appointmentModalDate, 'YYYY-MM-DD')}
-                        onChange= {(date, dateString) => {
-                        setAppointmentModalDate(dateString)
-                        }}
+                      locale={locale}
+                      defaultValue={moment(appointmentModalEventDate, 'YYYY-MM-DD')}
+                      onChange= {(date, dateString) => { setAppointmentModalEventDate(dateString) }}
                     />
                 </div>
 
@@ -438,14 +511,14 @@ function RendezVous() {
                     <RangePicker
                         locale={locale}
                         format= 'HH:mm'
-                        minuteStep={15}
+                        minuteStep={30}
                         disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23]}
                         hideDisabledOptions={true}
                         placeholder={["Début", "Fin"]}
-                        defaultValue={[moment(appointmentModalHour1, 'HH:mm'), moment(appointmentModalHour2, 'HH:mm')]}
+                        defaultValue={[moment(appointmentModalEventHour1, 'HH:mm'), moment(appointmentModalEventHour2, 'HH:mm')]}
                         onChange= { (time, timeSring) => {
-                        setAppointmentModalHour1(timeSring[0]);
-                        setAppointmentModalHour2(timeSring[1]);
+                          setAppointmentModalEventHour1(timeSring[0])
+                          setAppointmentModalEventHour2(timeSring[1])
                         }}
                     />
                 </div>
@@ -457,7 +530,7 @@ function RendezVous() {
                         style={{ width: '80%' }}
                         placeholder="Bien à faire visiter"
                         optionFilterProp="children"
-                        onChange={value => setAppointmentModalId(value)}
+                        onChange={value => setAppointmentModalEventPropertyId(value)}
                     >
                         {propertiesOptions}
                     </Select>
@@ -465,10 +538,9 @@ function RendezVous() {
                 }
 
                 <div>
-                <Radio.Group onChange={e => {
-                  setAppointmentModalPrivate(e.target.value)
-                }}
-                  value={appointmentModalPrivate} 
+                <Radio.Group
+                  onChange={e => { setAppointmentModalEventPrivate(e.target.value) }}
+                  value={appointmentModalEventPrivate} 
                 >
                     <Radio value={true}>Visite individuelle</Radio>
                     <Radio value={false}>Visite en groupe</Radio>
@@ -478,7 +550,7 @@ function RendezVous() {
           </Content>  
         </Layout>
     </Layout>
-  );
+  )
 }
 
-export default RendezVous;
+export default RendezVous

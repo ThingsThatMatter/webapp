@@ -38,7 +38,7 @@ function CreateFormThree(props) {
         return <Redirect to="/createform/step2"/> // Triggered by button-back handleClick
     }
 
-    console.log(fileList)
+    console.log("form 3", props.formData)
     return (
 
         <Layout>
@@ -54,7 +54,6 @@ function CreateFormThree(props) {
                             <Step title="Description" />
                             <Step title="Documents" />
                             <Step title="Prix/honnoraires" />
-                            <Step title="Plateformes" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>
@@ -63,7 +62,7 @@ function CreateFormThree(props) {
 
                         <form>
 
-                            <p className='formLabel'>Documents (10 max)</p>
+                            <p className='formLabel'>Documents (Optionnel)</p>
                             <Dragger
                             name= 'file'
                             accept= ".png,.jpeg,.pdf"
@@ -76,8 +75,8 @@ function CreateFormThree(props) {
                                 const { status } = info.file;
                                 if (status !== 'uploading') {
                                 console.log(info.file);
-                                if(fileList.findIndex((e) => e.name === info.file.name) === -1){
-                                    setFileList([...fileList, info.file])
+                                if(fileList.findIndex((e) => e === info.file.name) === -1){
+                                    setFileList([...fileList, info.file.name])
                                 }
                                 
                                 }
@@ -90,17 +89,16 @@ function CreateFormThree(props) {
                                 <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
                                 </p>
-                                <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                                <p className="ant-upload-text">Cliquez ou déposez des images pour les charger (10 max)</p>
                                 <p className="ant-upload-hint">
-                                Support for a single or bulk upload. Strictly prohibit from uploading company data or other
-                                band files
+                                Format acceptés : png et jpeg
                                 </p>
                             </Dragger>
                             {fileList.map((e, i) => (
-                            <div>{e.name} <DeleteOutlined 
+                            <div>{e} <DeleteOutlined 
                             onClick={async () => {
-                                setFileList(fileList.filter((f) =>  f.name !== e.name ))
-                                await fetch(`/pro/upload/${props.formData.adID}-${e.name}`, {
+                                setFileList(fileList.filter((f) =>  f !== e ))
+                                await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
                                     method: "delete"
                                 })
                             }}
@@ -148,7 +146,7 @@ function CreateFormThree(props) {
         },
         saveFormData : function(fileList) { 
         dispatch( {
-            type: 'saveFormData',
+            type: 'saveFormData3',
             files : fileList
         } ) 
     }
