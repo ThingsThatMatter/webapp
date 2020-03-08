@@ -2,14 +2,16 @@ import React, {useState, useEffect} from 'react';
 import { Layout, Row, Button, Col, Collapse, Carousel, Modal } from 'antd';
 import {Redirect} from 'react-router-dom';
 
+import {connect} from 'react-redux'
+
+
 import Sidebar from '../../components/Sidebar';
 import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse;
 
 const { Content } = Layout;
-var tokenTest = "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn"
 
-function Offres() {
+function Offres(props) {
 
     const [offersList, setOfferslist] = useState([])
 
@@ -27,7 +29,7 @@ function Offres() {
         const dbFetch = async () => {
             const ads = await fetch(`/pro/ads`, {
                 method: 'GET',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
             })
             const body = await ads.json();
           
@@ -51,7 +53,7 @@ function Offres() {
     const handleAcceptOffer = async () => {
         const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
         })
         const body = await acceptOffer.json();
 
@@ -64,7 +66,7 @@ function Offres() {
     const handleDeclineOffer = async () => {
         const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
         })
         const body = await declineOffer.json();
 
@@ -77,7 +79,7 @@ function Offres() {
     const handleCancelOffer = async () => {
         const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/cancel`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: tokenTest}
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
         })
         const body = await cancelOffer.json();
 
@@ -233,5 +235,15 @@ function Offres() {
 
     );
   }
+
+function mapStateToProps(state) {
+    return { 
+        token : state.token
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    null
+)(Offres)
   
-  export default Offres;

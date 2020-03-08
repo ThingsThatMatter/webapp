@@ -4,6 +4,8 @@ import {Form, Input, Button } from 'antd';
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
+import setToken from '../../actions/token.actions'
+
 function SignIn(props) {
 
     const [email, setEmail] = useState(null)
@@ -11,18 +13,7 @@ function SignIn(props) {
     const [msgErrorSignin, setMsgErrorSignin] = useState()
     const [toRedirect, setToRedirect] = useState(false)
     const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
-    
 
-    // useEffect( () => {
-    //     console.log(props.token)
-    //     console.log(cookies.token)
-    //     const redirect = () => {
-    //         if(props.token !== '' || cookies.token !== ''){
-    //             return <Redirect to='/' />
-    //         }
-    //     }
-    //     redirect()
-    // }, [])
 
     const handleSubmitSignin = async () => {
         const checkAgent = await fetch('/pro/sign-in', {
@@ -42,12 +33,12 @@ function SignIn(props) {
     }
 
     if (toRedirect) { // if login OK (from form) redirect to home
-        return <Redirect to='/' /> 
+        return <Redirect to='/pro' /> 
     } else {
-        if (typeof cookies.token !== 'undefined') {  //if landing on signin but has a valid token
-            props.setToken(cookies.token)
-            return <Redirect to='/' /> 
+        if (typeof cookies.token !== 'undefined' && props.token !== '') {  //if landing on signin and has a valid token : does not work
+            return <Redirect to='/pro' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
         }
+        else {
 
     return (
         <div className="pro-sign-layout">
@@ -103,7 +94,7 @@ function SignIn(props) {
                 </div>
             </div>
         </div>
-    )}
+    )}}
 }
 
 function mapStateToProps(state) {
@@ -115,7 +106,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch){
     return {
         setToken: function(token){
-            dispatch({type: 'setToken', token})
+            dispatch(setToken(token))
         }
     }
 }

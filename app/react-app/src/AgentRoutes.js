@@ -19,6 +19,8 @@ import CreateFormSix from './screens/Agent/CreateForm6';
 import agentSignIn from './screens/Agent/SignIn'
 import agentSignUp from './screens/Agent/SignUp'
 
+import setToken from './actions/token.actions'
+
 function AgentRoutes(props) {
 
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
@@ -55,17 +57,17 @@ function AgentRoutes(props) {
 
         <Router>
             <Switch>
-                <PrivateRoute component={Home} path="/" exact />
-                <PrivateRoute component={Offres} path="/offres"  />
-                <PrivateRoute component={RendezVous} path="/rendezvous"  />
-                <PrivateRoute component={Questions} path="/questions"  />
-                <PrivateRoute component={AdDesc} path="/addesc"  />
-                <PrivateRoute component={CreateFormOne} path="/createform/step1"  />
-                <PrivateRoute component={CreateFormTwo} path="/createform/step2"  />
-                <PrivateRoute component={CreateFormThree} path="/createform/step3"  />
-                <PrivateRoute component={CreateFormFour} path="/createform/step4"  />
-                <PrivateRoute component={CreateFormFive} path="/createform/step5"  />
-                <PrivateRoute component={CreateFormSix} path="/createform/step6"  />
+                <PrivateRoute component={Home} path="/pro" exact />
+                <PrivateRoute component={Offres} path="/pro/offres" exact/>
+                <PrivateRoute component={RendezVous} path="/pro/rendezvous" exact/>
+                <PrivateRoute component={Questions} path="/pro/questions" exact/>
+                <PrivateRoute component={AdDesc} path="/pro/addesc" exact/>
+                <PrivateRoute component={CreateFormOne} path="/pro/createform/step1" exact/>
+                <PrivateRoute component={CreateFormTwo} path="/pro/createform/step2" exact/>
+                <PrivateRoute component={CreateFormThree} path="/pro/createform/step3" exact/>
+                <PrivateRoute component={CreateFormFour} path="/pro/createform/step4" exact/>
+                <PrivateRoute component={CreateFormFive} path="/pro/createform/step5" exact/>
+                <PrivateRoute component={CreateFormSix} path="/pro/createform/step6" exact/>
 
                 <Route component={agentSignIn} path="/pro/signin" />
                 <Route component={agentSignUp} path="/pro/signup" />
@@ -84,7 +86,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch){
     return {
         setToken: function(token){
-            dispatch({type: 'setToken', token})
+            dispatch(setToken(token))
         }
     }
 }

@@ -188,7 +188,7 @@ router.post('/ad', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token: req.headers.token });
 
       let adID = req.body.adID
 

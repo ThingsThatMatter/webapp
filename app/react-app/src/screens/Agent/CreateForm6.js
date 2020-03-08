@@ -18,8 +18,7 @@ function CreateFormSix(props) {
     const [currentPage, setCurrentPage] = useState(0)
     const [redir, setRedir] = useState(false)
     const [backRedir, setBackRedir] = useState(false)
-
-
+    
     useEffect(() => {
 
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
@@ -62,10 +61,10 @@ function CreateFormSix(props) {
 
 
     if(redir === true) {
-        return <Redirect to="/"/> // Triggered by button-add handleClick
+        return <Redirect to="/pro"/> // Triggered by button-add handleClick
     }
     if(backRedir === true) {
-        return <Redirect to="/createform/step5"/> // Triggered by button-back handleClick
+        return <Redirect to="/pro/createform/step5"/> // Triggered by button-back handleClick
     }
 
     console.log("form 6", props.formData)
@@ -191,10 +190,12 @@ function CreateFormSix(props) {
 
                             let rawResponse = await fetch("/pro/ad", {
                                 method: 'post',
-                                headers: {'Content-Type': 'application/json'},
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'token': props.token
+                                },
                                 body: JSON.stringify(
                                     {
-                                    token : "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn",
                                     adID: props.formData.adID,
                                     price: props.formData.price,
                                     fees: props.formData.fees,
@@ -256,7 +257,8 @@ function CreateFormSix(props) {
   function mapStateToProps(state) {
     return {
         step : state.step,
-        formData: state.formData
+        formData: state.formData,
+        token: state.token
     }
   }
 

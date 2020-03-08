@@ -10,6 +10,8 @@ import locale from 'antd/es/date-picker/locale/fr_FR'
 import moment from 'moment'
 import 'moment/locale/fr'
 
+import {connect} from 'react-redux'
+
 import Sidebar from '../../components/Sidebar'
 
 import './Calendar.css'
@@ -22,9 +24,8 @@ const { RangePicker } = TimePicker
 const { Option } = Select
 const {Content} = Layout
 
-var tokenTest = "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn"
 
-function RendezVous() {
+function RendezVous(props) {
   
   const [myEvents, setMyEvents] = useState([])
   const [properties, setProperties] = useState([])
@@ -42,7 +43,7 @@ function RendezVous() {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': tokenTest}
+        headers: {'token': props.token}
       })
       const body = await ads.json()
       
@@ -225,7 +226,7 @@ function RendezVous() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'token': tokenTest
+          'token': props.token
         },
         body: `timeslot=${slots}`
       })
@@ -252,7 +253,7 @@ function RendezVous() {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'token': tokenTest
+          'token': props.token
         },
         body: `timeslot=${slots}`
       })
@@ -297,7 +298,7 @@ function RendezVous() {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'token': tokenTest
+        'token': props.token
       }
     })
     const body = await deleteTimeslots.json()
@@ -553,4 +554,13 @@ function RendezVous() {
   )
 }
 
-export default RendezVous
+function mapStateToProps(state) {
+  return { 
+      token : state.token
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(RendezVous)
