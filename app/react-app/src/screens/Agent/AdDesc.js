@@ -23,7 +23,6 @@ function AdDesc() {
 
     const [toggle, setToggle] = useState(true)
 
-
     let toggleStyle = {fontWeight: 600, color:"#1476E1", fontSize:"18px"}
 
     if(toggle === false) {

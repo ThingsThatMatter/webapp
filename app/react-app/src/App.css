@@ -110,6 +110,8 @@ p {
   text-align: center;
 }
 
+
+
 .ant-form-vertical .ant-form-item-label, .ant-col-24.ant-form-item-label, .ant-col-xl-24.ant-form-item-label {
   padding: 0 0 5px;
 }
@@ -139,6 +141,10 @@ p {
   .input-modal-label {
     margin: 0 1em
   }
+
+.offer-modal {
+  text-align: center;
+}
 
 .offer-modal p {
   margin-bottom: 10px;
