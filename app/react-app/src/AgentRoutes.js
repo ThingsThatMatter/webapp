@@ -61,7 +61,7 @@ function AgentRoutes(props) {
                 <PrivateRoute component={Offres} path="/pro/offres" exact/>
                 <PrivateRoute component={RendezVous} path="/pro/rendezvous" exact/>
                 <PrivateRoute component={Questions} path="/pro/questions" exact/>
-                <PrivateRoute component={AdDesc} path="/pro/addesc" exact/>
+                <PrivateRoute component={AdDesc} path="/pro/addesc/:id" exact/>
                 <PrivateRoute component={CreateFormOne} path="/pro/createform/step1" exact/>
                 <PrivateRoute component={CreateFormTwo} path="/pro/createform/step2" exact/>
                 <PrivateRoute component={CreateFormThree} path="/pro/createform/step3" exact/>

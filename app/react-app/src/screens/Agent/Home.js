@@ -19,6 +19,8 @@ function Home(props) {
   const [offerStatus, setOfferStatus] = useState("All")
   const [filterChange, setFilterChange] = useState(false)
 
+  const [urlAd, setUrlAd] = useState(null);
+
   /* Ad Cards */
   useEffect( () => {
     const adsFetch = async () => {
@@ -84,7 +86,11 @@ function Home(props) {
   ads = ads.map( (e,i) => {
     return (
       <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
-        <div className="annonce-element" onClick={() => setNavToAdDetail(true) }>
+        <div className="annonce-element" 
+              onClick={() => {
+                setUrlAd(`/pro/addesc/${e._id}`)
+                setNavToAdDetail(true) 
+              }}>
           <img className="annonce-image" src={e.photos[0]} />
           <div className="annonce-text">
               <div className="annonce-price-container">
@@ -109,7 +115,7 @@ function Home(props) {
     return <Redirect to="/pro/createform/step1"/>
   }
   if(navToAdDetail === true) {
-    return <Redirect to="/pro/addesc"/>
+    return <Redirect to={urlAd} />
   }
   
   return (
