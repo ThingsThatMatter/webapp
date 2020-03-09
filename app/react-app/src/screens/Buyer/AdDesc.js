@@ -81,6 +81,11 @@ function AdDesc() {
 
                 <Content style={{ margin: '2em 3em' }}>
 
+                <div className="buyer-ad-container">
+
+
+                    <div className="buyer-left-content">
+
                         <div className="agent-section">
 
                             <h1 className='pageTitle'>{adDetails.title} - {adDetails.area}m<sup>2</sup> - {adDetails.address} {adDetails.postcode} {adDetails.city} - {priceFormatter.format(adDetails.price)}</h1>
@@ -176,6 +181,24 @@ function AdDesc() {
                      <p>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
                     </Panel>
                 </Collapse>
+
+                </div>
+
+                <div className="buyer-right-content">
+
+                    <div className="timeslot-picker">
+                        <p>Sélectionnez un créneau de visite</p> 
+                        {/* 
+                        1) extraire jours >= today. les mettre dans un objet et dans un tableau [{jour : 02/01/2020, créneaux : [{id: id, start: 8h30, end: 9h00}, ...], ...]
+                        
+                         */}
+
+                    </div>
+
+                </div>
+
+            </div>
+
                    
             </Content>  
 
