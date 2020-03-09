@@ -42,7 +42,6 @@ function AgentRoutes(props) {
 
     if (cookies.token) { // si il y a un cookie, on vérifie qu'il existe bien en base
         checkToken()
-
     }
 
     const PrivateRoute = ({ component: Component, ...rest }) => (
