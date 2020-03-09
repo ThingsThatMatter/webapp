@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bcrypt": "^3.0.8",
+    "bcryptjs": "^2.4.3",
     "cloudinary": "^1.19.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
@@ -15,9 +16,11 @@
     "express-fileupload": "^1.1.6",
     "file-system": "^2.2.2",
     "http-errors": "~1.6.3",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.8.11",
     "morgan": "~1.9.1",
     "nodemon": "^2.0.2",
+    "react-cookie": "^4.0.3",
     "sync-request": "^6.1.0",
     "uid2": "0.0.3"
   }

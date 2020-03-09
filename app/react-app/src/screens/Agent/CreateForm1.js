@@ -47,7 +47,7 @@ function CreateFormOne(props) {
     }
 
     if(redir === true) {
-        return <Redirect to="/createform/step2"/> // Triggered by button handleClick
+        return <Redirect to="/pro/createform/step2"/> // Triggered by button handleClick
     }
 
     console.log("form 1", props.formData)

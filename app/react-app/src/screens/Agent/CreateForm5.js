@@ -14,6 +14,8 @@ import 'moment/locale/fr'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
+import setToken from '../../actions/token.actions'
+
 import Sidebar from '../../components/Sidebar'
 
 import './Calendar.css'
@@ -25,9 +27,6 @@ const { RangePicker } = TimePicker
 const { Option } = Select
 
 const ts = require("time-slots-generator")
-
-
-var tokenTest = "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn"
 
 
 function CreateFormFive(props) {
@@ -50,7 +49,7 @@ function CreateFormFive(props) {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': tokenTest}
+        headers: {'token': props.token}
       })
       const body = await ads.json()
       
@@ -322,10 +321,10 @@ function CreateFormFive(props) {
     },[]);
 
   if(redir === true) {
-      return <Redirect to="/createform/step6"/> // Triggered by button-add handleClick
+      return <Redirect to="/pro/createform/step6"/> // Triggered by button-add handleClick
   }
   if(backRedir === true) {
-      return <Redirect to="/createform/step4"/> // Triggered by button-back handleClick
+      return <Redirect to="/pro/createform/step4"/> // Triggered by button-back handleClick
   }
 
   const handleClick = () => {
@@ -333,12 +332,6 @@ function CreateFormFive(props) {
       props.saveFormData(newEvents, adColor)
       setRedir(true)
   }
-
-  const handleSkip = () => {
-    setRedir(true)
-    props.nextStep()
-  }
-
 
     return (
 
@@ -530,7 +523,10 @@ function CreateFormFive(props) {
 
               <span
                 className = "new-offer-step5-skip"
-                onClick= { () => handleSkip()}
+                onClick= { () => {
+                  setRedir(true)
+                  props.nextStep()
+                }}
               >
                 Passer cette étape
               </span>
@@ -553,28 +549,29 @@ function CreateFormFive(props) {
   function mapStateToProps(state) {
     return { 
         step : state.step,
-        formData: state.formData
+        formData: state.formData,
+        token: state.token
     }
   }
 
-  function mapDispatchToProps(dispatch) {
-    return {
-      nextStep : function() { 
-          dispatch( {type: 'nextStep'} ) 
-      },
-      previousStep : function() {
-          dispatch( {type: 'prevStep'} )
-      },
-      saveFormData : function(timeslots, color) { 
-        dispatch( {
-            type: 'saveFormData5',
-            timeslots : timeslots,
-            color: color
-        } ) } 
-    }
+function mapDispatchToProps(dispatch) {
+  return {
+    nextStep : function() { 
+        dispatch( {type: 'nextStep'} ) 
+    },
+    previousStep : function() {
+        dispatch( {type: 'prevStep'} )
+    },
+    saveFormData : function(timeslots, color) { 
+      dispatch( {
+          type: 'saveFormData5',
+          timeslots : timeslots,
+          color: color
+      } ) } 
   }
-    
-  export default connect(
-    mapStateToProps, 
-    mapDispatchToProps
-  )(CreateFormFive);
+}
+  
+export default connect(
+  mapStateToProps, 
+  mapDispatchToProps
+)(CreateFormFive);

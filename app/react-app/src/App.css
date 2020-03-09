@@ -24,6 +24,10 @@ p {
   padding: 30px;
 }
 
+.each-slide > div {
+  min-height: 600px;
+}
+
 .sidebar {
   min-width: 300px;
   max-width: 300px;

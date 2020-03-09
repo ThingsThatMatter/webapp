@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import { Layout, Row, Button, Col, Collapse, Radio } from 'antd';
 import {Redirect} from 'react-router-dom';
+import {connect} from 'react-redux' 
 
 import Sidebar from '../../components/Sidebar';
 import {PlusCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse;
 
 const { Content } = Layout;
-var tokenTest = "idMN5ebalGgc336ZVmkMI5n8P2zA8PXn"
 
-function Home() {
+function Home(props) {
   
   const [navToCreateAd, setNavToCreateAd] = useState(false)
   const [navToAdDetail, setNavToAdDetail] = useState(false)
@@ -17,13 +17,14 @@ function Home() {
   const [onlineStatus, setOnlineStatus] = useState("All")
   const [visitStatus, setVisitStatus] = useState("All")
   const [offerStatus, setOfferStatus] = useState("All")
+  const [filterChange, setFilterChange] = useState(false)
 
   /* Ad Cards */
   useEffect( () => {
     const adsFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': tokenTest}
+        headers: {'token': props.token}
       })
       const body = await ads.json();
       setAdslist(body.data.ads)
@@ -34,23 +35,29 @@ function Home() {
   /* Filters */
   let ads = [...adsList]
 
-  if (onlineStatus === 'Y') {
-    ads = adsList.filter( e => e.onlineStatus === true )
-  } else if (onlineStatus === 'N') {
-    ads = adsList.filter( e => e.onlineStatus === false )
-  }
+  // useEffect(() => {
+  //   const filter () => {
+  //     if (onlineStatus === 'Y') {
+  //       ads = adsList.filter( e => e.onlineStatus === true )
+  //     } else if (onlineStatus === 'N') {
+  //       ads = adsList.filter( e => e.onlineStatus === false )
+  //     }
+    
+  //     if (visitStatus === 'Y') {
+  //       ads = adsList.filter( e => e.visitStatus === true )
+  //     } else if (visitStatus === 'N') {
+  //       ads = adsList.filter( e => e.visitStatus === false )
+  //     }
+    
+  //     if (offerStatus === 'Y') {
+  //       ads = adsList.filter( e => e.offerStatus === true )
+  //     } else if (offerStatus === 'N') {
+  //       ads = adsList.filter( e => e.offerStatus === false )
+  //     }
+  //   }
 
-  if (visitStatus === 'Y') {
-    ads = adsList.filter( e => e.visitStatus === true )
-  } else if (visitStatus === 'N') {
-    ads = adsList.filter( e => e.visitStatus === false )
-  }
+  // }[filterChange])
 
-  if (offerStatus === 'Y') {
-    ads = adsList.filter( e => e.offerStatus === true )
-  } else if (offerStatus === 'N') {
-    ads = adsList.filter( e => e.offerStatus === false )
-  }
 
   /* Price formatting */
   const priceFormatter = new Intl.NumberFormat('fr', {
@@ -99,10 +106,10 @@ function Home() {
   
   /*  Navigation */ 
   if(navToCreateAd === true) {
-    return <Redirect to="/createform/step1"/>
+    return <Redirect to="/pro/createform/step1"/>
   }
   if(navToAdDetail === true) {
-    return <Redirect to="/addesc"/>
+    return <Redirect to="/pro/addesc"/>
   }
   
   return (
@@ -194,4 +201,13 @@ function Home() {
   );
 }
 
-export default Home;
+function mapStateToProps(state) {
+  return { 
+      token : state.token
+  }
+}
+
+export default connect(
+  mapStateToProps,
+  null
+)(Home)

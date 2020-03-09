@@ -2,10 +2,19 @@ var express = require('express');
 var router = express.Router();
 var fs = require('fs');
 var mongoose = require('../models/bdd');
+var agencyModel = require('../models/agencyModel.js')
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
 var cloudinary = require('cloudinary').v2;
 const path = require('path');
+
+
+var uid2 = require("uid2");
+const jwt = require('jsonwebtoken')
+const JWTPrivateKey = "n4opQ61HEDNPkLw9xBOdGTw92CTKgcrx" 
+const bcrypt = require('bcryptjs');
+const saltRounds = 12;
+
 
 
 cloudinary.config({ 
@@ -14,83 +23,163 @@ cloudinary.config({
   api_secret: 'IIAMf3ZmBfXycAVxnqGFpctM-YE' 
 });
 
+const generateToken = () => { // it is possible to add data (payload) by adding an argument to the function -- see doc
+  u = {} //payload data
+  return token = jwt.sign(u, JWTPrivateKey, {
+    expiresIn: 60 // 24h 60 * 60 * 24
+  })
+}
+
+const agencyID = "5e6222aa670cd85f2fb6ba51" // temporaire le temps de gérer les agences 
+
 // var request = require('sync-request');
-var uid2 = require("uid2");
-
-const ObjectId = mongoose.Types.ObjectId;
-
-
-// var userModel = require('../models/users');
-
-// var bcrypt = require('bcrypt');
-// const saltRounds = 10;
 
 let status;
 let response;
 
+
+/* Check token to access app*/
+router.get('/user-access', async function(req, res, next) {
+
+  let findAgent = await agentModel.findOne({ token:req.headers.token });
+  
+  try {
+
+    if(!findAgent) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      status = 200;
+      response = {
+        message: 'OK',
+        data: findAgent
+      }
+    }
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+})
+
 /* PRO sign-in */
 router.post('/sign-in', async function(req, res, next) {
 
-  if(req.body.email == '' || req.body.password == '') {
+  try {
 
-    res.json({
-      state: false, 
-      message: 'Vérifiez les informations saisies'
-    });
-
-  } else {
-
-    let findAgent = await agentModel.findOne({ email:req.body.email });
-
-    if(findAgent == null) {
-
-      res.json({
-        state: false, 
-        message: 'Erreur d\'authentification'
-      }); 
-
+    if( ['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
+      status = 401;
+      response = {
+        message: 'Form error',
+        details: 'Veuillez remplir tous les champs'
+      }
     } else {
 
-      if (req.body.password === findAgent.password) {
-        console.log(findAgent.email + ' : Mot de passe correct')
-        res.json({
-          state: true,
-          message: 'Authentification réussie',
-          token: findAgent.token
-        }); 
+      const findAgent = await agentModel.findOne({ email:req.body.email });
+      if(findAgent === null) {
+        status = 401;
+        response = {
+          message: 'Authentification error',
+          details: "L'email ou le mot de passe fournis sont incorrects"
+        }
       } else {
-        console.log(findAgent.email + ' : Mauvais mot de passe')
-        res.json({
-          state: false, 
-          message: 'Erreur d\'authentification'
-        }); 
+        const pwdMatch = await bcrypt.compare(req.body.password, findAgent.password);
+        if (pwdMatch) {
+          status = 200;
+          response = {
+            message: 'OK',
+            data: findAgent
+          }
+        } else {
+          status = 401;
+          response = {
+            message: 'Authentification error',
+            details: "L'email ou le mot de passe fournis sont incorrects"
+          }
+        }   
       }
-      
     }
 
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
   }
-  
+
+  res.status(status).json(response);
 });
 
 /* PRO sign-up */
 router.post('/sign-up', async function(req, res, next) {
 
-  let newAgent = new agentModel ({
-    token: uid2(32),
-    creationDate: req.body.creationDate,
-    admin: req.body.admin,
-    lastname: req.body.lastname,
-    firstname: req.body.firstname,
-    email: req.body.email,
-    password: req.body.password,
-    ads: req.body.ads
-  });
+  try {
 
-  let agent = await newAgent.save();
+    if(['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
+      status = 401;
+      response = {
+        message: 'Form error',
+        details: 'Veuillez remplir tous les champs'
+      }
+    } else {
 
-  console.log(agent);
+      const findAgent = await agentModel.findOne({
+        email: req.body.email
+      })
 
-  res.json(agent);
+      if(findAgent != null){
+        status = 401;
+        response = {
+          message: 'User already exists',
+          details: 'Cet utilisateur existe déjà'
+        }
+      } else {
+        var hash = await bcrypt.hash(req.body.password, saltRounds)
+        /* Création agent */
+        const newAgent = new agentModel({
+          // admin: req.body.admin,
+          // lastname: req.body.lastname,
+          // firstname: req.body.firstname,
+          email: req.body.email,
+          password: hash,
+          token: generateToken()
+        })
+
+        saveAgent = await newAgent.save()
+
+        /* Rattachement à l'agence */
+        const adToAgency = await agencyModel.updateOne(
+          { _id: agencyID }, 
+          { $push: { agents : saveAgent._id } }
+        )
+      
+        status = 200;
+        response = {
+          message: 'OK',
+          data: saveAgent
+        }
+      }
+    }
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+  
 });
 
 
@@ -99,7 +188,7 @@ router.post('/ad', async function(req, res, next) {
 
   try {
 
-    let findAgent = await agentModel.findOne({ token:req.body.token });
+    let findAgent = await agentModel.findOne({ token: req.headers.token });
 
       let adID = req.body.adID
 
