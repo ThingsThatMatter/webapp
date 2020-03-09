@@ -126,8 +126,8 @@ function CreateFormFour(props) {
 
                         <Button type="primary" className="button-back"
                         onClick={() => {
-                            setBackRedir(true)
-                            props.previousStep()
+                            setBackRedir(true);
+                            props.previousStep();
                         }}
                         >
                         Précédent</Button>  

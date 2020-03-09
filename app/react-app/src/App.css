@@ -507,6 +507,10 @@ p.offre-buyer-name {
   margin : 0;
 }
 
+.each-slide {
+  height: 10%;
+}
+
 .each-slide > div {
   display: flex;
   align-items: center;
