@@ -26,14 +26,14 @@ function CreateFormSix(props) {
         let tempTable = []
 
         // Creates avantages list
-        if(props.formData.advantages.findIndex((e) => e == "ascenseur") !== -1){
-            tempTable.push(<span ><img src="../../../elevator.png" width="20px"/> Ascenseur</span>)
+        if(props.formData.advantages.findIndex((e) => e === "ascenseur") !== -1){
+            tempTable.push(<span ><img src="../../../elevator.png" width="20px" alt="ascenseur"/>Ascenseur</span>)
         };
-        if(props.formData.advantages.findIndex((e) => e == "balcon") !== -1){
-            tempTable.push(<span ><img src="../../../balcony.png" width="20px"/> Balcon</span>)
+        if(props.formData.advantages.findIndex((e) => e === "balcon") !== -1){
+            tempTable.push(<span ><img src="../../../balcony.png" width="20px" alt="balcon"/>Balcon</span>)
         };
-        if(props.formData.advantages.findIndex((e) => e == "terrasse") !== -1){
-            tempTable.push(<span><img src="../../../floor.png" width="20px"/> Terrasse</span>)
+        if(props.formData.advantages.findIndex((e) => e === "terrasse") !== -1){
+            tempTable.push(<span><img src="../../../floor.png" width="20px" alt="terrasse"/>Terrasse</span>)
         };
 
         setAvantages(tempTable)
@@ -60,6 +60,7 @@ function CreateFormSix(props) {
     }
 
     console.log("form 6", props.formData)
+    console.log(avantages)
     return (
 
         <Layout>
@@ -90,12 +91,12 @@ function CreateFormSix(props) {
 
                         <div className="row">
 
-                            <span style={{justifySelf: "start"}} ><img src="../../../expand.svg" width="20px"/>{props.formData.area}<span>&nbsp;m2</span></span>
-                            <span style={{justifySelf: "center"}} ><img src="../../../floor-plan.png" width="20px"/>{props.formData.rooms}<span>&nbsp;pièces</span></span>
-                            <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
+                            <span style={{justifySelf: "start"}} ><img src="../../../expand.svg" alt="surface" width="20px"/>{props.formData.area}<span>&nbsp;m2</span></span>
+                            <span style={{justifySelf: "center"}} ><img src="../../../floor-plan.png" alt="pièces" width="20px"/>{props.formData.rooms}<span>&nbsp;pièces</span></span>
+                            <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" alt="chambres" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
                         </div>
                         
-                        {props.formData.advantages || props.formData.advantages.length > 0  && <div className="dark-row">
+                        {props.formData.advantages && <div className="dark-row">
 
                         <div className="row">
                         {avantages}
