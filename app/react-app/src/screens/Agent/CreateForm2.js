@@ -39,7 +39,7 @@ function CreateFormTwo(props) {
             setArea(props.formData.area)
             setRooms(props.formData.rooms)
             setBedrooms(props.formData.bedrooms)
-            setAvantages(props.formData.avantages)
+            setAvantages(props.formData.advantages)
             setTitle(props.formData.title)
             setDesc(props.formData.description)
             setFileList(props.formData.photos)
@@ -77,6 +77,8 @@ function CreateFormTwo(props) {
 
   
     console.log("form 2", props.formData)
+
+    console.log(props.formData.avantages)
 
     return (
 
