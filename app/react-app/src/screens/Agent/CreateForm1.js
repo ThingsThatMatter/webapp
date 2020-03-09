@@ -15,6 +15,7 @@ function CreateFormOne(props) {
     const [street, setStreet] = useState("")
     const [postal, setPostal] = useState("")
     const [pref, setPref] = useState("")
+    const [city, setCity] = useState("")
 
 
     const [redir, setRedir] = useState(false) 
@@ -28,15 +29,16 @@ function CreateFormOne(props) {
     useEffect(() => {
         if (props.formData.address) {
             setStreet(props.formData.address)
-            setPostal(props.formData.postCode)
+            setPostal(props.formData.postcode)
             setPref(props.formData.typeAddress)
+            setCity(props.formData.city)
         }
       },[]);
 
     const handleClick = () => {
 
         if(street !== "" && postal !== "" && pref !== "") {
-            props.saveFormData(street, postal, pref, adID);
+            props.saveFormData(street, postal, city, pref, adID);
             props.nextStep();
             setRedir(true);
 
@@ -51,7 +53,7 @@ function CreateFormOne(props) {
     }
 
     console.log("form 1", props.formData)
-    console.log(street, postal, pref)
+    console.log(street, postal, city, pref)
 
     return (
 
@@ -76,7 +78,7 @@ function CreateFormOne(props) {
 
                         <form>
                             
-                        <p className='formLabel'>Numéro et rue</p>
+                            <p className='formLabel'>Numéro et rue</p>
                             <label >
                                 <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance"/>
                             </label>
@@ -84,6 +86,11 @@ function CreateFormOne(props) {
                             <p className='formLabel'>Code postal</p>
                             <label>
                                 <InputNumber onChange={(e) => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
+                            </label>
+
+                            <p className='formLabel'>Ville</p>
+                            <label >
+                                <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris"/>
                             </label>
 
                             <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
@@ -122,8 +129,8 @@ function CreateFormOne(props) {
       nextStep : function() { 
         dispatch( {type: 'nextStep'} ) 
       },
-      saveFormData : function(street, postal, pref, adID) { 
-        dispatch( {type: 'saveFormData', address: street, postCode: postal, typeAddress: pref, adID: adID } ) 
+      saveFormData : function(street, postal, pref, city, adID) { 
+        dispatch( {type: 'saveFormData', address: street, postCode: postal, city: city, typeAddress: pref, adID: adID } ) 
     }
 
     }

@@ -59,6 +59,16 @@ function CreateFormSix(props) {
         return <Redirect to="/pro/createform/step5"/> // Triggered by button-back handleClick
     }
 
+    function capFirst(a){return (a+'').charAt(0).toUpperCase()+a.substr(1);}
+
+    /* Price formatting */
+    const priceFormatter = new Intl.NumberFormat('fr', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        useGrouping: true
+    })
+
     console.log("form 6", props.formData)
     return (
 
@@ -79,12 +89,10 @@ function CreateFormSix(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <h1 style={{marginTop: "3%"}} className='pageTitle'>{props.formData.title}</h1> 
-
                     <div className='detail'>
-                     <p>{props.formData.type.toUpperCase()}</p>
-                     <p>{props.formData.address} {props.formData.postCode}</p> {props.formData.typeAddress === false && <p>(uniquement le quartier sera communiqué sur les plateformes)</p>}
-                     </div>
+                        <p>{props.formData.type.toUpperCase()}</p>
+                        <p>{props.formData.address} {props.formData.postCode}</p> {props.formData.typeAddress === false && <p>(uniquement le quartier sera communiqué sur les plateformes)</p>}
+                    </div>
 
                     <div className="section">
 
@@ -195,12 +203,12 @@ function CreateFormSix(props) {
                                     price: props.formData.price,
                                     fees: props.formData.fees,
                                     type: props.formData.type,
-                                    title:props.formData.title,
+                                    title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price),
                                     description: props.formData.description,
                                     typeAddress: props.formData.typeAddress,
                                     address: props.formData.address,
-                                    postcode: props.formData.postCode,
-                                    city:"",
+                                    postcode: props.formData.postcode,
+                                    city: props.formData.city,
                                     photos: props.formData.photos,
                                     video: props.formData.video,
                                     area: props.formData.area,

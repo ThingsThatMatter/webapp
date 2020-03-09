@@ -23,7 +23,7 @@ function CreateFormFour(props) {
     useEffect(() => {
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
 
-        if(props.formData.feesPayer) {     // Display inputed info if user goes back from next form pages
+        if(props.formData.price) {     // Display inputed info if user goes back from next form pages
             setFeesPayer(props.formData.feesPayer)
             setPrice(props.formData.price)
             setFees(props.formData.fees)        
@@ -66,7 +66,7 @@ function CreateFormFour(props) {
                             <Step title="Localisation" />
                             <Step title="Description" />
                             <Step title="Documents" />
-                            <Step title="Prix/honnoraires" />
+                            <Step title="Prix/honoraires" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>
@@ -75,25 +75,25 @@ function CreateFormFour(props) {
 
                         <form>
                             
-                            <p className='formLabel'>Les honorraires sont à la charge de</p>
+                            <p className='formLabel'>Les honoraires sont à la charge de</p>
                             <label>
                                 <Radio.Group 
                                 value={feesPayer} 
                                 onChange={(e) => setFeesPayer(e.target.value)} 
                                 >
                                 <Radio 
-                                value="acquéreur" 
+                                value="buyer" 
                                 style={{paddingTop : "1%"}}>
                                 l'acquéreur</Radio>
                                 <br/>
                                 <Radio 
-                                value="vendeur" 
+                                value="seller" 
                                 style={{paddingTop : "1%"}}>
                                     le vendeur</Radio>
                                 </Radio.Group>
                             </label>
 
-                            <p className='formLabel'>Prix du bien hors honnoraires</p>
+                            <p className='formLabel'>Prix du bien hors honoraires</p>
                             <label >
                                 <InputNumber 
                                 min={0} 
@@ -113,7 +113,7 @@ function CreateFormFour(props) {
                             </label>
                             <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
 
-                            <p className='formLabel'>Prix du bien incluant les honnoraires</p>
+                            <p className='formLabel'>Prix du bien incluant les honoraires</p>
                             <label >
                                 <InputNumber 
                                 value={price*fees/100+price} 

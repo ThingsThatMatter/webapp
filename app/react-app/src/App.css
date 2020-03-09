@@ -1,3 +1,43 @@
+@import url('https://fonts.googleapis.com/css?family=Raleway:400,800&display=swap');
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Raleway',sans-serif;
+  font-weight: 800;
+  color: #052040;
+}
+
+body {
+  font-family: 'Raleway',sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 27px;
+  letter-spacing: .03em;
+  color: #585858;
+  overflow-x: hidden!important;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* TITRES DE PAGES*/
+
+.pageTitle {
+  font-weight: 900;
+  font-size: 35px;
+  margin: 0;
+  color: #000;
+  margin-bottom: 1em;
+}
+
+.pageSubTitle {
+  font-weight: 700;
+  font-size: 1.5em;
+  margin: 0;
+  color: #ffff;
+  background-color: #052040;
+  width: fit-content;
+  padding: 10px 20px;
+  margin-top: 2em;
+}
+
 .App {
   text-align: center;
 }
@@ -344,27 +384,6 @@ p.offre-buyer-name {
   margin: 0 auto 20px auto;
 }
 
-/* TITRES DE PAGES*/
-
-.pageTitle {
-  font-weight: 900;
-  font-size: 2em;
-  margin: 0;
-  color: #052040;
-  margin-bottom : 30px;
-}
-
-.pageSubTitle {
-  font-weight: 700;
-  font-size: 1.5em;
-  margin: 0;
-  color: #ffff;
-  background-color: #052040;
-  width: fit-content;
-  padding: 10px 20px;
-  margin-top: 2em;
-}
-
 /* formulaires */
 
 .formLabel {
@@ -539,12 +558,16 @@ p.offre-buyer-name {
   margin: 0;
 }
 
-.agent-section {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: nowrap;
+.agent-action {
+  text-align: center;
+  position: fixed;
+  right: 0;
+  top: 80px;
+  background-color: #fff;
+  padding: 1em 2em 1em 1.5em;
+  box-shadow: 0 0 5px #b1b1b1;
+  z-index: 9999;
+  border-radius: 10px 0 0 10px;
 }
 
 .agent-resume {

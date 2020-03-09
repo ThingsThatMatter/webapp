@@ -35,6 +35,10 @@ function AdDesc(props) {
     const [adOffers, setAdOffers] = useState([])
     const [adVisits, setAdVisits] = useState([])
 
+    const [redir, setRedir] = useState(false)
+    const [editRedir, setEditRedir] = useState(false)
+
+
     let toggleStyle = {fontWeight: 600, color:"#1476E1", fontSize:"18px"}
 
     if(toggle === false) {
@@ -56,6 +60,34 @@ function AdDesc(props) {
         }   
         dbFetch()
     }, []);
+
+    // Supprimer une ad
+    const handleDelete = async () => {
+        const deleteAd = await fetch(`/pro/ad/${props.match.params.id}`, {
+            method: 'DELETE',
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+        })
+        const body = await deleteAd.json();
+
+        if(body.message === "OK") {
+            setRedir(true)
+        }
+    }
+
+    // Editer une ad
+    const handleEdit = async () => {
+        props.saveforEdit(adDetails)
+        setEditRedir(true)
+    }
+
+    // Redirection
+    if(redir === true) {
+        return <Redirect to="/pro"/>
+    }
+
+    if(editRedir === true) {
+        return <Redirect to="/pro/createform/step1"/>
+    }
 
     /* Price formatting */
     const priceFormatter = new Intl.NumberFormat('fr', {
@@ -82,7 +114,6 @@ function AdDesc(props) {
         )
     });
 
-
     return (
   
         <Layout>
@@ -95,13 +126,13 @@ function AdDesc(props) {
 
                         <div className="agent-section">
 
-                            <h1 className='pageTitle'>{adDetails.title} - {adDetails.area}m<sup>2</sup> - {adDetails.address} {adDetails.postcode} {adDetails.city} - {priceFormatter.format(adDetails.price)}</h1>
+                            <h1 className='pageTitle'>{adDetails.title}</h1>
 
                             <div className="agent-action">
                                 <div style={toggleStyle}>En ligne  <Switch defaultChecked onChange={() => setToggle(!toggle)}/></div>
                                 <div> 
-                                    <img src="../../../edit.png" width="25px" style={{marginRight: 20, cursor: "pointer"}}/>
-                                    <img src="../../../bin.png" width="25px" style={{cursor: "pointer"}}/>
+                                    <img src="../../../edit.png" width="25px" style={{marginRight: 20, cursor: "pointer"}} onClick={handleEdit}/>
+                                    <img src="../../../bin.png" width="25px" style={{cursor: "pointer"}} onClick={handleDelete}/>
                                 </div>
                             </div>
 
@@ -221,13 +252,22 @@ function AdDesc(props) {
   }
 
 
-function mapStateToProps(state) {
-    return { 
-        token : state.token
+    function mapStateToProps(state) {
+        return { 
+            token : state.token
+        }
+    }
+
+    function mapDispatchToProps(dispatch) {
+        return {
+            saveforEdit : function(adDetails) { 
+            dispatch( {type: 'saveForEdit', data: adDetails } )
+        }
+
     }
 }
 
 export default connect(
     mapStateToProps,
-    null
+    mapDispatchToProps
 )(AdDesc)

@@ -20,6 +20,7 @@ var offerSchema = mongoose.Schema({
     location: String,
     message: String,
     status: String, /* pending, acceped, rejected, expired*/ 
+    feesPayer: String /* buyer, seller */
 });
 
 var offerModel = mongoose.model('offers', offerSchema);
