@@ -27,24 +27,16 @@ function CreateFormSix(props) {
 
         // Creates avantages list
         if(props.formData.advantages.findIndex((e) => e == "ascenseur") !== -1){
-            tempTable.push(<span ><img src="../elevator.png" width="20px"/> Ascenseur</span>)
+            tempTable.push(<span ><img src="../../../elevator.png" width="20px"/> Ascenseur</span>)
         };
         if(props.formData.advantages.findIndex((e) => e == "balcon") !== -1){
-            tempTable.push(<span ><img src="../balcony.png" width="20px"/> Balcon</span>)
+            tempTable.push(<span ><img src="../../../balcony.png" width="20px"/> Balcon</span>)
         };
         if(props.formData.advantages.findIndex((e) => e == "terrasse") !== -1){
-            tempTable.push(<span><img src="../floor.png" width="20px"/> Terrasse</span>)
+            tempTable.push(<span><img src="../../../floor.png" width="20px"/> Terrasse</span>)
         };
 
         setAvantages(tempTable)
-
-        // const getFiles = async() => {
-        //     const data = await fetch(`/pro/tempfiles?id=${props.formData.adID}&photos=${JSON.stringify(props.formData.photos)}&files=${JSON.stringify(props.formData.files)}`)
-        //     console.log("response: ", data)
-        //   }
-      
-        //   getFiles()  
-
 
     },[]);
        
@@ -98,12 +90,12 @@ function CreateFormSix(props) {
 
                         <div className="row">
 
-                            <span style={{justifySelf: "start"}} ><img src="../expand.svg" width="20px"/>{props.formData.area}<span>&nbsp;m2</span></span>
-                            <span style={{justifySelf: "center"}} ><img src="../floor-plan.png" width="20px"/>{props.formData.rooms}<span>&nbsp;pièces</span></span>
-                            <span style={{justifySelf: "end"}} ><img src="../bed.svg" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
+                            <span style={{justifySelf: "start"}} ><img src="../../../expand.svg" width="20px"/>{props.formData.area}<span>&nbsp;m2</span></span>
+                            <span style={{justifySelf: "center"}} ><img src="../../../floor-plan.png" width="20px"/>{props.formData.rooms}<span>&nbsp;pièces</span></span>
+                            <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
                         </div>
                         
-                        {props.formData.advantages.length > 0 && <div className="dark-row">
+                        {props.formData.advantages || props.formData.advantages.length > 0  && <div className="dark-row">
 
                         <div className="row">
                         {avantages}
@@ -112,7 +104,7 @@ function CreateFormSix(props) {
                         
 
                         <div className="row">
-                        <p style={{textAlign: "justify"}}>{props.formData.description}</p>
+                        <p style={{textAlign: "justify", whiteSpace: "pre-wrap"}}>{props.formData.description}</p>
                         </div>
 
                             <div className="slide-container">
@@ -120,9 +112,9 @@ function CreateFormSix(props) {
                                 <Slide {...properties}>
 
                                 {
-                                    props.formData.photos.map((e) => (
+                                    props.formData.photos.map((e, i) => (
                                     <div className="each-slide">
-                                        <div style={{'backgroundImage': `url(http://localhost:3000/temp/${props.formData.adID}-${e.name})`}}> </div>
+                                        <div key={i} style={{'backgroundImage': `url(http://localhost:3000/pro/tempfiles/?name=${props.formData.adID}-${e})`}}> </div>
                                     </div>
                                     ))
                                 }
@@ -163,12 +155,15 @@ function CreateFormSix(props) {
 
                     <div className="section">
                         <div className="section-text">
-                            <div>
-                                <a>PV-AG-2020.jpg</a>
-                            </div>
-                            <div>
-                                <a>PV-AG-2020.jpg</a>
-                            </div>
+
+                        {
+                            props.formData.files.map((e, i) => (
+                                <div>
+                                <a key={i} href={`http://localhost:3000/pro/tempfiles/?name=${props.formData.adID}-${e}`} target="_blank">{e}</a> 
+                                </div>
+                            ))
+                        }
+                           
                                                         
                         </div>
                     </div>
@@ -233,7 +228,7 @@ function CreateFormSix(props) {
                                 message.error(response.details);
                             }
 
-                            }}>Suivant</Button>
+                            }}>Créer et diffuser l'annonce</Button>
                            
                 </Content>  
 
@@ -249,7 +244,10 @@ function CreateFormSix(props) {
     return {
       clear : function() { 
         dispatch( {type: 'clear'} ) 
-      }
+      },
+      previousStep : function() {
+        dispatch( {type: 'prevStep'} )
+    }
 
     }
   }

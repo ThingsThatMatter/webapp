@@ -508,12 +508,15 @@ p.offre-buyer-name {
   margin-bottom: 2.5%;
 }
 
+.each-slide {
+  height: 10%;
+}
+
 .each-slide > div {
   display: flex;
   align-items: center;
   justify-content: center;
   background-size: cover;
-  height: 300px;
 }
 
 .section-text {

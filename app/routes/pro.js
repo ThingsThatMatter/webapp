@@ -245,7 +245,7 @@ router.post('/ad', async function(req, res, next) {
         options: req.body.options,
         dpe: req.body.dpe,
         ges: req.body.ges,
-        files: req.body.files,
+        files: filesUrl,
         timeSlots: req.body.timeSlots
       });
   
@@ -866,20 +866,9 @@ router.delete('/upload/:name', async function(req, res, next) {
 
 router.get('/tempfiles', async function(req, res, next) { // ne marche pas pour l'instant
 
-  console.log("début de la route")
+  console.log(req.query.name)
 
-  let photos = JSON.parse(req.query.photos)
-  let files = JSON.parse(req.query.files)
-  let id = req.query.id
-
-  console.log("photos", photos)
-  console.log("files", files)
-
-  console.log("début du sendfile")
-
-  res.sendFile(path.join(__dirname, `./temp/${id}-${photos[0]}`));
-
-  console.log("fin du sendfile")
+  res.sendFile(path.join(__dirname, `../temp/${req.query.name}`));
 
 });
 
