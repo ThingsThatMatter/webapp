@@ -587,4 +587,34 @@ p.offre-buyer-name {
     font-size: 1.5em;
     color: #052040;
   }
- 
+
+  /* Buyer pages styles  */
+  
+  .buyer-ad-container{
+    display: flex;
+    flex-direction: row;
+  }
+
+.buyer-left-content{
+  width: 75%;
+}
+
+.buyer-right-content{
+  width: 100%;
+  display: flex;
+  justify-content: flex-end;
+
+}
+
+.timeslot-picker {
+  width: 280px;
+  height: 280px;
+  margin-left: 10px;
+  margin-top: 73px;
+  background: #F7F8F9;
+  position: fixed;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  
+}

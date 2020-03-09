@@ -197,7 +197,7 @@ router.post('/ad', async function(req, res, next) {
   
       
       for(i=0; i<photos.length ; i++) {
-        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`, {use_filename: true, unique_filename: false});
         photosUrl.push(resultCloudinary.url)
       }
   
@@ -211,7 +211,7 @@ router.post('/ad', async function(req, res, next) {
       let filesUrl = []
       
       for(i=0; i < files.length ; i++) {
-        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`, {use_filename: true, unique_filename: false});
         filesUrl.push(resultCloudinary.url)
       }
   

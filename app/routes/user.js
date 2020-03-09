@@ -47,6 +47,27 @@ router.post('/sign-up', async function(req, res, next) {
   res.json(user);
 });
 
+/* GET ad  */
+router.get('/ad/:id', async function(req, res, next) {
+
+  try {
+    let ad = await adModel.findById(req.params.id)
+    status = 200;
+    response = ad  
+    }
+
+   catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
 /* GET offers */
 router.get('/offers', async function(req, res, next) {
 

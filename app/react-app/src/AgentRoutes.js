@@ -50,7 +50,7 @@ function AgentRoutes(props) {
             ? <Component {...state} />
             : <Redirect to='/pro/signin' />
         )} />
-      )
+    )
     
     return (
 

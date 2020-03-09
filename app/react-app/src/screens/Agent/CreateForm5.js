@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
 
-import { Layout, Steps, Button, Radio, Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Popconfirm, message, Alert} from 'antd'
+import {Layout, Steps, Button, Radio, Menu, Dropdown, Modal, DatePicker, TimePicker, Popconfirm, message} from 'antd'
 import {RightOutlined, LeftOutlined, DownOutlined} from '@ant-design/icons'
 import locale from 'antd/es/date-picker/locale/fr_FR'
 import moment from 'moment'
@@ -13,8 +13,6 @@ import 'moment/locale/fr'
 
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
-
-import setToken from '../../actions/token.actions'
 
 import Sidebar from '../../components/Sidebar'
 
@@ -24,7 +22,6 @@ import 'antd/dist/antd.css'
 const { Step } = Steps;
 const {Content} = Layout;
 const { RangePicker } = TimePicker
-const { Option } = Select
 
 const ts = require("time-slots-generator")
 

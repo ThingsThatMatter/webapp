@@ -199,7 +199,7 @@ function CreateFormTwo(props) {
                                 </p>
                             </Dragger>
                             {fileList.map((e, i) => (
-                            <div>{e} <DeleteOutlined 
+                            <div key={i}>{e} <DeleteOutlined
                             onClick={async () => {
                                 setFileList(fileList.filter((f) =>  f !== e ))
                                 await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
