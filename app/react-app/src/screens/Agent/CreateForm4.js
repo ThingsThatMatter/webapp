@@ -44,10 +44,10 @@ function CreateFormFour(props) {
     }
 
     if(redir === true) {
-        return <Redirect to="/createform/step5"/> // Triggered by button-add handleClick
+        return <Redirect to="/pro/createform/step5"/> // Triggered by button-add handleClick
     }
     if(backRedir === true) {
-        return <Redirect to="/createform/step3"/> // Triggered by button-back handleClick
+        return <Redirect to="/pro/createform/step3"/> // Triggered by button-back handleClick
     }
 
     console.log("form 4", props.formData)

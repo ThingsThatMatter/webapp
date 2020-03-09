@@ -23,6 +23,7 @@
     "react-scripts": "^3.4.0",
     "react-slideshow-image": "^1.3.4",
     "redux": "^4.0.5",
+    "remote-redux-devtools": "^0.5.16",
     "time-slots-generator": "^1.0.6"
   },
   "scripts": {
@@ -46,5 +47,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3000"
+  "proxy": "http://localhost:3000",
+  "devDependencies": {
+    "redux-devtools-extension": "^2.13.8"
+  }
 }

@@ -1,29 +1,44 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
+import {Redirect} from 'react-router-dom'
 import {Form, Input, Button } from 'antd';
-import {Redirect} from 'react-router-dom';
+import {connect} from 'react-redux'
+import {useCookies} from 'react-cookie'
 
-function SignIn() {
+import setToken from '../../actions/token.actions'
+
+function SignIn(props) {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
     const [msgErrorSignin, setMsgErrorSignin] = useState()
+    const [toRedirect, setToRedirect] = useState(false)
+    const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
+
 
     const handleSubmitSignin = async () => {
-        const data = await fetch('/pro/sign-in', {
+        const checkAgent = await fetch('/pro/sign-in', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `email=${email}&password=${password}`
           })
       
-          const body = await data.json()
-      
-          if(body.state == true){
-            //props.addToken(body.token)
-            
-          }  else {
-            setMsgErrorSignin(body.message)
-          }
-    } 
+        const body = await checkAgent.json()
+        if (body.message === 'OK') {
+            setCookie('token', body.data.token, {path:'/'})
+            props.setToken(body.data.token)
+            setToRedirect(true)
+        } else {
+            setMsgErrorSignin(body.details)
+        }
+    }
+
+    if (toRedirect) { // if login OK (from form) redirect to home
+        return <Redirect to='/pro' /> 
+    } else {
+        if (typeof cookies.token !== 'undefined' && props.token !== '') {  //if landing on signin and has a valid token : does not work
+            return <Redirect to='/pro' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
+        }
+        else {
 
     return (
         <div className="pro-sign-layout">
@@ -79,7 +94,24 @@ function SignIn() {
                 </div>
             </div>
         </div>
-    )
+    )}}
 }
 
-export {SignIn};
+function mapStateToProps(state) {
+    return { 
+        token : state.token
+    }
+}
+
+function mapDispatchToProps(dispatch){
+    return {
+        setToken: function(token){
+            dispatch(setToken(token))
+        }
+    }
+}
+  
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(SignIn)

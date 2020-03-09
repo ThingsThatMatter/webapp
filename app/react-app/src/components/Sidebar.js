@@ -27,28 +27,28 @@ function Sidebar() {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} >
 
           <Menu.Item key="1">
-            <Link to="/">
+            <Link to="/pro">
             <HomeOutlined />
             <span className="nav-text">Biens</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="2">
-            <Link to="/offres">
+            <Link to="/pro/offres">
             <EuroCircleOutlined />
             <span className="nav-text">Offres</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="3">
-            <Link to="/rendezvous">
+            <Link to="/pro/rendezvous">
             <CalendarOutlined />
             <span className="nav-text">Rendez-vous</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="4">
-            <Link to="/questions">
+            <Link to="/pro/questions">
             <MailOutlined />
             <span className="nav-text">Messages</span>
             </Link>
