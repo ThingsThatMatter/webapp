@@ -4,7 +4,7 @@ import { Layout, Menu } from 'antd';
 import {HomeOutlined, EuroCircleOutlined, CalendarOutlined, MailOutlined} from '@ant-design/icons'
 
 
-const { Header, Content, Footer, Sider } = Layout;
+const {Sider } = Layout;
 
 
 function Sidebar() {

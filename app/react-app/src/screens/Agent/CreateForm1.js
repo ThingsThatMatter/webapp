@@ -21,8 +21,6 @@ function CreateFormOne(props) {
 
     const [formError, setFormError] = useState("")
 
-    const [currentPage, setCurrentPage] = useState(0)
-
     const adID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
 
     useEffect(() => {
@@ -63,7 +61,7 @@ function CreateFormOne(props) {
 
                 <Content style={{ margin: '2em 3em' }}>
 
-                    <Steps progressDot current={currentPage}>
+                    <Steps progressDot current={0}>
                             <Step title="Localisation" />
                             <Step title="Description" />
                             <Step title="Documents" />

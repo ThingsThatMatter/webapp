@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, Input, Radio, InputNumber} from 'antd';
+import { Layout, Steps, Button, Radio, InputNumber} from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 

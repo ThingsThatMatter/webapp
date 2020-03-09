@@ -1,6 +1,6 @@
 export default function(formData = {}, action) {
   
-    if(action.type == 'saveFormData') {
+    if(action.type === 'saveFormData') {
       var newData = {
         ...formData,
         address: action.address,
@@ -11,7 +11,7 @@ export default function(formData = {}, action) {
 
       return newData;
 
-    } else if(action.type == 'saveFormData2') {
+    } else if(action.type === 'saveFormData2') {
         
         var newData = {
             ...formData,
@@ -29,14 +29,14 @@ export default function(formData = {}, action) {
         }
         return newData;
 
-    } else if(action.type == 'saveFormData3') {
+    } else if(action.type === 'saveFormData3') {
         var newData = {
             ...formData,
             files: action.files
         }
         return newData;
 
-    } else if(action.type == 'saveFormData4') {
+    } else if(action.type === 'saveFormData4') {
         var newData = {
             ...formData,
             feesPayer : action.feesPayer,
@@ -45,7 +45,7 @@ export default function(formData = {}, action) {
         }
         return newData;
     
-    } else if (action.type == 'saveFormData5') {
+    } else if (action.type === 'saveFormData5') {
         const timeslots = action.timeslots.map( e => {
           const {start, end, priv} = e
           return {
@@ -62,7 +62,7 @@ export default function(formData = {}, action) {
         }
         return newData;
   
-  } else if (action.type == 'clear') {
+  } else if (action.type === 'clear') {
 
       let newData = {}
 
