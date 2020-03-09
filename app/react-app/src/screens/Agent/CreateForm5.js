@@ -186,6 +186,9 @@ function CreateFormFive(props) {
       startTime = Number(hour2)*60+Number(min2)
       endTime = Number(hour1)*60+Number(min1)
     }
+
+    function capFirst(a){return (a+'').charAt(0).toUpperCase()+a.substr(1);}
+
       /* Warning: timeslots does not include bounds (so first slot is starTime minus the interval) */
     const interval = 30
     const id = Math.floor(Math.random()*1000000000000000) // generate random id to handle edit and delete of slots
@@ -193,7 +196,7 @@ function CreateFormFive(props) {
     const slotsForCalendar = slots.map( (e,i) => {   //create timeslots for calendar render
       var start = new Date(year, month, day, minToHandM(e).hour, minToHandM(e).minute)
       return {
-        title: props.formData.title,
+        title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2',
         start: start,
         end: moment(start).add(interval, 'm').toDate(),
         backgroundColor: adColor,

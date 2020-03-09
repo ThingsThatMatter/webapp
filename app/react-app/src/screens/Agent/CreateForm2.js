@@ -18,7 +18,6 @@ function CreateFormTwo(props) {
     const [rooms, setRooms] = useState(0)
     const [bedrooms, setBedrooms] = useState(0)
     const [avantages, setAvantages] = useState([])
-    const [title, setTitle] = useState("")
     const [desc, setDesc] = useState("")
     const [fileList, setFileList] = useState([])
     const [video, setVideo] = useState("")
@@ -40,7 +39,6 @@ function CreateFormTwo(props) {
             setRooms(props.formData.rooms)
             setBedrooms(props.formData.bedrooms)
             setAvantages(props.formData.advantages)
-            setTitle(props.formData.title)
             setDesc(props.formData.description)
             setFileList(props.formData.photos)
             setVideo(props.formData.video)
@@ -58,9 +56,9 @@ function CreateFormTwo(props) {
      
     const handleClick = () => {
 
-        if(type !== "" && area !== 0 && rooms !== 0 && title !== "" && desc !== "" && fileList.length > 0  ) {
+        if(type !== "" && area !== 0 && rooms !== 0 && desc !== "" && fileList.length > 0  ) {
             props.nextStep();
-            props.saveFormData(type, area, rooms, bedrooms, avantages, title, desc, fileList, video, emission, conso)
+            props.saveFormData(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso)
             setRedir(true)
 
         } else {
@@ -157,14 +155,6 @@ function CreateFormTwo(props) {
                                 value={avantages}
                                 />
                                 </label>
-                            
-                            <p className='formLabel'>Titre de l'annonce</p>
-                            <label >
-                                <Input 
-                                onChange={(e) => setTitle(e.target.value)} 
-                                value={title} 
-                                placeholder="Appartement de charme"/>
-                            </label>
 
                             <p className='formLabel'>Texte de l'annonce</p>
                             <label >
@@ -290,7 +280,7 @@ function CreateFormTwo(props) {
       previousStep : function() {
           dispatch( {type: 'prevStep'} )
       },
-      saveFormData : function(type, area, rooms, bedrooms, avantages, title, desc, fileList, video, emission, conso) { 
+      saveFormData : function(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso) { 
         dispatch( {
             type: 'saveFormData2',
             typeBien: type,
@@ -298,7 +288,6 @@ function CreateFormTwo(props) {
             rooms: rooms,
             bedrooms: bedrooms,
             avantages: avantages,
-            title: title,
             description: desc,
             photos: fileList,
             video : video,

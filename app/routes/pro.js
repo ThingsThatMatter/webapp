@@ -206,7 +206,7 @@ router.post('/ad', async function(req, res, next) {
   
       
       for(i=0; i<photos.length ; i++) {
-        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`);
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`, {use_filename: true, unique_filename: false});
         photosUrl.push(resultCloudinary.url)
       }
   
@@ -220,7 +220,7 @@ router.post('/ad', async function(req, res, next) {
       let filesUrl = []
       
       for(i=0; i < files.length ; i++) {
-        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`);
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`, {use_filename: true, unique_filename: false});
         filesUrl.push(resultCloudinary.url)
       }
   
@@ -358,10 +358,20 @@ router.delete('/ad/:id_ad', async function(req, res, next) {
     } else {
       let deleteAd = await adModel.deleteOne({ _id: req.params.id_ad });
 
+      let adsFromAgent = await agentModel.findById(req.params.id_ad);
+      adsFromAgent = findAgent.ads; 
+
+      adsFromAgent = adsFromAgent.filter(e => e._id != req.params.id_ad);
+
+      let deleteAdFromAgent = await agentModel.updateOne(
+          { _id: findAgent._id }, 
+          { $set: { ads: adsFromAgent } }
+      );
+
       status = 200;
       response = {
         message: 'OK',
-        data: deleteAd
+        data: deleteAdFromAgent
       }
     };
 
@@ -679,18 +689,6 @@ router.get('/ad/:id_ad/offers', async function(req, res, next) {
 
   res.status(status).json(response);
   
-});
-
-
-/* PUT TEST ALL PENDING */
-router.put('/ad/:id_ad/test', async function(req, res, next) {
-
-   let testOffers = await adModel.updateMany(
-      { _id: req.params.id_ad },
-      { $set: { "offers.status" : 'pending' } }
-    )
-
-  res.json('test');
 });
 
 /* PUT accept offer */

@@ -4,7 +4,8 @@ export default function(formData = {}, action) {
       var newData = {
         ...formData,
         address: action.address,
-        postCode: action.postCode,
+        postcode: action.postcode,
+        city: action.city,
         typeAddress: action.typeAddress,
         adID: action.adID
       }
@@ -20,7 +21,6 @@ export default function(formData = {}, action) {
             rooms : action.rooms,
             bedrooms : action.bedrooms,
             advantages : action.avantages,
-            title : action.title,
             description : action.description,
             photos : action.photos,
             video : action.video,
@@ -62,13 +62,19 @@ export default function(formData = {}, action) {
         }
         return newData;
   
-  } else if (action.type === 'clear') {
+    } else if (action.type == 'clear') {
 
-      let newData = {}
+        let newData = {}
+
+        return newData;
+
+    } else if (action.type == 'saveForEdit') {
+
+      let newData = {...formData,...action.data};
 
       return newData;
-
-  } else {
-      return formData;
+      
+    } else {
+        return formData;
     }
-  }
+}

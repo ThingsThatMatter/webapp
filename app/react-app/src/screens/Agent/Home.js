@@ -99,7 +99,7 @@ function Home(props) {
                   <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                   <span className={`annonce-state open-${e.onlineStatus}`}></span>
               </div>
-              <p className="annonce-address-title">{e.title}</p>
+              <p className="annonce-address-title">{e.address}</p>
               <p className="annonce-address-sub">{e.postcode} {e.city}</p>
           </div>
           <div className="annonce-infos">
