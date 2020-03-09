@@ -8,7 +8,6 @@ var adModel = require('../models/adModel.js')
 // var request = require('sync-request');
 var uid2 = require("uid2");
 
-// var userModel = require('../models/users');
 
 // var bcrypt = require('bcrypt');
 // const saltRounds = 10;
@@ -20,6 +19,9 @@ var adIdTest = '5e5cf133e1a25d0b8a9805bd';
 var userIdTest1 = '5e5cf93759f38b0e11fc0ad5';
 var userIdTest2 = '5e5cfbe96c8d820efe85ad45';
 var userIdTest3 = '5e5cfbf96c8d820efe85ad46';
+
+let status;
+let response;
 
 /* User sign-in */
 router.post('/sign-in', async function(req, res, next) {
@@ -47,10 +49,61 @@ router.post('/sign-up', async function(req, res, next) {
   res.json(user);
 });
 
+/* GET ads */
+router.get('/ads', async function(req, res, next){
+
+  const adsFromUser = await userModel
+    .findOne({ token:req.headers.token })
+    .populate('ads')
+    .exec()
+
+  try {
+
+    if(!adsFromUser) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      adsFromUser.ads.forEach( e => {
+        let visits = e.timeSlots.filter( f => {
+          return f.user.indexOf(adsFromUser._id) > -1
+        })
+        let offers = e.offers.filter( g => {
+          return String(g.user) === String(adsFromUser._id)
+        })
+        e.timeSlots = visits
+        e.offers = offers
+      })
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: {
+          ads: adsFromUser.ads,
+          token: adsFromUser.token
+        }
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+})
+
 /* GET offers */
 router.get('/offers', async function(req, res, next) {
 
-  let userToFind = await userModel.findOne({ token:req.body.token });
+  let userToFind = await userModel.findOne({ token:req.headers.token });
 
   adModel.aggregate([
     { $unwind: "$offers" },

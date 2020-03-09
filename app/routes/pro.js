@@ -55,7 +55,10 @@ router.get('/user-access', async function(req, res, next) {
       status = 200;
       response = {
         message: 'OK',
-        data: findAgent
+        data: {
+          ads: findAgent.ads,
+          token: findAgent.token
+        }
       }
     }
 
@@ -96,7 +99,10 @@ router.post('/sign-in', async function(req, res, next) {
           status = 200;
           response = {
             message: 'OK',
-            data: findAgent
+            data: {
+              ads: findAgent.ads,
+              token: findAgent.token
+            }
           }
         } else {
           status = 401;
@@ -161,11 +167,14 @@ router.post('/sign-up', async function(req, res, next) {
           { _id: agencyID }, 
           { $push: { agents : saveAgent._id } }
         )
-      
+        console.log(saveAgent)
         status = 200;
         response = {
           message: 'OK',
-          data: saveAgent
+          data: {
+            ads: saveAgent.ads,
+            token: saveAgent.token
+          }
         }
       }
     }
@@ -617,7 +626,10 @@ router.get('/ads', async function(req, res, next) {
       status = 200;
       response = {
         message: 'OK',
-        data: adsFromAgent
+        data: {
+          ads: adsFromAgent.ads,
+          token: adsFromAgent.token
+        }
       }
     };
   } catch(e) {

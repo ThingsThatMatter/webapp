@@ -19,6 +19,9 @@ import CreateFormSix from './screens/Agent/CreateForm6';
 import agentSignIn from './screens/Agent/SignIn'
 import agentSignUp from './screens/Agent/SignUp'
 
+import Spinner from './screens/Agent/Spin'
+
+
 import setToken from './actions/token.actions'
 
 function AgentRoutes(props) {
@@ -33,10 +36,6 @@ function AgentRoutes(props) {
         const body = await getToken.json()
         if (body.message === 'OK') {
             props.setToken(body.data.token)
-        } else {
-            //removeCookie('token')
-            //props.setToken('')
-            //setMsgErrorSignin(body.details) Afficher un message d'erreur à l'utilisateur
         }
     }
 
@@ -60,7 +59,7 @@ function AgentRoutes(props) {
                 <PrivateRoute component={Offres} path="/pro/offres" exact/>
                 <PrivateRoute component={RendezVous} path="/pro/rendezvous" exact/>
                 <PrivateRoute component={Questions} path="/pro/questions" exact/>
-                <PrivateRoute component={AdDesc} path="/pro/addesc/:id" exact/>
+                <PrivateRoute component={AdDesc} path="/pro/ad/:id" exact/>
                 <PrivateRoute component={CreateFormOne} path="/pro/createform/step1" exact/>
                 <PrivateRoute component={CreateFormTwo} path="/pro/createform/step2" exact/>
                 <PrivateRoute component={CreateFormThree} path="/pro/createform/step3" exact/>

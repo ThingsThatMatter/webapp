@@ -73,7 +73,7 @@ p {
 }
 
 /* Sign-in sign-up Agent */
-.pro-sign-content {
+.pro-sign-layout {
   height: 100vh;
   background-color: #052040;
   color: #FFF
@@ -564,4 +564,109 @@ p.offre-buyer-name {
     font-size: 1.5em;
     color: #052040;
   }
- 
+
+
+/* Spinner */
+.spinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* -----------------------------------------------------------BUYER APP--------------------------------------------------------------- */
+
+.user-layout {
+  background-color: #FFF;
+}
+
+/* Header */
+.nav-header {
+  display: flex;
+  align-items: center;
+  width: 100vw;
+  height: 3em;
+  background-color: #f9ca24;
+  font-size: 16px;
+}
+
+.nav-header-logo {
+  margin-left:2em;
+}
+.nav-header-menu {
+  display:flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+.nav-header-block-link {
+  display:flex;
+  align-items: flex-end;
+}
+.nav-header-block-account {
+  display: flex;
+  align-items: center;
+}
+
+.nav-header-content {
+  margin:0;
+  list-style-type: none;
+}
+  .nav-header-link {
+    color: #666;
+    margin-right: 2em;
+  }
+  .nav-header-link:hover {
+    color: #052040;
+  }
+
+  .nav-header-link-main {
+    font-size: 18px;
+    font-weight: 500;
+    color: #052040;
+    text-decoration: underline;
+  }
+
+.nav-header-account {
+  margin-right: 2em;
+}
+
+
+/* HomePage */
+
+.annonce-text-user {
+  padding: 1em 1em 0 1em;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+.annonce-infos-buyer {
+  display: flex;
+  justify-content: space-around;
+  background-color: #FFF;
+  padding: 0.5em 1em;
+}
+.annonce-infos-buyer span {
+  font-weight: 700;
+}
+.annonce-infos-buyer span span {
+  font-weight: 300;
+  color: #999;
+}
+.annonce-infos-buyer span {
+  align-items: center;
+  font-weight: 700;
+  display: flex;
+}
+.annonce-infos-buyer span img {
+  margin-right: 5px;
+}
+
+.annonce-status-buyer {
+  height: 3.5em;
+  background-color: #f1f1f1;
+  color: #555
+}
+
+.annonce-messages-buyer {
+  padding: 0.2em 1em 0 1em;
+}
