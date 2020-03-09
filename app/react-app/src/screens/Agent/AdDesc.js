@@ -1,7 +1,13 @@
-import React, {useState} from 'react';
-import Sidebar from '../../components/Sidebar';
-import { Layout, Button, Switch, Badge, Collapse} from 'antd';
+import React, {useState, useEffect} from 'react';
+import { Layout, Button, Switch, Badge, Collapse } from 'antd';
 import { Slide } from 'react-slideshow-image';
+import {Redirect} from 'react-router-dom';
+
+import {connect} from 'react-redux'
+
+
+import Sidebar from '../../components/Sidebar';
+import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
 
 const {Content} = Layout;
 const { Panel } = Collapse;
@@ -18,17 +24,64 @@ const { Panel } = Collapse;
   }
 
 
-function AdDesc() {
+function AdDesc(props) {
 
 
     const [toggle, setToggle] = useState(true)
+    const [adDetails, setAdDetails] = useState({})
 
+    const [adPhotos, setAdPhotos] = useState([])
+    const [adDocuments, setAdDocuments] = useState([])
+    const [adOffers, setAdOffers] = useState([])
+    const [adVisits, setAdVisits] = useState([])
 
     let toggleStyle = {fontWeight: 600, color:"#1476E1", fontSize:"18px"}
 
     if(toggle === false) {
         toggleStyle = {fontWeight: 500, color:"#6F6E6E", fontSize:"18px"}
     }
+
+    useEffect( () => {
+        const dbFetch = async () => {
+            const data = await fetch(`/pro/ad/${props.match.params.id}`, {
+                method: 'GET',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+            })
+            const body = await data.json()
+            setAdDetails(body.data)
+            setAdPhotos(body.data.photos)
+            setAdDocuments(body.data.files)
+            setAdOffers(body.data.offers)
+            setAdVisits(body.data.timeSlots)
+        }   
+        dbFetch()
+    }, []);
+
+    /* Price formatting */
+    const priceFormatter = new Intl.NumberFormat('fr', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        useGrouping: true
+    })
+
+
+    let photos = adPhotos.map((e,i) => {
+        return (
+            <div key={i} className="each-slide">
+                <div style={{'backgroundImage': `url(${e})`}}> </div>
+            </div>
+        )
+    });
+
+    let documents = adDocuments.map((e,i) => {
+        return (
+            <div key={i}>
+                <a href={e}>{e}</a>
+            </div>
+        )
+    });
+
 
     return (
   
@@ -38,93 +91,67 @@ function AdDesc() {
 
             <Layout className='main-content'>
 
-                <Content style={{ margin: '24px 16px 0' }}>
+                <Content style={{ margin: '2em 3em' }}>
 
-                     <h1 className='pageTitle'>Appartement 8 rue Constance 75018</h1>
+                        <div className="agent-section">
 
-                     <div className='detail'>
-                     <p>APPARTEMENT</p>
-                     <p>8 rue constance 75018</p>
-                     </div>
+                            <h1 className='pageTitle'>{adDetails.title} - {adDetails.area}m<sup>2</sup> - {adDetails.address} {adDetails.postcode} {adDetails.city} - {priceFormatter.format(adDetails.price)}</h1>
 
-                    {/* PARTIE ACTIONS */}
-
-                    <div className="section">
-
-                        <div className="row">
-
-                            <Badge count={5}>
-                            <Button type="primary" ghost className="button-add">Offres </Button>
-                            </Badge>
-
-                            <Badge count={2}>
-                            <Button type="primary" ghost className="button-add">Visites</Button>            
-                            </Badge>
-
-                            <Badge count={10}>
-                            <Button type="primary" ghost className="button-add">Questions</Button>
-                            </Badge>
-
-                        </div>
-
-                        <div className="dark-row-radius">
-
-                            <div className="row-between">
-
-                                <span style={toggleStyle}>annonce en ligne  <Switch defaultChecked onChange={() => setToggle(!toggle)}/> </span>
-                            
-                                <span> 
-                                <img src="edit.png" width="35px" style={{marginRight: 40, cursor: "pointer"}}/>
-                                <img src="bin.png" width="35px" style={{cursor: "pointer"}}/>
-                                </span>
-
+                            <div className="agent-action">
+                                <div style={toggleStyle}>En ligne  <Switch defaultChecked onChange={() => setToggle(!toggle)}/></div>
+                                <div> 
+                                    <img src="../../../edit.png" width="25px" style={{marginRight: 20, cursor: "pointer"}}/>
+                                    <img src="../../../bin.png" width="25px" style={{cursor: "pointer"}}/>
+                                </div>
                             </div>
+
                         </div>
-                    </div>
+                        <div className="row agent-resume">
+                            <Badge count={adOffers.length}>
+                                <Button type="primary" ghost className="button-add">Offres </Button>
+                            </Badge>
+
+                            <Badge count={adVisits.length}>
+                                <Button type="primary" ghost className="button-add">Visites</Button>            
+                            </Badge>
+
+                            <Badge count={3}>
+                                <Button type="primary" ghost className="button-add">Questions</Button>
+                            </Badge>
+                        </div>
 
                     {/* PARTIE DESCRIPTION */}
 
                     <h2 className='pageSubTitle'>Descriptif</h2>  
 
-                    <div className="section">
+                    <div className="section ad-main-details">
 
                         <div className="row">
-
-                            <span ><img src="expand.svg" width="20px"/> 55 <span>&nbsp;m2</span></span>
-                            <span ><img src="floor-plan.png" width="20px"/> 3 <span>&nbsp;pièces</span></span>
-                            <span><img src="bed.svg" width="20px"/> 2 <span>&nbsp;chambres</span></span>
+                            <span ><img src="../../../expand.svg" width="20px"/><strong>{adDetails.area}</strong> m<sup>2</sup></span>
+                            <span ><img src="../../../floor-plan.png" width="20px"/><strong>{adDetails.rooms}</strong> pièces</span>
+                            <span><img src="../../../bed.svg" width="20px"/><strong>{adDetails.bedrooms}</strong> chambres</span>
                         </div>
 
                         <div className="dark-row">
 
                             <div className="row">
 
-                            <span ><img src="elevator.png" width="20px"/> Ascenseur</span>
-                            <span ><img src="balcony.png" width="20px"/> Balcon</span>
-                            <span><img src="floor.png" width="20px"/> Terrasse</span>
+                            <span ><img src="../../../elevator.png" width="20px"/> Ascenseur</span>
+                            <span ><img src="../../../balcony.png" width="20px"/> Balcon</span>
+                            <span><img src="../../../floor.png" width="20px"/> Terrasse</span>
 
                             </div>
                         </div>
 
-                        <div className="row">
-                            <p style={{textAlign: "justify"}}>Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto tail bacon ground round picanha swine. Rump ham hock shoulder shank picanha kielbasa. Cupim venison pork chop tongue pig buffalo drumstick chuck pork chislic ribeye. Chislic strip steak hamburger meatloaf, capicola filet mignon kevin cow bresaola salami. Porchetta alcatra biltong frankfurter, leberkas bacon short loin jowl drumstick. Venison pig turkey pancetta tail. Porchetta venison chislic ground round ball tip.</p>
+                        <div className="section-text">
+                            <p style={{textAlign: "justify"}}>{adDetails.description}</p>
                         </div>
 
                             <div className="slide-container">
 
                                 <Slide {...properties}>
 
-                                <div className="each-slide">
-                                    <div style={{'backgroundImage': "url(../house2.jpg)"}}> </div>
-                                </div>
-
-                                <div className="each-slide">
-                                    <div style={{'backgroundImage': "url(../house2.jpg)"}}> </div>
-                                </div>
-
-                                <div className="each-slide">
-                                    <div style={{'backgroundImage': "url(../house2.jpg)"}}> </div>
-                                </div> 
+                                {photos}
 
                                 </Slide>
                             </div>
@@ -134,14 +161,14 @@ function AdDesc() {
                     {/* PARTIE PRIX ET HONNORAIRES */}
 
 
-                    <h2 className='pageSubTitle'>Prix & honnoraires</h2>  
+                    <h2 className='pageSubTitle'>Prix & honoraires</h2>  
 
                     <div className="section">
 
                         <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>500 000 €</span> TTC</p>
-                            <p><span style={{fontWeight: 700}}>475 000 €</span> hors honnoraires</p>
-                            <p><span style={{fontWeight: 700}}>5%</span> honnoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
+                            <p><span style={{fontWeight: 700}}>{priceFormatter.format(adDetails.price*adDetails.fees/100+adDetails.price)} </span> TTC</p>
+                            <p><span style={{fontWeight: 700}}>{priceFormatter.format(adDetails.price)}</span> hors honoraires</p>
+                            <p><span style={{fontWeight: 700}}>{adDetails.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
                         </div>
                     </div>
 
@@ -151,8 +178,8 @@ function AdDesc() {
 
                     <div className="section">
                     <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>290</span> kWhEP/m².an</p>
-                            <p><span style={{fontWeight: 700}}>14</span> kgeqCO2/m².an</p>
+                            <p><span style={{fontWeight: 700}}>{adDetails.dpe}</span> kWhEP/m² /an</p>
+                            <p><span style={{fontWeight: 700}}>{adDetails.ges}</span> kgeqCO2/m² /an</p>
                         </div>
                     </div>
 
@@ -162,18 +189,14 @@ function AdDesc() {
 
                     <div className="section">
                         <div className="section-text">
-                            <div>
-                                <a>PV-AG-2020.jpg</a>
-                            </div>
-                            <div>
-                                <a>PV-AG-2020.jpg</a>
-                            </div>
-                                                        
+                                {documents}                
                         </div>
                     </div>
 
                 
-                <h1 style={{marginTop: "30px"}} className='pageTitle'>Questions fréquentes</h1>
+
+                <h2 className='pageSubTitle'>Questions fréquentes</h2>  
+
 
                 <Collapse style={{marginBottom: 20}} bordered={false} defaultActiveKey={['1']}>
                     <Panel className="faq" header="Qu'est ce qu'un m2 ? " key="1">
@@ -197,4 +220,14 @@ function AdDesc() {
     );
   }
 
-  export default AdDesc;
+
+function mapStateToProps(state) {
+    return { 
+        token : state.token
+    }
+}
+
+export default connect(
+    mapStateToProps,
+    null
+)(AdDesc)

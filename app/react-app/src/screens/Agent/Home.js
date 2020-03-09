@@ -13,11 +13,13 @@ function Home(props) {
   
   const [navToCreateAd, setNavToCreateAd] = useState(false)
   const [navToAdDetail, setNavToAdDetail] = useState(false)
-  const [adsList, setAdslist] = useState([])
+  const [adsListFromDb, setAdsListFromDb] = useState([])
   const [onlineStatus, setOnlineStatus] = useState("All")
   const [visitStatus, setVisitStatus] = useState("All")
   const [offerStatus, setOfferStatus] = useState("All")
-  const [filterChange, setFilterChange] = useState(false)
+  const [adsToShow, setAdsToShow] = useState([])
+
+  const [urlAd, setUrlAd] = useState(null);
 
   /* Ad Cards */
   useEffect( () => {
@@ -27,36 +29,37 @@ function Home(props) {
         headers: {'token': props.token}
       })
       const body = await ads.json();
-      setAdslist(body.data.ads)
+      setAdsListFromDb(body.data.ads)
     }
     adsFetch()
   }, [])
 
   /* Filters */
-  let ads = [...adsList]
 
-  // useEffect(() => {
-  //   const filter () => {
-  //     if (onlineStatus === 'Y') {
-  //       ads = adsList.filter( e => e.onlineStatus === true )
-  //     } else if (onlineStatus === 'N') {
-  //       ads = adsList.filter( e => e.onlineStatus === false )
-  //     }
+  useEffect(() => {
+    let ads = [...adsListFromDb]
+    const filter = () => {
+      if (onlineStatus === 'Y') {
+        ads = ads.filter( e => e.onlineStatus === true )
+      } else if (onlineStatus === 'N') {
+        ads = ads.filter( e => e.onlineStatus === false )
+      }
     
-  //     if (visitStatus === 'Y') {
-  //       ads = adsList.filter( e => e.visitStatus === true )
-  //     } else if (visitStatus === 'N') {
-  //       ads = adsList.filter( e => e.visitStatus === false )
-  //     }
+      if (visitStatus === 'Y') {
+        ads = ads.filter( e => e.visitStatus === true )
+      } else if (visitStatus === 'N') {
+        ads = ads.filter( e => e.visitStatus === false )
+      }
     
-  //     if (offerStatus === 'Y') {
-  //       ads = adsList.filter( e => e.offerStatus === true )
-  //     } else if (offerStatus === 'N') {
-  //       ads = adsList.filter( e => e.offerStatus === false )
-  //     }
-  //   }
-
-  // }[filterChange])
+      if (offerStatus === 'Y') {
+        ads = ads.filter( e => e.offerStatus === true )
+      } else if (offerStatus === 'N') {
+        ads = ads.filter( e => e.offerStatus === false )
+      }
+      setAdsToShow(ads)
+    }
+    filter()
+  }, [adsListFromDb, onlineStatus, visitStatus, offerStatus])
 
 
   /* Price formatting */
@@ -69,7 +72,8 @@ function Home(props) {
   
   /* Ad card rending */
     //sort
-  ads = ads.sort((a,b) => {
+  let adsCopy = [...adsToShow]
+  adsCopy = adsCopy.sort((a,b) => {
     const dateCreate = (date) => {
       var year = date.slice(0,4)
       var month = Number(date.slice(5,7))-1
@@ -81,10 +85,14 @@ function Home(props) {
     return (dateCreate(a.creationDate) - dateCreate(b.creationDate))
   })
     //rend
-  ads = ads.map( (e,i) => {
+    adsCopy = adsCopy.map( (e,i) => {
     return (
       <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
-        <div className="annonce-element" onClick={() => setNavToAdDetail(true) }>
+        <div className="annonce-element" 
+              onClick={() => {
+                setUrlAd(`/pro/addesc/${e._id}`)
+                setNavToAdDetail(true) 
+              }}>
           <img className="annonce-image" src={e.photos[0]} />
           <div className="annonce-text">
               <div className="annonce-price-container">
@@ -109,7 +117,7 @@ function Home(props) {
     return <Redirect to="/pro/createform/step1"/>
   }
   if(navToAdDetail === true) {
-    return <Redirect to="/pro/addesc"/>
+    return <Redirect to={urlAd} />
   }
   
   return (
@@ -137,7 +145,9 @@ function Home(props) {
                 <div>
                   <p className='filter-label'>En Ligne</p>
                     <Radio.Group
-                      onChange={e => setOnlineStatus(e.target.value)}
+                      onChange={e => {
+                        setOnlineStatus(e.target.value)
+                      }}
                       value={onlineStatus}
                     >
                     <Radio className="filter-radio-button-main" value="All">
@@ -192,7 +202,7 @@ function Home(props) {
           </Collapse>
 
           <Row gutter={16}>
-              {ads}
+              {adsCopy}
           </Row>
 
         </Content>

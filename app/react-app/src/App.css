@@ -24,10 +24,6 @@ p {
   padding: 30px;
 }
 
-.each-slide > div {
-  min-height: 600px;
-}
-
 .sidebar {
   min-width: 300px;
   max-width: 300px;
@@ -110,6 +106,8 @@ p {
   text-align: center;
 }
 
+
+
 .ant-form-vertical .ant-form-item-label, .ant-col-24.ant-form-item-label, .ant-col-xl-24.ant-form-item-label {
   padding: 0 0 5px;
 }
@@ -139,6 +137,10 @@ p {
   .input-modal-label {
     margin: 0 1em
   }
+
+.offer-modal {
+  text-align: center;
+}
 
 .offer-modal p {
   margin-bottom: 10px;
@@ -356,8 +358,11 @@ p.offre-buyer-name {
   font-weight: 700;
   font-size: 1.5em;
   margin: 0;
-  color: #052040;
-  margin : 15px 0;
+  color: #ffff;
+  background-color: #052040;
+  width: fit-content;
+  padding: 10px 20px;
+  margin-top: 2em;
 }
 
 /* formulaires */
@@ -415,7 +420,6 @@ p.offre-buyer-name {
 }
 
 .button-add {
-  margin-bottom : 30px;
   font-size: 18px;
   color: #052040 !important;
   font-weight: 600;
@@ -461,10 +465,6 @@ p.offre-buyer-name {
 
 .section {
   background-color: #FFFFFF;
-  border-radius: 10px;
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.25);
-  height: auto;
-
 }
 
 .row {
@@ -503,9 +503,8 @@ p.offre-buyer-name {
 /* IMAGE SLIDER (doc : https://www.npmjs.com/package/react-slideshow-image)  */
 
 .slide-container {
-  width: 70%;
-  margin : 0 15%;
-  margin-bottom: 2.5%;
+  width: 100%;
+  margin : 0;
 }
 
 .each-slide {
@@ -517,6 +516,7 @@ p.offre-buyer-name {
   align-items: center;
   justify-content: center;
   background-size: cover;
+  min-height: 600px;
 }
 
 .section-text {
@@ -527,6 +527,37 @@ p.offre-buyer-name {
   padding: 0.25%;
 }
 
+.ad-main-details img {
+  margin: 0 10px;
+}
+
+.ad-main-details span {
+  font-weight: bold;
+}
+
+.agent-resume button {
+  margin: 0;
+}
+
+.agent-section {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: nowrap;
+}
+
+.agent-resume {
+  padding: 1em 2em;
+}
+
+.agent-action img {
+  margin: 10px 0;
+}
+
+.agent-action {
+  text-align: right;
+}
 
 .ant-collapse-header{
     font-weight: 700;
