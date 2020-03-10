@@ -74,10 +74,7 @@ function CreateFormTwo(props) {
     }
 
   
-    console.log("form 2", props.formData)
-
-    console.log(props.formData.avantages)
-
+    console.log(props.formData)
     return (
 
         <Layout>
@@ -166,10 +163,10 @@ function CreateFormTwo(props) {
                                 />
                             </label>
 
-                            <p className='formLabel'>Photos</p>
+                            <p className='formLabel'>Photos (10 max)</p>
                             <Dragger
                             name= 'file'
-                            accept= ".png,.jpeg"
+                            accept= ".png,.jpeg,.pdf"
                             multiple= {true}
                             showUploadList= {false}
                             action='/pro/upload'
@@ -177,18 +174,13 @@ function CreateFormTwo(props) {
                             data={{token : props.formData.adID}}
                             onChange={(info) => {
                                 const { status } = info.file;
-                                if (status !== 'uploading') {
-                                console.log(info.file);
-                                if(fileList.findIndex((e) => e === info.file.name) === -1){
-                                    setFileList([...fileList, info.file.name])
-                                }
-                                
-                                }
                                 if (status === 'done') {
                                 message.success(`${info.file.name} file uploaded successfully.`);
+                                setFileList([...fileList, info.file.name])
                                 } else if (status === 'error') {
                                 message.error(`${info.file.name} file upload failed.`);
                             }}}
+                            
                             >
                                 <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
@@ -199,14 +191,18 @@ function CreateFormTwo(props) {
                                 </p>
                             </Dragger>
                             {fileList.map((e, i) => (
-                            <div key={i}>{e} <DeleteOutlined
-                            onClick={async () => {
-                                setFileList(fileList.filter((f) =>  f !== e ))
-                                await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
-                                    method: "delete"
-                                })
-                            }}
-                            />
+                            <div key={i}>{e} 
+                                <DeleteOutlined 
+                                onClick={async () => {
+                                    const request = await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
+                                        method: "delete"
+                                    })
+                                    const response = await request.json()
+                                    if(response === "deleted") {
+                                        setFileList(fileList.filter((f) =>  f !== e ))
+                                    }
+                                }}
+                                />
                             </div>)
                             )}
 

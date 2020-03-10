@@ -34,6 +34,7 @@ function AdDesc(props) {
     const [adDocuments, setAdDocuments] = useState([])
     const [adOffers, setAdOffers] = useState([])
     const [adVisits, setAdVisits] = useState([])
+    const [avantages, setAvantages] = useState([])
 
     const [redir, setRedir] = useState(false)
     const [editRedir, setEditRedir] = useState(false)
@@ -57,6 +58,20 @@ function AdDesc(props) {
             setAdDocuments(body.data.files)
             setAdOffers(body.data.offers)
             setAdVisits(body.data.timeSlots)
+
+            const tempTable = []
+
+            if(body.data.advantages.findIndex((e) => e === "ascenseur") !== -1){
+                tempTable.push(<span ><img src="../../../elevator.png" width="20px" alt="ascenseur"/>Ascenseur</span>)
+            };
+            if(body.data.advantages.findIndex((e) => e === "balcon") !== -1){
+                tempTable.push(<span ><img src="../../../balcony.png" width="20px" alt="balcon"/>Balcon</span>)
+            };
+            if(body.data.advantages.findIndex((e) => e === "terrasse") !== -1){
+                tempTable.push(<span><img src="../../../floor.png" width="20px" alt="terrasse"/>Terrasse</span>)
+            };
+    
+            setAvantages(tempTable)
         }   
         dbFetch()
     }, []);
@@ -109,7 +124,7 @@ function AdDesc(props) {
     let documents = adDocuments.map((e,i) => {
         return (
             <div key={i}>
-                <a href={e}>{e}</a>
+                <a href={e} target="_blank">{e.split('-')[1]}</a>
             </div>
         )
     });
@@ -163,16 +178,12 @@ function AdDesc(props) {
                             <span><img src="../../../bed.svg" width="20px"/><strong>{adDetails.bedrooms}</strong> chambres</span>
                         </div>
 
-                        <div className="dark-row">
+                        {avantages.length > 0 && <div className="dark-row">
 
-                            <div className="row">
-
-                            <span ><img src="../../../elevator.png" width="20px"/> Ascenseur</span>
-                            <span ><img src="../../../balcony.png" width="20px"/> Balcon</span>
-                            <span><img src="../../../floor.png" width="20px"/> Terrasse</span>
-
-                            </div>
+                        <div className="row">
+                        {avantages}
                         </div>
+                        </div>}
 
                         <Row gutter={16} className="section-text">
                             <Col xs={{span:24}} md={{span:12}} lg={{span:12}} xl={{span:12}}>

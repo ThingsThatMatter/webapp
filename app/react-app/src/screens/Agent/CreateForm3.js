@@ -62,7 +62,7 @@ function CreateFormThree(props) {
 
                         <form>
 
-                            <p className='formLabel'>Documents (Optionnel)</p>
+                        <p className='formLabel'>Documents (Optionnel)</p>
                             <Dragger
                             name= 'file'
                             accept= ".png,.jpeg,.pdf"
@@ -73,18 +73,13 @@ function CreateFormThree(props) {
                             data={{token : props.formData.adID}}
                             onChange={(info) => {
                                 const { status } = info.file;
-                                if (status !== 'uploading') {
-                                console.log(info.file);
-                                if(fileList.findIndex((e) => e === info.file.name) === -1){
-                                    setFileList([...fileList, info.file.name])
-                                }
-                                
-                                }
                                 if (status === 'done') {
                                 message.success(`${info.file.name} file uploaded successfully.`);
+                                setFileList([...fileList, info.file.name])
                                 } else if (status === 'error') {
                                 message.error(`${info.file.name} file upload failed.`);
                             }}}
+                            
                             >
                                 <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
@@ -95,16 +90,22 @@ function CreateFormThree(props) {
                                 </p>
                             </Dragger>
                             {fileList.map((e, i) => (
-                            <div>{e} <DeleteOutlined 
-                            onClick={async () => {
-                                setFileList(fileList.filter((f) =>  f !== e ))
-                                await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
-                                    method: "delete"
-                                })
-                            }}
-                            />
+                            <div key={i}>{e} 
+                                <DeleteOutlined 
+                                onClick={async () => {
+                                    const request = await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
+                                        method: "delete"
+                                    })
+                                    const response = await request.json()
+                                    if(response === "deleted") {
+                                        setFileList(fileList.filter((f) =>  f !== e ))
+                                    }
+                                }}
+                                />
                             </div>)
                             )}
+
+                          
   
                         </form>
 
