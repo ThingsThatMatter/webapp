@@ -7,6 +7,8 @@ import {useCookies} from 'react-cookie'
 
 import Home from './screens/Buyer/Home'
 import AdDesc from './screens/Buyer/AdDesc'
+import Visits from './screens/Buyer/Visits'
+import Offers from './screens/Buyer/Offers'
 
 import setToken from './actions/token.actions'
 
@@ -58,7 +60,9 @@ function BuyerRoutes(props) {
                 <PrivateRoute component={CreateFormSix} path="/pro/createform/step6" exact/> */}
 
                 <Route component={Home} path="/" exact/>
-                <Route component={AdDesc} path="/ad" />
+                <Route component={AdDesc} path="/ad/:id" />
+                <Route component={Visits} path="/visits" />
+                <Route component={Offers} path="/offers" />
             </Switch>
         </Router>
           

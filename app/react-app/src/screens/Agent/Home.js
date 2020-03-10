@@ -34,8 +34,8 @@ function Home(props) {
     adsFetch()
   }, [])
 
-  /* Filters */
 
+  /* Filters */
   useEffect(() => {
     let ads = [...adsListFromDb]
     const filter = () => {
@@ -90,7 +90,7 @@ function Home(props) {
       <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
         <div className="annonce-element" 
               onClick={() => {
-                setUrlAd(`/pro/addesc/${e._id}`)
+                setUrlAd(`/pro/ad/${e._id}`)
                 setNavToAdDetail(true) 
               }}>
           <img className="annonce-image" src={e.photos[0]} />
@@ -109,8 +109,8 @@ function Home(props) {
           </div>
         </div>
       </Col>
-    )
-  })
+      )
+    })
   
   /*  Navigation */ 
   if(navToCreateAd === true) {

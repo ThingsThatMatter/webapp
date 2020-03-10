@@ -4,6 +4,8 @@ import {Form, Input, Button } from 'antd';
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
+import Spinner from './Spin'
+
 import setToken from '../../actions/token.actions'
 
 function SignIn(props) {
@@ -35,7 +37,9 @@ function SignIn(props) {
     if (toRedirect) { // if login OK (from form) redirect to home
         return <Redirect to='/pro' /> 
     } else {
-        if (typeof cookies.token !== 'undefined' && props.token !== '') {  //if landing on signin and has a valid token : does not work
+        if (typeof cookies.token !== 'undefined' && props.token === '') {
+            return <Spinner />
+        } else if (typeof cookies.token !== 'undefined' && props.token !== '') {  //if landing on signin and has a valid token : does not work
             return <Redirect to='/pro' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
         }
         else {

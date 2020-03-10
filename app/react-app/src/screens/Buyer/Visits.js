@@ -4,18 +4,18 @@ import { Layout} from 'antd';
 const {Content} = Layout;
 
 
-function Template() {
+function Visits() {
 
     return (
   
         <Layout className="user-layout">
 
-            <UserNavHeader/> 
+            <UserNavHeader current="Visites"/>
 
             <Layout className='user-layout main-content'>
 
                 <Content style={{ margin: '24px 16px 0' }}>
-                   
+                   Visits
                 </Content>  
 
          </Layout>
@@ -26,4 +26,4 @@ function Template() {
     );
   }
 
-  export default Template;
+  export default Visits;
