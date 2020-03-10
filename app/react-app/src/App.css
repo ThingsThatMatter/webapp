@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,800&display=swap');
 
-
-
 body {
   font-family: 'Raleway',sans-serif;
   font-weight: 400;
@@ -14,7 +12,19 @@ body {
 }
 
 a {
+  color: #355c7d;
+  text-decoration: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  -webkit-transition: color 0.3s;
+  transition: color 0.3s;
+  -webkit-text-decoration-skip: objects;
   word-wrap: break-word;
+}
+
+a:hover, a:focus, a:active { 
+  color: #000;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -787,8 +797,7 @@ p.offre-buyer-name {
 .nav-header {
   display: flex;
   background-color: #f8b195;
-  font-size: 18px;
-  font-weight: 700;
+  font-size: 16px;
   padding: 1em 2em;
 }
 
@@ -845,6 +854,10 @@ p.offre-buyer-name {
   cursor: pointer;
 }
 
+.go-back {
+  display: block;
+  margin-bottom: 2em;
+}
 
 /* HomePage */
 
@@ -950,14 +963,8 @@ h1.userTitle  {
 }
 
 .timeslot-picker {
-  width: 280px;
-  height: 280px;
-  margin-left: 10px;
-  margin-top: 73px;
   background: #F7F8F9;
-  position: fixed;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-  
 }

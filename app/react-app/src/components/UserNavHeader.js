@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react'
+import { Button } from 'antd';
 import {Link} from 'react-router-dom'
-import {UserOutlined} from '@ant-design/icons'
+import {UserOutlined,HomeOutlined} from '@ant-design/icons'
 import { Affix } from 'antd';
 
 
@@ -31,15 +32,7 @@ function UserNavHeader(props) {
     }, [])
 
     return (
-        <Affix offsetTop={0}
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={broken => {
-          console.log(broken);
-        }}
-        onCollapse={(collapsed, type) => {
-          console.log(collapsed, type);
-        }}>
+        <Affix offsetTop={0}>
             <header className="nav-header">
                 <div className="nav-header-logo"><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
 
@@ -48,10 +41,28 @@ function UserNavHeader(props) {
                         <li><Link className={`nav-header-link ${propertiesClass}`} to="/">Mes biens</Link></li>
                         <li><Link className={`nav-header-link ${visitsClass}`} to="/visits">Mes visites</Link></li>
                     </ul>
-                    <div className="nav-header-account nav-header-block-account">
-                        <UserOutlined />
-                        <span className={`${accountClass}`}>Connexion</span>
-                    </div>
+                    <ul className="nav-header-content nav-header-block-link">
+                        <li style={{margin:"0 10px 0 0"}}>
+                            <Link to="/sign-in" 
+                            style={{ 
+                                backgroundColor: "#355c7d", 
+                                color: "#fff", 
+                                padding: "5px 10px",
+                                border: "2px solid #355c7d"
+                            }}>
+                            <UserOutlined /> Connexion</Link></li>
+                        <li>
+                            <Link to="/pro" 
+                            style={{ 
+                                backgroundColor: "#fff", 
+                                color: "#355c7d", 
+                                padding: "5px 10px",
+                                border: "2px solid #355c7d"
+                            }}>
+                            <HomeOutlined /> Espace PRO</Link>
+                        </li>
+                    </ul>
+                        
                 </nav>
             </header>
         </Affix>

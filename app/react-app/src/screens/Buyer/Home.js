@@ -171,7 +171,7 @@ function Home() {
 
             <Layout className='user-layout main-content'>
 
-            <Content style={{ margin: '2em 3em' }}>
+            <Content>
                     
                     <h1 className='userTitle'>Mes offres déposées</h1>
                     <Row gutter={16} className="offers-row">
