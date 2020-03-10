@@ -17,6 +17,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+a {
+  word-wrap: break-word;
+}
+
+.ant-row {
+  padding: 2em 0;
+}
+
+.filter-header {
+  margin: 2em 0;
+}
+
 /* TITRES DE PAGES*/
 
 .pageTitle {
@@ -35,7 +47,6 @@ body {
   background-color: #052040;
   width: fit-content;
   padding: 10px 20px;
-  margin-top: 2em;
 }
 
 .App {
@@ -580,22 +591,25 @@ p.offre-buyer-name {
   right: 0;
   top: 80px;
   background-color: #fff;
-  padding: 1em 2em 1em 1.5em;
+  padding: 10px 15px 13px 15px;
   box-shadow: 0 0 5px #b1b1b1;
   z-index: 9999;
   border-radius: 10px 0 0 10px;
+  transition: 0.2s;
+}
+
+.agent-action:hover {
+  padding: 10px 25px 13px 15px;
 }
 
 .agent-resume {
-  padding: 1em 2em;
+  display: flex;
+  justify-content: space-around;
+  padding: 1em 0 3em 0;
 }
 
 .agent-action img {
-  margin: 10px 0;
-}
-
-.agent-action {
-  text-align: right;
+  margin-top: 10px;
 }
 
 .ant-collapse-header{
@@ -625,7 +639,7 @@ p.offre-buyer-name {
   align-items: center;
   width: 100vw;
   height: 3em;
-  background-color: #f9ca24;
+  background-color: #349fa4;
   font-size: 16px;
 }
 
@@ -673,7 +687,7 @@ p.offre-buyer-name {
 
 /* HomePage */
 
-.annonce-text-user {
+.annonce-text-buyer {
   padding: 1em 1em 0 1em;
   border-bottom: 1px solid #f1f1f1;
 }
@@ -701,7 +715,6 @@ p.offre-buyer-name {
 }
 
 .annonce-status-buyer {
-  height: 3.5em;
   background-color: #f1f1f1;
   color: #555
 }
