@@ -1,10 +1,6 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,800&display=swap');
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Raleway',sans-serif;
-  font-weight: 800;
-  color: #052040;
-}
+
 
 body {
   font-family: 'Raleway',sans-serif;
@@ -21,6 +17,38 @@ a {
   word-wrap: break-word;
 }
 
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Raleway',sans-serif;
+  font-weight: 800;
+  display: block;
+  color: #052040;
+}
+
+h1 {
+  font-size: 3.5em;
+  margin: 0.67em 0;
+}
+h2 {
+  font-size: 2.5em;
+  margin: 0.83em 0;
+}
+h3 {
+  font-size: 1.9em;
+  margin: 1em 0;
+}
+h4 {
+  font-size: 1.4em;
+  margin: 1.33em 0;
+}
+h5 {
+  font-size: 0.95em;
+  margin: 1.67em 0;
+}
+h6 {
+  font-size: 0.7em;
+  margin: 2.33em 0;
+}
+
 .ant-row {
   padding: 2em 0;
 }
@@ -30,14 +58,6 @@ a {
 }
 
 /* TITRES DE PAGES*/
-
-.pageTitle {
-  font-weight: 900;
-  font-size: 35px;
-  margin: 0;
-  color: #000;
-  margin-bottom: 1em;
-}
 
 .pageSubTitle {
   font-weight: 700;
@@ -636,16 +656,16 @@ p.offre-buyer-name {
 /* Header */
 .nav-header {
   display: flex;
-  align-items: center;
-  width: 100vw;
-  height: 3em;
-  background-color: #349fa4;
-  font-size: 16px;
+  background-color: #f8b195;
+  font-size: 18px;
+  font-weight: 700;
+  padding: 1em 2em;
 }
 
-.nav-header-logo {
-  margin-left:2em;
+.nav-header-logo img {
+  max-width: 100px;
 }
+
 .nav-header-menu {
   display:flex;
   width: 100%;
@@ -665,27 +685,67 @@ p.offre-buyer-name {
   margin:0;
   list-style-type: none;
 }
-  .nav-header-link {
-    color: #666;
-    margin-right: 2em;
-  }
-  .nav-header-link:hover {
-    color: #052040;
-  }
 
-  .nav-header-link-main {
-    font-size: 18px;
-    font-weight: 500;
-    color: #052040;
-    text-decoration: underline;
-  }
+.nav-header-link {
+  font-weight: 400;
+  color: #fff;
+  margin-right: 2em;
+}
+.nav-header-link:hover {
+  color: #355c7d;
+}
+
+.nav-header-link-main {
+  font-weight: 700;
+}
 
 .nav-header-account {
-  margin-right: 2em;
+  background-color: #fff;
+  color: #355c7d;
+  padding: 5px;
+}
+
+.nav-header-account span {
+  margin: 0 5px;
+}
+
+.nav-header-account.nav-header-block-account:hover {
+  background-color: #355c7d;
+  color: #fff;
+  cursor: pointer;
 }
 
 
 /* HomePage */
+
+.offers-row, .visit-row, .ads-row  {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+}
+
+h1.userTitle  {
+  color: #355c7d;
+}
+
+.offers-row, .visit-row {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4em;
+  padding-bottom: 4em;
+}
+
+
+.offers-row::-webkit-scrollbar, .visit-row::-webkit-scrollbar, .ads-row::-webkit-scrollbar {
+  background-color: transparent;
+  height: 2vmin;
+}
+
+.offers-row::-webkit-scrollbar-thumb,.visit-row::-webkit-scrollbar-thumb,.ads-row::-webkit-scrollbar-thumb {
+  background-color: #e7e7e7;
+  border-radius: 1vmin;
+}
 
 .annonce-text-buyer {
   padding: 1em 1em 0 1em;
@@ -715,24 +775,34 @@ p.offre-buyer-name {
 }
 
 .annonce-status-buyer {
-  background-color: #f1f1f1;
-  color: #555
+  background-color: #355c7d;
+  text-align: center;
 }
 
 .annonce-messages-buyer {
-  padding: 0.5em 1em 0 1em;
-  line-height: 110%;
+  color: #fff;
 }
 
 .annonce-messages-buyer-offer-accepted {
-  color: #41bb41;
+  color: #fff;
   font-weight: 700;
+  position: absolute;
+  background-color: #41bb41;
+  padding: 10px 15px;
+  border-radius: 10px 0 10px 0;
+  z-index: 99999;
 }
 
 .annonce-messages-buyer-offer-declined {
-  color: #ff6b6b;
-  font-weight: 500;
+  color: #fff;
+  font-weight: 700;
+  position: absolute;
+  background-color: #ff6b6b;
+  padding: 10px 15px;
+  border-radius: 10px 0 10px 0;
+  z-index: 99999;
 }
+
 
 /* Buyer pages styles  */
   
