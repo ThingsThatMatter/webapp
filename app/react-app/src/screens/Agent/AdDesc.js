@@ -144,15 +144,15 @@ function AdDesc(props) {
                             <h1 className='pageTitle'>{adDetails.title}</h1>
 
                             <div className="agent-action">
-                                <div style={toggleStyle}>En ligne  <Switch defaultChecked onChange={() => setToggle(!toggle)}/></div>
+                                <Switch defaultChecked onChange={() => setToggle(!toggle)}/>
                                 <div> 
-                                    <img src="../../../edit.png" width="25px" style={{marginRight: 20, cursor: "pointer"}} onClick={handleEdit}/>
-                                    <img src="../../../bin.png" width="25px" style={{cursor: "pointer"}} onClick={handleDelete}/>
+                                    <img src="../../../edit.png" width="20px" style={{marginRight: 20, cursor: "pointer"}} onClick={handleEdit}/>
+                                    <img src="../../../bin.png" width="20px" style={{cursor: "pointer"}} onClick={handleDelete}/>
                                 </div>
                             </div>
 
                         </div>
-                        <div className="row agent-resume">
+                        <div className="agent-resume">
                             <Badge count={adOffers.length}>
                                 <Button type="primary" ghost className="button-add">Offres </Button>
                             </Badge>
@@ -168,20 +168,30 @@ function AdDesc(props) {
                     
                     {/* PARTIE DESCRIPTION */}
 
+
                     <h2 className='pageSubTitle'>Descriptif</h2>  
 
                     <div className="section ad-main-details">
 
                         <div className="row">
-                            <span ><img src="../../../expand.svg" width="20px"/><strong>{adDetails.area}</strong> m<sup>2</sup></span>
-                            <span ><img src="../../../floor-plan.png" width="20px"/><strong>{adDetails.rooms}</strong> pièces</span>
-                            <span><img src="../../../bed.svg" width="20px"/><strong>{adDetails.bedrooms}</strong> chambres</span>
+                                <span ><img src="../../../expand.svg" width="20px"/><strong>{adDetails.area}</strong> m<sup>2</sup></span>
+                                <span ><img src="../../../floor-plan.png" width="20px"/><strong>{adDetails.rooms}</strong> pièces</span>
+                                <span><img src="../../../bed.svg" width="20px"/><strong>{adDetails.bedrooms}</strong> chambres</span>
                         </div>
 
+<<<<<<< HEAD
                         {avantages.length > 0 && <div className="dark-row">
 
                         <div className="row">
                         {avantages}
+=======
+                        <div className="dark-row">
+                            <div className="row">
+                                <span ><img src="../../../elevator.png" width="20px"/> Ascenseur</span>
+                                <span ><img src="../../../balcony.png" width="20px"/> Balcon</span>
+                                <span><img src="../../../floor.png" width="20px"/> Terrasse</span>
+                            </div>
+>>>>>>> 192ec5b6c848a772e87752a3197a879265f10070
                         </div>
                         </div>}
 
@@ -203,39 +213,42 @@ function AdDesc(props) {
                     </div>
 
                     {/* PARTIE PRIX ET HONORAIRES */}
+                    <Row gutter={30}>
+                        <Col xs={{span:24}} md={{span:24}} lg={{span:8}} xl={{span:8}}>
+                            <h2 className='pageSubTitle'>Prix & honoraires</h2>  
 
-
-                    <h2 className='pageSubTitle'>Prix & honoraires</h2>  
-
-                    <div className="section">
-
-                        <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>{priceFormatter.format(adDetails.price*adDetails.fees/100+adDetails.price)} </span> TTC</p>
-                            <p><span style={{fontWeight: 700}}>{priceFormatter.format(adDetails.price)}</span> hors honoraires</p>
-                            <p><span style={{fontWeight: 700}}>{adDetails.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
-                        </div>
-                    </div>
+                            <div className="section">
+                                <div className="section-text">
+                                    <p><span style={{fontWeight: 700}}>{priceFormatter.format(adDetails.price*adDetails.fees/100+adDetails.price)} </span> TTC</p>
+                                    <p><span style={{fontWeight: 700}}>{priceFormatter.format(adDetails.price)}</span> hors honoraires</p>
+                                    <p><span style={{fontWeight: 700}}>{adDetails.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
+                                </div>
+                            </div>
+                        </Col>
 
                     {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
+                        <Col xs={{span:24}} md={{span:24}} lg={{span:8}} xl={{span:8}}>
+                            <h2 className='pageSubTitle'>Diagnostique électrique</h2>  
 
-                    <h2 className='pageSubTitle'>Diagnostique électrique</h2>  
-
-                    <div className="section">
-                    <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>{adDetails.dpe}</span> kWhEP/m² /an</p>
-                            <p><span style={{fontWeight: 700}}>{adDetails.ges}</span> kgeqCO2/m² /an</p>
-                        </div>
-                    </div>
+                            <div className="section">
+                                <div className="section-text">
+                                    <p><span style={{fontWeight: 700}}>{adDetails.dpe}</span> kWhEP/m² /an</p>
+                                    <p><span style={{fontWeight: 700}}>{adDetails.ges}</span> kgeqCO2/m² /an</p>
+                                </div>
+                            </div>
+                        </Col>
 
                     {/* PARTIE DOCUMENTS */}
+                        <Col xs={{span:24}} md={{span:24}} lg={{span:8}} xl={{span:8}}>
+                            <h2 className='pageSubTitle'>Documents</h2> 
 
-                    <h2 className='pageSubTitle'>Documents</h2> 
-
-                    <div className="section">
-                        <div className="section-text">
-                                {documents}                
-                        </div>
-                    </div>
+                            <div className="section">
+                                <div className="section-text">
+                                        {documents}                
+                                </div>
+                            </div>
+                        </Col>
+                    </Row>
 
                 
 

@@ -29,6 +29,7 @@ function Home() {
         })
         const body = await ads.json();
         setAdsListFromDb(body.data.ads)
+        console.log(body)
         }
         adsFetch()
     }, [])
@@ -55,15 +56,34 @@ function Home() {
         var visitEndDate = dateCreate(e.timeSlots[0].end)
         var visitStartDate = dateCreate(e.timeSlots[0].start)
         if (visitEndDate > new Date() ) {
-            visitMessage = `Visite prévue le ${visitStartDate.toLocaleDateString('fr-FR')} à ${visitStartDate.toLocaleTimeString('fr-FR')}`
+            visitMessage = 
+                <p className="annonce-messages-buyer">
+                    Visite prévue le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
+                </p>
         } else {
-            visitMessage = `Visite effectuée le ${visitStartDate.toLocaleDateString('fr-FR')} à ${visitStartDate.toLocaleTimeString('fr-FR')}`
+            visitMessage = 
+                <p className="annonce-messages-buyer">
+                    Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
+                </p>
         }
+
+         /* Offer status translation */
+        const statusInFrench = {
+            'pending' : 'En attente',
+            'declined' : 'Refusée',
+            'accepted' : 'Acceptée'
+        }
+        const statusTranslate = (state) => statusInFrench[state]
 
         let offerMessage;
         if ( e.offers.length > 0) {
-            var offerDate = dateCreate(e.offers[0].creationDate)
-            offerMessage = `Offre déposée le ${offerDate.toLocaleDateString('fr-FR')} à ${offerDate.toLocaleTimeString('fr-FR')}`
+            const offerDate = dateCreate(e.offers[0].creationDate)
+            const offerStatus = statusTranslate(e.offers[0].status)
+            offerMessage = 
+                <p className="annonce-messages-buyer">
+                    Offre déposée le {offerDate.toLocaleDateString('fr-FR')} à {offerDate.toLocaleTimeString('fr-FR')} - <span className={`annonce-messages-buyer-offer-${e.offers[0].status}`}>{offerStatus}</span>
+                </p>
+            
         }
         
 
@@ -84,8 +104,8 @@ function Home() {
                         <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
                     </div>
                     <div className="annonce-status-buyer">
-                        <p className="annonce-messages-buyer">{visitMessage}</p>
-                        <p className="annonce-messages-buyer">{offerMessage}</p>
+                        {visitMessage}
+                        {offerMessage}
                     </div>
                 </Link>
             </Col>
