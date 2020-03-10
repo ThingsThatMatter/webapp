@@ -36,7 +36,7 @@ function AdDesc() {
 
     useEffect( () => {
         const dbFetch = async () => {
-            const data = await fetch(`/user/ad/5e666272799a2825dcd8ec0e`)
+            const data = await fetch(`/user/ad/5e667918c8cd1041d8dabb4d`)
             const body = await data.json()
     
             setAdDetails(body)
@@ -88,7 +88,7 @@ function AdDesc() {
 
                         <div className="agent-section">
 
-                            <h1 className='pageTitle'>{adDetails.title} - {adDetails.area}m<sup>2</sup> - {adDetails.address} {adDetails.postcode} {adDetails.city} - {priceFormatter.format(adDetails.price)}</h1>
+                            <h1 className='pageTitle'>{adDetails.title}</h1>
 
                         </div>
 

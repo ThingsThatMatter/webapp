@@ -71,6 +71,7 @@ function CreateFormSix(props) {
 
     console.log("form 6", props.formData)
     console.log(avantages)
+
     return (
 
         <Layout>
@@ -90,9 +91,10 @@ function CreateFormSix(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div className='detail'>
-                        <p>{props.formData.type.toUpperCase()}</p>
-                        <p>{props.formData.address} {props.formData.postCode}</p> {props.formData.typeAddress === false && <p>(uniquement le quartier sera communiqué sur les plateformes)</p>}
+                    <div style={{margin : "20px 0"}}>
+
+                    <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
+
                     </div>
 
                     <div className="section">
@@ -104,7 +106,7 @@ function CreateFormSix(props) {
                             <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" alt="chambres" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
                         </div>
                         
-                        {props.formData.advantages && <div className="dark-row">
+                        {avantages.length > 0 && <div className="dark-row">
 
                         <div className="row">
                         {avantages}

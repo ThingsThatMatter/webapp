@@ -874,7 +874,7 @@ router.delete('/upload/:name', async function(req, res, next) {
 
 });
 
-router.get('/tempfiles', async function(req, res, next) { // ne marche pas pour l'instant
+router.get('/tempfiles', async function(req, res, next) { 
 
   console.log(req.query.name)
 

@@ -127,8 +127,8 @@ function CreateFormOne(props) {
       nextStep : function() { 
         dispatch( {type: 'nextStep'} ) 
       },
-      saveFormData : function(street, postal, pref, city, adID) { 
-        dispatch( {type: 'saveFormData', address: street, postCode: postal, city: city, typeAddress: pref, adID: adID } ) 
+      saveFormData : function(street, postal, city, pref, adID) { 
+        dispatch( {type: 'saveFormData', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
     }
 
     }
