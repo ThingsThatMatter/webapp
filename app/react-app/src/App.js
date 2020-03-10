@@ -9,8 +9,9 @@ import BuyerRoutes from './BuyerRoutes'
 import step from './reducers/step.reducer'
 import formData from './reducers/formData.reducer'
 import token from './reducers/authentification.reducer'
+import edit from './reducers/edit.reducer'
 
-const store = createStore(combineReducers({step, formData, token}))
+const store = createStore(combineReducers({step, formData, token, edit}))
 
 function App() {
 

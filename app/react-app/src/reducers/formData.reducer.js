@@ -25,14 +25,16 @@ export default function(formData = {}, action) {
             photos : action.photos,
             video : action.video,
             ges : action.ges,
-            dpe : action.dpe
+            dpe : action.dpe,
+            photosDB : action.photosDB
         }
         return newData;
 
     } else if(action.type === 'saveFormData3') {
         var newData = {
             ...formData,
-            files: action.files
+            files: action.files,
+            filesDB: action.filesDB
         }
         return newData;
 

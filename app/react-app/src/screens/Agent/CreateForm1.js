@@ -50,8 +50,7 @@ function CreateFormOne(props) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button handleClick
     }
 
-    console.log("form 1", props.formData)
-    console.log(street, postal, city, pref)
+    console.log(props.edit)
 
     return (
 
@@ -118,7 +117,9 @@ function CreateFormOne(props) {
 
   function mapStateToProps(state) {
     return { 
-        formData: state.formData
+        formData: state.formData,
+        step : state.step,
+        edit: state.edit
     }
   }
 
