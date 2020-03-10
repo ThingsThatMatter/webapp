@@ -22,35 +22,35 @@ function Sidebar() {
         className="sidebar"
       >
         <div className="logo">
-          <img width="100%" src='logo.jpg'/>
+          <img width="100%" src='http://localhost:3001/logo.jpg'/>
         </div>
-        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']} >
+        <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
 
           <Menu.Item key="1">
             <Link to="/pro">
-            <HomeOutlined />
-            <span className="nav-text">Biens</span>
+              <HomeOutlined />
+              <span className="nav-text">Biens</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="2">
             <Link to="/pro/offres">
-            <EuroCircleOutlined />
-            <span className="nav-text">Offres</span>
+              <EuroCircleOutlined />
+              <span className="nav-text">Offres</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="3">
             <Link to="/pro/rendezvous">
-            <CalendarOutlined />
-            <span className="nav-text">Rendez-vous</span>
+              <CalendarOutlined />
+              <span className="nav-text">Rendez-vous</span>
             </Link>
           </Menu.Item>
 
           <Menu.Item key="4">
             <Link to="/pro/questions">
-            <MailOutlined />
-            <span className="nav-text">Messages</span>
+              <MailOutlined />
+              <span className="nav-text">Messages</span>
             </Link>
           </Menu.Item>
 

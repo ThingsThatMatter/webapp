@@ -535,7 +535,8 @@ p.offre-buyer-name {
   align-items: center;
   justify-content: center;
   background-size: cover;
-  min-height: 600px;
+  background-position: center;
+  min-height: 450px;
 }
 
 .section-text {
@@ -554,8 +555,23 @@ p.offre-buyer-name {
   font-weight: bold;
 }
 
+.ant-btn-background-ghost.ant-btn-primary {
+  color: #001428;
+  background-color: transparent;
+  border-color: #001428;
+  text-shadow: none;
+}
+
 .agent-resume button {
   margin: 0;
+  border: 2px solid #001428;
+  line-height: 13px;
+}
+
+.agent-resume .ant-btn-primary:hover, .agent-resume .ant-btn-primary:focus {
+  color: #fff !important;
+  border-color: #001428;
+  background-color: #001428 !important;
 }
 
 .agent-action {

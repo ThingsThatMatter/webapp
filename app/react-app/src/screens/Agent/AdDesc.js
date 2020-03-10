@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { Layout, Button, Switch, Badge, Collapse } from 'antd';
+import { Layout, Button, Switch, Badge, Collapse, Col, Row } from 'antd';
 import { Slide } from 'react-slideshow-image';
 import {Redirect} from 'react-router-dom';
 
@@ -150,7 +150,7 @@ function AdDesc(props) {
                                 <Button type="primary" ghost className="button-add">Questions</Button>
                             </Badge>
                         </div>
-
+                    
                     {/* PARTIE DESCRIPTION */}
 
                     <h2 className='pageSubTitle'>Descriptif</h2>  
@@ -174,22 +174,24 @@ function AdDesc(props) {
                             </div>
                         </div>
 
-                        <div className="section-text">
-                            <p style={{textAlign: "justify"}}>{adDetails.description}</p>
-                        </div>
+                        <Row gutter={16} className="section-text">
+                            <Col xs={{span:24}} md={{span:12}} lg={{span:12}} xl={{span:12}}>
+                                <div className="slide-container">
 
-                            <div className="slide-container">
+                                    <Slide {...properties}>
 
-                                <Slide {...properties}>
+                                    {photos}
 
-                                {photos}
-
-                                </Slide>
-                            </div>
-                        
+                                    </Slide>
+                                </div>
+                            </Col>
+                            <Col xs={{span:24}} md={{span:12}} lg={{span:12}} xl={{span:12}}>
+                                <p style={{textAlign: "justify"}}>{adDetails.description}</p>
+                            </Col>
+                        </Row>
                     </div>
 
-                    {/* PARTIE PRIX ET HONNORAIRES */}
+                    {/* PARTIE PRIX ET HONORAIRES */}
 
 
                     <h2 className='pageSubTitle'>Prix & honoraires</h2>  
