@@ -720,7 +720,18 @@ p.offre-buyer-name {
 }
 
 .annonce-messages-buyer {
-  padding: 0.2em 1em 0 1em;
+  padding: 0.5em 1em 0 1em;
+  line-height: 110%;
+}
+
+.annonce-messages-buyer-offer-accepted {
+  color: #41bb41;
+  font-weight: 700;
+}
+
+.annonce-messages-buyer-offer-declined {
+  color: #ff6b6b;
+  font-weight: 500;
 }
 
 /* Buyer pages styles  */
