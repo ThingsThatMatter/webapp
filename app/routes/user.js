@@ -67,9 +67,16 @@ router.get('/ads', async function(req, res, next) {
       };
     } else {
 
-      adsFromUser.ads.forEach( e => {
+      adsFromUser.ads.forEach( e => {      //filter timeslots and offers to only keep user's
         let visits = e.timeSlots.filter( f => {
-          return f.user.indexOf(adsFromUser._id) > -1
+          if (f.user.length > 0) {
+            let users = f.user.map( g => {return g.toString()})
+            //console.log(a.indexOf(adsFromUser._id.toString()))
+            if (users.indexOf(adsFromUser._id.toString()) > -1) {
+              f.user = adsFromUser._id 
+            } else {f = null}
+            return f
+          }
         })
         let offers = e.offers.filter( g => {
           return String(g.user) === String(adsFromUser._id)

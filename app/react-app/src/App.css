@@ -673,7 +673,7 @@ p.offre-buyer-name {
 
 /* HomePage */
 
-.annonce-text-user {
+.annonce-text-buyer {
   padding: 1em 1em 0 1em;
   border-bottom: 1px solid #f1f1f1;
 }
@@ -701,13 +701,24 @@ p.offre-buyer-name {
 }
 
 .annonce-status-buyer {
-  height: 3.5em;
+  /* height: 3.5em; */
   background-color: #f1f1f1;
   color: #555
 }
 
 .annonce-messages-buyer {
-  padding: 0.2em 1em 0 1em;
+  padding: 0.5em 1em 0 1em;
+  line-height: 110%;
+}
+
+.annonce-messages-buyer-offer-accepted {
+  color: #41bb41;
+  font-weight: 700;
+}
+
+.annonce-messages-buyer-offer-declined {
+  color: #ff6b6b;
+  font-weight: 500;
 }
 
 /* Buyer pages styles  */
