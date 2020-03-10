@@ -49,9 +49,8 @@ router.post('/sign-up', async function(req, res, next) {
   res.json(user);
 });
 
-<<<<<<< HEAD
 /* GET ads */
-router.get('/ads', async function(req, res, next){
+router.get('/ads', async function(req, res, next) {
 
   const adsFromUser = await userModel
     .findOne({ token:req.headers.token })
@@ -90,7 +89,18 @@ router.get('/ads', async function(req, res, next){
     };
 
   } catch(e) {
-=======
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+})
+
+
 /* GET ad  */
 router.get('/ad/:id', async function(req, res, next) {
 
@@ -101,7 +111,6 @@ router.get('/ad/:id', async function(req, res, next) {
     }
 
    catch(e) {
->>>>>>> 1a73e6b6a7e954f8ff499e0b7192e5cbee4d7e12
     status = 500;
     response = {
       message: 'Internal error',
@@ -111,11 +120,8 @@ router.get('/ad/:id', async function(req, res, next) {
 
   res.status(status).json(response);
 
-<<<<<<< HEAD
-})
-=======
+
 });
->>>>>>> 1a73e6b6a7e954f8ff499e0b7192e5cbee4d7e12
 
 /* GET offers */
 router.get('/offers', async function(req, res, next) {
