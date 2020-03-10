@@ -179,21 +179,12 @@ function AdDesc(props) {
                                 <span><img src="../../../bed.svg" width="20px"/><strong>{adDetails.bedrooms}</strong> chambres</span>
                         </div>
 
-<<<<<<< HEAD
                         {avantages.length > 0 && <div className="dark-row">
-
                         <div className="row">
-                        {avantages}
-=======
-                        <div className="dark-row">
-                            <div className="row">
-                                <span ><img src="../../../elevator.png" width="20px"/> Ascenseur</span>
-                                <span ><img src="../../../balcony.png" width="20px"/> Balcon</span>
-                                <span><img src="../../../floor.png" width="20px"/> Terrasse</span>
-                            </div>
->>>>>>> 192ec5b6c848a772e87752a3197a879265f10070
+                            {avantages}
                         </div>
-                        </div>}
+                        </div>
+                        }
 
                         <Row gutter={16} className="section-text">
                             <Col xs={{span:24}} md={{span:12}} lg={{span:12}} xl={{span:12}}>
