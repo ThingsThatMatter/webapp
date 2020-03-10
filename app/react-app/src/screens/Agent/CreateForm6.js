@@ -85,7 +85,7 @@ function CreateFormSix(props) {
                             <Step title="Localisation" />
                             <Step title="Description" />
                             <Step title="Documents" />
-                            <Step title="Prix/honnoraires" />
+                            <Step title="Prix/honoraires" />
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>
