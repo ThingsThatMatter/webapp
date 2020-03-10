@@ -71,8 +71,6 @@ function CreateFormFour(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
-
                         <form>
                             
                             <p className='formLabel'>Les honoraires sont à la charge de</p>
@@ -124,18 +122,19 @@ function CreateFormFour(props) {
                         </form>
                         {formError}
 
-                        <Button type="primary" className="button-back"
-                        onClick={() => {
-                            setBackRedir(true);
-                            props.previousStep();
-                        }}
-                        >
-                        Précédent</Button>  
+                        <div className="form-buttons">
 
-                        <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
-                        
-                    </div>
-                           
+                            <Button type="primary" className="button-back"
+                            onClick={() => {
+                                setBackRedir(true);
+                                props.previousStep();
+                            }}
+                            >
+                            Précédent</Button>  
+
+                            <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
+                        </div>
+                                                   
                 </Content>  
 
          </Layout>

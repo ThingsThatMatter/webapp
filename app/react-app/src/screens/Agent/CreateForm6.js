@@ -91,7 +91,7 @@ function CreateFormSix(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{margin : "20px 0"}}>
+                    <div style={{margin : "3em 0"}}>
 
                     <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
 
@@ -179,6 +179,8 @@ function CreateFormSix(props) {
                         </div>
                     </div>
 
+                    <div className="form-buttons">
+
                     <Button type="primary" className="button-back"
                         onClick={() => {
                             setBackRedir(true)
@@ -187,7 +189,7 @@ function CreateFormSix(props) {
                         >
                         Précédent</Button>  
 
-                        <Button type="primary" className="button-validate" 
+                        <Button type="secondary" className="button-validate" 
                         onClick={async() => {
 
                             const key = "updatable"
@@ -240,6 +242,7 @@ function CreateFormSix(props) {
                             }
 
                             }}>Créer et diffuser l'annonce</Button>
+                    </div>
                            
                 </Content>  
 

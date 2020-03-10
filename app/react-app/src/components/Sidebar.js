@@ -55,6 +55,7 @@ function Sidebar() {
           </Menu.Item>
 
         </Menu>
+        <div className="logo-ttm"><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
       </Sider>
     
 

@@ -509,7 +509,8 @@ function CreateFormFive(props) {
 
             </div>
             
-            <div className= "new-offer-step5-buttons-block">
+            <div className="form-buttons">
+
               <Button
                 type="primary" 
                 className="button-back"
@@ -521,15 +522,16 @@ function CreateFormFive(props) {
                 Précédent
               </Button>  
 
-              <span
-                className = "new-offer-step5-skip"
+              <Button
+                type="primary" 
+                className="button-skip"
                 onClick= { () => {
                   setRedir(true)
                   props.nextStep()
                 }}
               >
                 Passer cette étape
-              </span>
+              </Button>
 
               <Button
                 type="primary"
