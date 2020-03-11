@@ -53,6 +53,7 @@ export default function(formData = {}, action) {
           return {
             start: start,
             end: end,
+            booked: false,
             private: priv
           }
         })

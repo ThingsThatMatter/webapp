@@ -5,6 +5,7 @@ import { Redirect, Link } from "react-router-dom";
 import UserNavHeader from "../../components/UserNavHeader";
 
 import { connect } from "react-redux";
+import { getInputClassName } from "antd/lib/input/Input";
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -26,6 +27,8 @@ function AdDesc() {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
+  const [timeslots, setTimeslots] = useState([])
+  const [slotsDisplay, setSlotsDisplay] = useState([])
 
   let toggleStyle = { fontWeight: 600, color: "#1476E1", fontSize: "18px" };
 
@@ -41,9 +44,56 @@ function AdDesc() {
       setAdDetails(body);
       setAdPhotos(body.photos);
       setAdDocuments(body.files);
+      setTimeslots(body.timeSlots);
     };
-
     dbFetch();
+    console.log(timeslots)
+    const daySlots = []
+
+    for(let i=0 ; i<timeslots.length ; i++) {
+
+      const year = timeslots[i].start.slice(0,4)
+      let month = Number(timeslots[i].start.slice(5,7))-1
+      const day = timeslots[i].start.slice(8,10)
+      const hour1 = timeslots[i].start.slice(11,13)
+      const min1 = timeslots[i].start.slice(14,16)
+      const hour2 = timeslots[i].end.slice(11,13)
+      const min2 = timeslots[i].end.slice(14,16)
+
+      const date = new Date(year, month, day)
+
+      const index = daySlots.findIndex((e) => {
+
+      console.log(e.day.getTime() == date.getTime());
+
+      return e.day.getTime() == date.getTime();
+    })
+      
+      if( index !== -1 ) {
+        daySlots[index].slots.push({
+        start : [hour1, min1], end : [hour2,min2]
+        })
+      } else {
+        daySlots.push({
+          day: date,
+          slots : [{start : [hour1, min1], end : [hour2,min2]}]
+        })
+      }
+    }
+
+    console.log(daySlots)
+      
+      const mapSlots = daySlots.map((e) => (
+         <div>{e.day}</div>
+      )
+      )
+
+
+
+      setSlotsDisplay(mapSlots)
+
+   
+
   }, []);
 
   /* Price formatting */
@@ -70,9 +120,11 @@ function AdDesc() {
         </a>
       </div>
     );
-  });
+  });  
 
-  console.log(adDetails);
+  
+
+
   return (
     <Layout className="user-layout">
       <UserNavHeader current="Biens consultés" />
@@ -299,10 +351,16 @@ function AdDesc() {
             >
               <div className="timeslot-picker">
                 <p>Sélectionnez un créneau de visite</p>
-                {/* 
-                        1) extraire jours >= today. les mettre dans un objet et dans un tableau [{jour : 02/01/2020, créneaux : [{id: id, start: 8h30, end: 9h00}, ...], ...]
-                        
-                         */}
+                <Row>
+                  <div>
+                        {slotsDisplay}
+                  </div>
+                  
+                 
+                 
+                </Row>
+
+                
               </div>
             </Col>
           </Row>

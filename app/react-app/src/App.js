@@ -1,7 +1,7 @@
 import React from 'react'
 import 'antd/dist/antd.css';import './App.css'
 import {Provider} from 'react-redux'
-import {createStore, combineReducers, applyMiddleware}  from 'redux'
+import {createStore, combineReducers}  from 'redux'
 
 import AgentRoutes from './AgentRoutes'
 import BuyerRoutes from './BuyerRoutes'
