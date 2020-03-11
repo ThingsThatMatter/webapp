@@ -240,7 +240,7 @@ function AdDesc(props) {
                 lg={{ span: 12 }}
                 xl={{ span: 12 }}
               >
-                <p style={{ textAlign: "justify" }}>{adDetails.description}</p>
+                <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{adDetails.description}</p>
               </Col>
             </Row>
           </div>

@@ -32,6 +32,7 @@ function CreateFormTwo(props) {
 
 
     useEffect(() => {
+
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
 
         if(props.formData.rooms) {     // Display inputed info if user goes back from next form pages
