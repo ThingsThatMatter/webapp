@@ -20,9 +20,9 @@ function OfferForm2(props) {
     const [contributionAmount, setContributionAmount] = useState('')
     const [salary, setSalary] = useState('')
 
-    const [formError, setFormError] = useState('')
-    const [redir, setRedir] = useState(false)
-    const [backRedir, setBackRedir] = useState(false)
+    const [offerFormError, setOfferFormError] = useState('')
+    const [offerRedir, setOfferRedir] = useState(false)
+    const [backOfferRedir, setOfferBackRedir] = useState(false)
 
     /* ----------------------------------------------------AD CARD--------------------------------------- */
 
@@ -119,19 +119,19 @@ function OfferForm2(props) {
     const handleClick = () => {
         if(offerAmount !== "" && loanAmount !== "" && contributionAmount !== "") {
             const salaryOk = salary !=='' ? salary : 0
-            props.saveFormData(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk);
-            props.nextStep();
-            setRedir(true);
+            props.offerSaveFormData(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk);
+            props.offerNextStep();
+            setOfferRedir(true);
 
         } else {
-            setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+            setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }
     }
 
-    if(redir === true) {
+    if(offerRedir === true) {
         return <Redirect to="/newoffer/step3"/> // Triggered by button handleClick
     }
-    if(backRedir === true) {
+    if(backOfferRedir === true) {
         return <Redirect to="/newoffer/step1"/> // Triggered by button-back handleClick
     }
 
@@ -217,13 +217,13 @@ function OfferForm2(props) {
                                 </div>
                                 
                             </form>
-                            {formError}
+                            {offerFormError}
                             <Button
                                 type="primary"
                                 className="button-back"
                                 onClick={() => {
-                                    setBackRedir(true)
-                                    props.previousStep()
+                                    setOfferBackRedir(true)
+                                    props.offerPreviousStep()
                                 }}
                             >
                                 Précédent
@@ -258,15 +258,15 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        nextStep : function() { 
-            dispatch( {type: 'nextStep'} ) 
+        offerNextStep : function() { 
+            dispatch( {type: 'offerNextStep'} ) 
         },
-        previousStep : function() {
-            dispatch( {type: 'prevStep'} )
+        offerPreviousStep : function() {
+            dispatch( {type: 'offerPrevStep'} )
         },
-        saveFormData : function(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk) { 
+        offerSaveFormData : function(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk) { 
             dispatch({
-                type: 'saveFormData2',
+                type: 'offerSaveFormData2',
                 offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk
             })
         } 

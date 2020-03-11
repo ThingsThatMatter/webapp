@@ -24,12 +24,12 @@ function OfferForm3(props) {
     const [offerLocation, setOfferLocation] = useState('')
     const [comments, setComments] = useState('')
     
-    const [formError, setFormError] = useState('')
-    const [redirHome, setRedirHome] = useState(false)
-    const [redirStep1, setRedirStep1] = useState(false)
-    const [backRedir, setBackRedir] = useState(false)
+    const [offerFormError, setOfferFormError] = useState('')
+    const [offerRedirHome, setOfferRedirHome] = useState(false)
+    const [offerRedirStep1, setOfferRedirStep1] = useState(false)
+    const [offerBackRedir, setOfferBackRedir] = useState(false)
 
-    const [modalVisible, setModalVisible] = useState(true)
+    const [modalVisible, setModalVisible] = useState(false)
 
     /* ----------------------------------------------------AD CARD--------------------------------------- */
 
@@ -111,21 +111,21 @@ function OfferForm3(props) {
 
     const handleClick = () => {
         if(validityPeriod !== "" && offerLocation !== "" && comments !== "" ) {
-            props.saveFormData(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress);
+            props.offerSaveFormData(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress);
             setModalVisible(true)
 
         } else {
-            setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+            setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }
     }
 
-    if(redirHome === true) {
+    if(offerRedirHome === true) {
         return <Redirect to="/"/> // Triggered by button handleClick
     }
-    if(redirStep1 === true) {
+    if(offerRedirStep1 === true) {
         return <Redirect to="/newoffer/step1"/> // Triggered by button handleClick
     }
-    if(backRedir === true) {
+    if(offerBackRedir === true) {
         return <Redirect to="/newoffer/step2"/> // Triggered by button-back handleClick
     }
 
@@ -184,13 +184,13 @@ function OfferForm3(props) {
                                 </label>
                                 
                             </form>
-                            {formError} 
+                            {offerFormError} 
                             <Button
                                 type="primary"
                                 className="button-back"
                                 onClick={() => {
-                                    setBackRedir(true)
-                                    props.previousStep()
+                                    setOfferBackRedir(true)
+                                    props.offerPreviousStep()
                                 }}
                             >
                                 Précédent
@@ -216,8 +216,9 @@ function OfferForm3(props) {
                         visible={modalVisible}
                         centered
                         okText="Déposer l'offre"
-                        onOk={() => () => {setModalVisible(false) ; setRedirHome(true) }}
+                        onOk={() => () => {setModalVisible(false) ; setOfferRedirHome(true) }}
                         cancelText="Annuler"
+                        cancelButtonProps={{type: 'primary', className:'button-back'}}
                         onCancel={ () => setModalVisible(false)}
                         destroyOnClose= {true}
                         width= "80%"
@@ -231,7 +232,7 @@ function OfferForm3(props) {
                                     <p>Informations personnelles</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setRedirStep1(true)}
+                                        onClick={() => setOfferRedirStep1(true)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
@@ -255,7 +256,7 @@ function OfferForm3(props) {
                                     <p>Offre</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setRedirStep1(true)}
+                                        onClick={() => setOfferRedirStep1(true)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
@@ -279,7 +280,7 @@ function OfferForm3(props) {
                                     <p>Notaire</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setRedirStep1(true)}
+                                        onClick={() => setOfferRedirStep1(true)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
@@ -303,7 +304,7 @@ function OfferForm3(props) {
                                     <p>Commentaires</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setRedirStep1(true)}
+                                        onClick={() => setOfferRedirStep1(true)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
@@ -318,7 +319,7 @@ function OfferForm3(props) {
                                     <p>Conditions</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setRedirStep1(true)}
+                                        onClick={() => setOfferRedirStep1(true)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
@@ -353,15 +354,15 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        nextStep : function() { 
-            dispatch( {type: 'nextStep'} ) 
+        offerNextStep : function() { 
+            dispatch( {type: 'offerNextStep'} ) 
         },
-        previousStep : function() {
-            dispatch( {type: 'prevStep'} )
+        offerPreviousStep : function() {
+            dispatch( {type: 'offerPrevStep'} )
         },
-        saveFormData : function(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress) { 
+        offerSaveFormData : function(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress) { 
             dispatch({
-                type: 'saveFormData3',
+                type: 'offerSaveFormData3',
                 validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress
             })
         } 

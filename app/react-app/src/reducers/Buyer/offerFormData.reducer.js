@@ -1,6 +1,6 @@
 export default function(offerFormData = {}, action) {
   
-    if(action.type === 'saveFormData1') {
+    if(action.type === 'offerSaveFormData1') {
     
       var newData = {
         ...offerFormData,
@@ -15,7 +15,7 @@ export default function(offerFormData = {}, action) {
       }
       return newData;
 
-    } else if(action.type === 'saveFormData2') {
+    } else if(action.type === 'offerSaveFormData2') {
         
         var newData = {
             ...offerFormData,
@@ -27,7 +27,7 @@ export default function(offerFormData = {}, action) {
         }
         return newData;
 
-    } else if(action.type === 'saveFormData3') {
+    } else if(action.type === 'offerSaveFormData3') {
         var newData = {
             ...offerFormData,
             validityPeriod: action.validityPeriod,

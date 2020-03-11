@@ -63,12 +63,12 @@ function BuyerRoutes(props) {
                 <PrivateRoute component={CreateFormSix} path="/pro/createform/step6" exact/> */}
 
                 <Route component={Home} path="/" exact/>
-                <Route component={AdDesc} path="/ad/:id" />
-                <Route component={Visits} path="/visits" />
-                <Route component={Offers} path="/offers" />
-                <Route component={OfferForm1} path="/newoffer/step1" />
-                <Route component={OfferForm2} path="/newoffer/step2" />
-                <Route component={OfferForm3} parth="/newoffer/step3" />
+                <Route component={AdDesc} path="/ad/:id" exact/>
+                <Route component={Visits} path="/visits" exact/>
+                <Route component={Offers} path="/offers" exact/>
+                <Route component={OfferForm1} path="/newoffer/step1" exact/>
+                <Route component={OfferForm2} path="/newoffer/step2" exact/>
+                <Route component={OfferForm3} path="/newoffer/step3" exact/>
             </Switch>
         </Router>
           

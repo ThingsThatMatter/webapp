@@ -24,8 +24,8 @@ function OfferForm1(props) {
     
     const [showSecondBuyer, setShowSecondBuyer] = useState(false)
 
-    const [formError, setFormError] = useState('')
-    const [redir, setRedir] = useState(false)
+    const [offerFormError, setOfferFormError] = useState('')
+    const [offerRedir, setOfferRedir] = useState(false)
 
     /* ----------------------------------------------------AD CARD--------------------------------------- */
 
@@ -124,16 +124,16 @@ useEffect(() => {
 
 const handleClick = () => {
     if(firstName1 !== "" && lastName1 !== "" && address !== "" && postal !== "" && city !== "") {
-        props.saveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city);
-        props.nextStep();
-        setRedir(true);
+        props.offerSaveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city);
+        props.offerNextStep();
+        setOfferRedir(true);
 
     } else {
-        setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+        setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
     }
 }
 
-if(redir === true) {
+if(offerRedir === true) {
     return <Redirect to="/newoffer/step2"/> // Triggered by button handleClick
 }
 
@@ -199,7 +199,7 @@ if(redir === true) {
                                 </label>
                                 
                             </form>
-                            {formError} 
+                            {offerFormError} 
                             <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
 
                         </Col>
@@ -224,12 +224,12 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        nextStep : function() { 
-            dispatch( {type: 'nextStep'} ) 
+        offerNextStep : function() { 
+            dispatch( {type: 'offerNextStep'} ) 
         },
-        saveFormData : function(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city) {
+        offerSaveFormData : function(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city) {
             dispatch({
-                type: 'saveFormData1',
+                type: 'offerSaveFormData1',
                 firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city
             })
         } 
