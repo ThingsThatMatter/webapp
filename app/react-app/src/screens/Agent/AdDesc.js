@@ -92,18 +92,6 @@ function AdDesc(props) {
     dbFetch();
   }, []);
 
-    // Editer une ad
-    const handleEdit = async () => {
-        props.saveforEdit(adDetails)
-        setEditRedir(true)
-        props.edit()
-    }
-
-    // Redirection
-    if(redir === true) {
-        return <Redirect to="/pro"/>
-    }
-
   // Supprimer une ad
   const handleDelete = async () => {
     const deleteAd = await fetch(`/pro/ad/${props.match.params.id}`, {
@@ -124,6 +112,7 @@ function AdDesc(props) {
   const handleEdit = async () => {
     props.saveforEdit(adDetails);
     setEditRedir(true);
+    props.edit()
   };
 
   // Redirection

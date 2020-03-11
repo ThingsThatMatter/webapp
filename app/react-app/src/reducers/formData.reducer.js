@@ -65,9 +65,8 @@ export default function(formData = {}, action) {
         return newData;
   
     } else if (action.type == 'clear') {
-
-        let newData = {}
-
+        
+        const newData = {}
         return newData;
 
     } else if (action.type == 'saveForEdit') {

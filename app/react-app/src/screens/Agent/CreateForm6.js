@@ -109,12 +109,10 @@ function CreateFormSix(props) {
             let response = await rawResponse.json()
 
             if(response.message === "OK") {
-
                 message.success({ content: "annonce créée !", key, duration: 2 });
                 setRedir(true)
                 props.clear()
                 props.clearSteps()
-                props.clearEdit()
 
             } else {
                 message.error(response.details);
@@ -170,12 +168,12 @@ function CreateFormSix(props) {
             let response = await rawResponse.json()
 
             if(response.message === "OK") {
-
+                
                 message.success({ content: "annonce editée !", key, duration: 2 });
                 setRedir(true)
-                props.clear()
                 props.clearSteps()
                 props.clearEdit()
+                props.clear()
 
             } else {
                 message.error(response.details);
