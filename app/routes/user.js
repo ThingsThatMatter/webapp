@@ -176,7 +176,11 @@ router.post('/sign-up', async function(req, res, next) {
 router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
-    let findAd = await userModel.findOne({ token : req.headers.token, "ads": req.params.id_ad });
+    let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.id_ad });
+    console.log(req.headers.token)
+    console.log(req.params.id_ad)
+
+    console.log(findAd)
 
     if(!findAd) { 
       status = 401;
@@ -186,15 +190,15 @@ router.put('/ad/:id_ad', async function(req, res, next) {
       };
     } else {
 
-      let newAd = await userModel.updateOne(
-        { token : req.headers.token },
-        { $push : { 'ads' : req.params.id_ad } }
-      );
+      // let newAd = await userModel.updateOne(
+      //   { token : req.headers.token },
+      //   { $push : { 'ads' : req.params.id_ad } }
+      // );
 
       status = 200;
       response = {
         message: 'OK',
-        data: newAd
+        data: 'hello'
       }
     };
 

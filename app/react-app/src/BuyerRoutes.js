@@ -46,7 +46,6 @@ function BuyerRoutes(props) {
         <Router>
             <Switch>
                 <PrivateRoute component={Home} path="/" exact/>
-                <Route component={AdDesc} path="/ad/:id" />
                 <PrivateRoute component={Visits} path="/visits" />
                 <PrivateRoute component={Offers} path="/offers" />
                 <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
@@ -54,6 +53,7 @@ function BuyerRoutes(props) {
                 <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
 
                 <Route component={buyerSign} path="/sign" />
+                <Route component={AdDesc} path="/ad/:id" />
             </Switch>
         </Router>
           

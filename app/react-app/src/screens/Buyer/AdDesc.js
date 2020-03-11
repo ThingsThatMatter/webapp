@@ -6,6 +6,8 @@ import UserNavHeader from "../../components/UserNavHeader";
 
 import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
 
+import {useCookies} from 'react-cookie'
+
 
 import { connect } from "react-redux";
 import { getInputClassName } from "antd/lib/input/Input";
@@ -31,6 +33,9 @@ function AdDesc(props) {
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
   const [slotsDisplay, setSlotsDisplay] = useState([]);
+
+  const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+
 
   useEffect(() => {
 
@@ -160,6 +165,17 @@ function AdDesc(props) {
           })
 
         setSlotsDisplay(mapSlots)
+
+        const saveAdUser = await fetch(`/user/ad/${body._id}`, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
+        })
+    
+        const ad = await saveAdUser.json()
+
+        console.log(props.userToken)
+
+
       };
       dbFetchPrivate();
     } /// Fin de la condition dbFetchPrivate
@@ -190,8 +206,6 @@ function AdDesc(props) {
       </div>
     );
   });  
-
-  
 
 
   return (
@@ -423,9 +437,9 @@ function AdDesc(props) {
                   <Row className="slot-row">
 
                   {props.userToken === '' ?
-                    <p>Accès privé</p>
-                  :
                     <AdDescSidebarLogout/>
+                  :
+                    <p>Voici les créneaux</p>
                   }
 
                     {slotsDisplay}
