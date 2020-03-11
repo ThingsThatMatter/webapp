@@ -992,4 +992,151 @@ h1.userTitle  {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  
+}
+
+
+/* NEW OFFER - ALL STEPS */
+
+.newoffer-stepbar {
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.newoffer-stepbar-title {
+  text-align: center;
+}
+
+.newoffer-step-dots {
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0.8em;
+}
+
+.filled-dots {
+  background-color: #052040;
+}
+
+.empty-dots {
+  background-color: #FFF;
+  border: 2px solid #052040;
+}
+
+.formLabel-offer {
+  color: #052040;
+  /* font-weight: 500; */
+  padding-top : 1.2em;
+  padding-bottom : 0.4em;
+}
+
+.newoffer-ad-card {
+  padding-left: 3em !important;
+}
+.offer-form:hover {
+    transform: scale(1);
+    cursor:default;
+    box-shadow: 0 0 5px #bbbbbb;
+  }
+
+.new-offer-form-disclaimer {
+  font-size:10px
+}
+
+  /* Step 1 */
+
+  .last-name-1-offer {
+    margin-bottom:0.5em;
+  }
+
+  .second-buyer {
+    color: #052040;
+  }
+
+  .second-buyer-firstname {
+    padding-top: 2px
+  }
+
+  /* Step 2*/
+  .newoffer-input-step2 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.2em;
+  }
+
+  .newoffer-subsection-title {
+    margin-top: 2em
+  }
+
+  .formLabel-offer.step-2 {
+      margin-right: 1em;
+      padding: 0
+  }
+
+  .formLabel-offer.step-2-label {
+    display: flex;
+    flex-direction: column;
+    line-height: 110%;
+  }
+
+  .newoffer-input-step2.exception-field {
+    margin-bottom: 0;
+  }
+
+  .no-loan {
+    font-size:12px;
+    color: #052040;
+    font-weight: 600;
+    margin-bottom: 1.2em
+  }
+
+  /* Step 3*/
+
+.new-offer-modal .ant-modal-content .ant-modal-header {
+  border-bottom:0 
+}
+
+.newoffer-modal-title {
+  color: #052040;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.newoffer-modal-section {
+  margin-top: 1em
+}
+
+.newoffer-modal-section.first-section {
+  margin-top: 0
+}
+
+.newoffer-modal-section-title {
+  display:flex;
+  justify-content: space-between;
+  align-items:center;
+  color: #052040;
+  border-bottom: 1px solid #f1f1f1;
+  font-size: 15px;
+  font-weight: bold;
+}
+  .newoffer-modal-section-title-icon {
+    color: #999;
+  }
+
+.newoffer-modal-section-content-block {
+  padding: 2px 0;
+}
+
+.newoffer-modal-section-content-minor {
+  padding-left: 2em;
+  font-size: 12px;
+  line-height: 110%;
+}
+
+.newoffer-modal-section-content-data {
+  color:#052040
 }

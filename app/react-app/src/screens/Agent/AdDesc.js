@@ -42,31 +42,34 @@ function AdDesc(props) {
   }
 
   useEffect(() => {
+
     const dbFetch = async () => {
-      const data = await fetch(`/pro/ad/${props.match.params.id}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          token: props.token
-        }
-      });
-      const body = await data.json();
-      setAdDetails(body.data);
-      setAdPhotos(body.data.photos);
-      setAdDocuments(body.data.files);
-      setAdOffers(body.data.offers);
-      setAdVisits(body.data.timeSlots);
+        const data = await fetch(`/pro/ad/${props.match.params.id}`, {
+            method: "GET",
+            headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            token: props.token
+            }
+        })
 
-      const tempTable = [];
+    const body = await data.json();
+    setAdDetails(body.data);
+    setAdPhotos(body.data.photos);
+    setAdDocuments(body.data.files);
+    setAdOffers(body.data.offers);
+    setAdVisits(body.data.timeSlots);
 
-      if (body.data.advantages.findIndex(e => e === "ascenseur") !== -1) {
+    const tempTable = [];
+
+    if (body.data.advantages.findIndex(e => e === "ascenseur") !== -1) {
         tempTable.push(
-          <span>
+            <span>
             <img src="../../../elevator.png" width="20px" alt="ascenseur" />
             Ascenseur
           </span>
         );
       }
+
       if (body.data.advantages.findIndex(e => e === "balcon") !== -1) {
         tempTable.push(
           <span>
@@ -109,6 +112,7 @@ function AdDesc(props) {
   const handleEdit = async () => {
     props.saveforEdit(adDetails);
     setEditRedir(true);
+    props.edit()
   };
 
   // Redirection
@@ -236,7 +240,7 @@ function AdDesc(props) {
                 lg={{ span: 12 }}
                 xl={{ span: 12 }}
               >
-                <p style={{ textAlign: "justify" }}>{adDetails.description}</p>
+                <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{adDetails.description}</p>
               </Col>
             </Row>
           </div>
@@ -373,18 +377,21 @@ function AdDesc(props) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    token: state.token
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    saveforEdit: function(adDetails) {
-      dispatch({ type: "saveForEdit", data: adDetails });
+    function mapDispatchToProps(dispatch) {
+        return {
+            saveforEdit : function(adDetails) { 
+            dispatch( {type: 'saveForEdit', data: adDetails } ) 
+            },
+            edit : function() { 
+            dispatch( {type: 'edit'} )
+            }  
+        }
     }
-  };
-}
+
+    function mapStateToProps(state) {
+        return {
+          token: state.token
+        };
+      }
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdDesc);

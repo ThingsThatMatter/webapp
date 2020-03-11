@@ -332,6 +332,8 @@ function CreateFormFive(props) {
       props.saveFormData(newEvents, adColor)
       setRedir(true)
   }
+  
+  console.log(props.step)
 
     return (
 
@@ -548,13 +550,13 @@ function CreateFormFive(props) {
     );
   }
 
-  function mapStateToProps(state) {
-    return { 
-        step : state.step,
-        formData: state.formData,
-        token: state.token
-    }
+function mapStateToProps(state) {
+  return { 
+      step : state.step,
+      formData: state.formData,
+      token: state.token
   }
+}
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -565,9 +567,10 @@ function mapDispatchToProps(dispatch) {
         dispatch( {type: 'prevStep'} )
     },
     saveFormData : function(timeslots, color) { 
+      console.log(timeslots)
       dispatch( {
           type: 'saveFormData5',
-          timeslots : timeslots,
+          timeslots : timeslots !== null ? timeslots : [],
           color: color
       } ) } 
   }

@@ -17,17 +17,39 @@ function CreateFormThree(props) {
     const [backRedir, setBackRedir] = useState(false)
 
     const[fileList, setFileList] = useState([])
+    const[filesDB, setFilesDB] = useState([])
 
     useEffect(() => {
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
         if(props.formData.files) {
             setFileList(props.formData.files)
         }
+
+        if(props.edit === true) {
+            setFileList([])
+            setFilesDB(props.formData.files)
+        }
       },[]);
 
+      const filesFromDB = filesDB.map((e, i) => (
+        <div key={i}>{e.split('-')[1]} 
+            <DeleteOutlined 
+            onClick={async () => {
+                const request = await fetch(`/pro/image/${e.split('upload/')[1].split('/')[1].split('.')[0]}`, {
+                    method: "delete"
+                })
+                const response = await request.json()
+                if(response.result === "ok") {
+                    setFilesDB(filesDB.filter((f) =>  f !== e ))
+                }
+            }}
+            />
+        </div>)
+        )
+
     const handleClick = () => {
-            props.saveFormData(fileList)
-            props.nextStep();
+            props.saveFormData(fileList, filesDB)
+            props.nextStep()
             setRedir(true)    
     }
 
@@ -37,7 +59,8 @@ function CreateFormThree(props) {
     if(backRedir === true) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button-back handleClick
     }
-
+    
+    console.log(props.step)
     console.log("form 3", props.formData)
     return (
 
@@ -104,6 +127,7 @@ function CreateFormThree(props) {
                                 />
                             </div>)
                             )}
+                            {filesFromDB}
 
                           
   
@@ -133,7 +157,7 @@ function CreateFormThree(props) {
   }
 
   function mapStateToProps(state) {
-    return { step : state.step, formData : state.formData }
+    return { step : state.step, formData : state.formData, edit : state.edit }
   }
 
     function mapDispatchToProps(dispatch) {
@@ -144,10 +168,11 @@ function CreateFormThree(props) {
         previousStep : function() {
             dispatch( {type: 'prevStep'} )
         },
-        saveFormData : function(fileList) { 
+        saveFormData : function(fileList, filesDB) { 
         dispatch( {
             type: 'saveFormData3',
-            files : fileList
+            files: fileList,
+            filesDB: filesDB 
         } ) 
     }
 
