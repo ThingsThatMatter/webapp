@@ -63,8 +63,8 @@ function SignUp(props) {
     }
 
     if (toRedirect) { // if login OK (from form) redirect to home
-        
-        if (props.idAd === '') {
+
+        if (props.idAd !== '') {
             return <Redirect to={{pathname: `/ad/${props.idAd}`}} />
         } else {
             return <Redirect to='/' /> 
