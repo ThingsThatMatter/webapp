@@ -191,30 +191,39 @@ p {
 }
 
 /* Sign-in sign-up Agent */
+
 .pro-sign-layout {
   height: 100vh;
   background-color: #355c7d;
-  color: #FFF
-}
-.pro-sign-content {
-  display:flex;
+  display: flex;
   flex-direction: column;
+  justify-content: center;
   align-items: center;
 }
+
+.pro-sign-layout > .ant-row {
+  width: 70%;
+}
+.pro-sign-layout .ant-form-item {
+  padding: 0;
+}
+
+.pro-sign-box button {
+  margin: 0 auto;
+}
+
 .logo-ttm-sign {
   margin: 3em 1em 1em 1em;
   font-size: 35px;
 }
 .pro-sign-box {
-  display:flex;
+  display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 50%;
-  /* height: 50%; */
-  padding: 2% 7%;
+  padding: 2em;
   background-color: #f0f2f5;
   border-radius: 5px;
-  box-shadow: 0 0 30px #000;
+  box-shadow: 0 0 10px #888;
 }
 .pro-sign-box-title {
   color: #355c7d;
@@ -788,6 +797,22 @@ p.offre-buyer-name {
 
 
 /* -----------------------------------------------------------BUYER APP--------------------------------------------------------------- */
+
+.user-sign-layout {
+  height: 100vh;
+  background-color: #f8b195;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-sign-layout > .ant-row {
+  width: 70%;
+}
+.user-sign-layout .ant-form-item {
+  padding: 0;
+}
 
 .user-layout {
   background-color: #f0f2f5;

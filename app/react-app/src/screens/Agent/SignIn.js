@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {Redirect} from 'react-router-dom'
+import {Redirect,Link} from 'react-router-dom'
 import {Form, Input, Button } from 'antd';
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
@@ -46,8 +46,8 @@ function SignIn(props) {
 
     return (
         <div className="pro-sign-layout">
-            <div className="pro-sign-content">
-                <div className="logo-ttm-sign">LOGO</div>
+             <div className="nav-header-logo" style={{margin:"30px 0"}}><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
+
                 <div className="pro-sign-box">
                     <div className="pro-sign-box-title">
                         Se Connecter
@@ -96,7 +96,6 @@ function SignIn(props) {
                         href="#">Mot de passe oublié
                     </a>
                 </div>
-            </div>
         </div>
     )}}
 }

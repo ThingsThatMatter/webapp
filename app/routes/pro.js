@@ -16,7 +16,6 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 12;
 
 
-
 cloudinary.config({ 
   cloud_name: 'dp4mkibm2', 
   api_key: '692324412372859', 
