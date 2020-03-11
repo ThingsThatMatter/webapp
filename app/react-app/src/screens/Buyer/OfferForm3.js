@@ -4,7 +4,7 @@ import UserNavHeader from '../../components/UserNavHeader'
 
 import {connect} from 'react-redux'
 
-import { Layout, Row, Col, Input, InputNumber, Button, Checkbox, Modal} from 'antd'
+import { Layout, Row, Col, Input, InputNumber, Button, Checkbox, Modal, message} from 'antd'
 import {EditOutlined} from '@ant-design/icons'
 const {Content} = Layout
 const {TextArea} = Input
@@ -107,6 +107,21 @@ function OfferForm3(props) {
         return spans
     }
 
+/* --------------------------------------------------PREFILL FORM-------------------------------------------- */
+    useEffect(() => {
+
+        if(props.offerFormData.validityPeriod) {     // Display inputed info if user goes back from next form pages
+            setNotaryName(props.offerFormData.notaryName)
+            setNotaryEmail(props.offerFormData.notaryEmail)
+            setNotaryAddress(props.offerFormData.notaryAddress)
+            setDisableNotary(props.offerFormData.disableNotary)
+            setValidityPeriod(props.offerFormData.validityPeriod)
+            setOfferLocation(props.offerFormData.offerLocation)
+            setComments(props.offerFormData.comments)
+        }
+    },[]);
+
+
 /* -----------------------------------------------FORM VALIDATION------------------------------------------ */
 
     const handleClick = () => {
@@ -120,14 +135,72 @@ function OfferForm3(props) {
     }
 
     if(offerRedirHome === true) {
+        props.modifyStep(1)
         return <Redirect to="/"/> // Triggered by button handleClick
     }
     if(offerRedirStep1 === true) {
+        props.modifyStep(1)
         return <Redirect to="/newoffer/step1"/> // Triggered by button handleClick
     }
     if(offerBackRedir === true) {
+        props.modifyStep(2)
         return <Redirect to="/newoffer/step2"/> // Triggered by button-back handleClick
     }
+
+/* -----------------------------------------------OFFER CREATION IN DB------------------------------------------ */
+
+    const createOffer = async() => {
+
+        const key = "updatable"
+
+        message.loading({ content: 'Dépôt de l\'offre en cours...', key });
+
+        let rawResponse = await fetch(`/user/ad/${ad_id}/offer`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'token': tokenTest
+            },
+            body: JSON.stringify({
+
+                singleBuyer: !props.offerFormData.showSecondBuyer ? true : false ,
+                lastName1: props.offerFormData.lastName1,
+                firstName1: props.offerFormData.firstName1,
+                lastName2: props.offerFormData.lastName2,
+                firstName2: props.offerFormData.firstName2,
+                address: props.offerFormData.address,
+                postCode: props.offerFormData.postCode,
+                city: props.offerFormData.city,
+                amount: props.offerFormData.offerAmount,
+                loan: !props.offerFormData.disableLoan ? true : false,
+                loanAmount: props.offerFormData.loanAmount,
+                contributionAmount: props.offerFormData.contributionAmount,
+                monthlyPay: props.offerFormData.salary,
+                notary: props.offerFormData.notaryName ? true : false,
+                notaryName: props.offerFormData.notaryName,
+                notaryAddress: props.offerFormData.notaryAddress,
+                notaryEmail: props.offerFormData.notaryEmail,
+                validityPeriod: props.offerFormData.validityPeriod,
+                location: props.offerFormData.offerLocation,
+                comments: props.offerFormData.comments
+                }
+            )
+        })
+
+        let response = await rawResponse.json()
+
+        if(response.message === "OK") {
+            message.success({ content: "Offre déposée !", key, duration: 2 });
+            setOfferRedirHome(true)
+            props.offerClear()
+            props.modifyStep(1)
+
+        } else {
+            message.error(response.details);
+        }
+
+    }
+
 
     return (
   
@@ -145,9 +218,17 @@ function OfferForm3(props) {
                         <Col xs={24} md={16}>
                             <form>
                                 
-                                <h2 className="newoffer-subsection-title"> Notaire </h2>
+                                <h2 className="newoffer-subsection-title-first"> Notaire </h2>
                                 <label>
-                                    <Checkbox className="second-buyer" onChange={ e => setDisableNotary(e.target.checked)} >
+                                    <Checkbox
+                                        className="second-buyer"
+                                        onChange={ e => {
+                                            setDisableNotary(e.target.checked)
+                                            setNotaryName('')
+                                            setNotaryAddress('')
+                                            setNotaryEmail('')
+                                        }}
+                                    >
                                         Je fournirai ces informations plus tard
                                     </Checkbox>
                                 </label>
@@ -175,7 +256,7 @@ function OfferForm3(props) {
 
                                 <p className='formLabel-offer'>Offre faite à</p>
                                 <label>
-                                    <Input onChange={ e => setOfferLocation(e.targetValue)} value={offerLocation} />
+                                    <Input onChange={ e => setOfferLocation(e.target.value)} value={offerLocation} />
                                 </label>
                                 
                                 <h2 className="newoffer-subsection-title"> Commentaires </h2>
@@ -185,24 +266,26 @@ function OfferForm3(props) {
                                 
                             </form>
                             {offerFormError} 
-                            <Button
-                                type="primary"
-                                className="button-back"
-                                onClick={() => {
-                                    setOfferBackRedir(true)
-                                    props.offerPreviousStep()
-                                }}
-                            >
-                                Précédent
-                            </Button> 
-                            <Button
-                                onClick={()=> handleClick()}
-                                type="primary"
-                                className="button-validate"
-                            >
-                                Valider - Voir récapitulatif
-                            </Button>
 
+                            <div className="form-buttons">
+                                <Button
+                                    type="primary"
+                                    className="button-back"
+                                    onClick={() => {
+                                        setOfferBackRedir(true)
+                                        props.modifyStep(2)
+                                    }}
+                                >
+                                    Précédent
+                                </Button> 
+                                <Button
+                                    onClick={()=> handleClick()}
+                                    type="primary"
+                                    className="button-validate"
+                                >
+                                    Valider - Voir récapitulatif
+                                </Button>
+                            </div>
                         </Col>
                         <Col className="newoffer-ad-card"xs={0} md={8}>
                         {ad}
@@ -216,7 +299,7 @@ function OfferForm3(props) {
                         visible={modalVisible}
                         centered
                         okText="Déposer l'offre"
-                        onOk={() => () => {setModalVisible(false) ; setOfferRedirHome(true) }}
+                        onOk={() => createOffer()}
                         cancelText="Annuler"
                         cancelButtonProps={{type: 'primary', className:'button-back'}}
                         onCancel={ () => setModalVisible(false)}
@@ -227,7 +310,7 @@ function OfferForm3(props) {
                         maskClosable={true}
                     >
                         <div className="newoffer-modal">
-                            <div className="newoffer-modal-section first-section">
+                            <div className="newoffer-modal-section">
                                 <div className="newoffer-modal-section-title">
                                     <p>Informations personnelles</p>
                                     <EditOutlined
@@ -238,15 +321,17 @@ function OfferForm3(props) {
                                 <div className="newoffer-modal-section-content">
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Acheteur : </span>
-                                        <span className="newoffer-modal-section-content-data">Jean-Claude Dusse</span>
+                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.firstName1} ${props.offerFormData.lastName1}`}</span>
                                     </div>
+                                    {props.offerFormData.showSecondBuyer &&
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Acheteur 2 : </span>
-                                        <span className="newoffer-modal-section-content-data">Jacqueline Dusse</span>
+                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.firstName2} ${props.offerFormData.lastName2}`}</span>
                                     </div>
+                                    }
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Adresse : </span>
-                                        <span className="newoffer-modal-section-content-data">25, avenue du Général de Gaulle - 94000 - Chatenay Malabri</span>
+                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.address} - ${props.offerFormData.postCode} ${props.offerFormData.city}`}</span>
                                     </div>
                                 </div>
                             </div>
@@ -256,21 +341,21 @@ function OfferForm3(props) {
                                     <p>Offre</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setOfferRedirStep1(true)}
+                                        onClick={() => setOfferBackRedir(true)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Montant : </span>
-                                        <span className="newoffer-modal-section-content-data">300 000€</span>
+                                        <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.offerAmount)}</span>
                                     </div>
                                     <div className="newoffer-modal-section-content-block">
                                         <span className="newoffer-modal-section-content-minor">Dont apport : </span>
-                                        <span className="newoffer-modal-section-content-data">100 000 €</span>
+                                        <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.contributionAmount)}</span>
                                     </div>
                                     <div className="newoffer-modal-section-content-block">
                                         <span className="newoffer-modal-section-content-minor">Dont emprunt : </span>
-                                        <span className="newoffer-modal-section-content-data">200 000€</span>
+                                        <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.loanAmount)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -280,23 +365,27 @@ function OfferForm3(props) {
                                     <p>Notaire</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setOfferRedirStep1(true)}
+                                        onClick={() => setModalVisible(false)}
                                     />
                                 </div>
+                                {props.offerFormData.notaryName ?
                                 <div className="newoffer-modal-section-content">
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Nom : </span>
-                                        <span className="newoffer-modal-section-content-data">Maitre Gims</span>
+                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryName}</span>
                                     </div>
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Adresse email : </span>
-                                        <span className="newoffer-modal-section-content-data">gimsbg75@gmail.com</span>
+                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryEmail}</span>
                                     </div>
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Adresse postale : </span>
-                                        <span className="newoffer-modal-section-content-data">25, avenue du Général de Gaulle - 94000 - Chatenay Malabri</span>
+                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryAddress}</span>
                                     </div>
                                 </div>
+                                :
+                                <div>Ces informations seront communiquées ultérieurement</div>
+                                }
                             </div>
 
                             <div className="newoffer-modal-section">
@@ -304,12 +393,12 @@ function OfferForm3(props) {
                                     <p>Commentaires</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setOfferRedirStep1(true)}
+                                        onClick={() => setModalVisible(false)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
                                     <div className="newoffer-modal-section-content-block">
-                                        Bacon ipsum dolor amet sausage leberkas pancetta filet mignon. Meatloaf buffalo ham shankle chicken, frankfurter bacon meatball corned beef tail porchetta kielbasa. Ground round jerky sausage cow pork prosciutto, bacon pork belly jowl cupim. Meatloaf chislic beef porchetta. Brisket frankfurter kielbasa short loin burgdoggen turkey pastrami. Tenderloin ham hock buffalo beef ribs strip steak cow porchetta, chicken short loin.
+                                    {props.offerFormData.comments}
                                     </div>
                                 </div>
                             </div>
@@ -319,17 +408,17 @@ function OfferForm3(props) {
                                     <p>Conditions</p>
                                     <EditOutlined
                                         className="newoffer-modal-section-title-icon"
-                                        onClick={() => setOfferRedirStep1(true)}
+                                        onClick={() => setModalVisible(false)}
                                     />
                                 </div>
                                 <div className="newoffer-modal-section-content">
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Durée de validité de l'offre : </span>
-                                        <span className="newoffer-modal-section-content-data">7 jours</span>
+                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.validityPeriod} jours`}</span>
                                     </div>
                                     <div className="newoffer-modal-section-content-block">
                                         <span>Offre faite à : </span>
-                                        <span className="newoffer-modal-section-content-data">Moncul</span>
+                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.offerLocation}</span>
                                     </div>
                                 </div>
                             </div>
@@ -348,24 +437,25 @@ function OfferForm3(props) {
 function mapStateToProps(state) {
     return { 
         newOfferStep : state.newOfferStep,
-        offerFormData: state.offerFormData
+        offerFormData: state.offerFormData,
+        userToken: state.userToken
     }
-  }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
-        offerNextStep : function() { 
-            dispatch( {type: 'offerNextStep'} ) 
-        },
-        offerPreviousStep : function() {
-            dispatch( {type: 'offerPrevStep'} )
+        modifyStep : function(step) { 
+            dispatch( {type: 'modifyStep', futureStep: step} ) 
         },
         offerSaveFormData : function(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress) { 
             dispatch({
                 type: 'offerSaveFormData3',
                 validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress
             })
-        } 
+        },
+        offerClear : function() {
+            dispatch({type: 'offerClear'}) 
+        }
     }
   }
     

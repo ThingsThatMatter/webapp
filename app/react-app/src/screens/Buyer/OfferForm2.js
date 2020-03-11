@@ -103,7 +103,7 @@ function OfferForm2(props) {
 /* --------------------------------------------------PREFILL FORM-------------------------------------------- */
     useEffect(() => {
 
-        if(props.offerFormData) {     // Display inputed info if user goes back from next form pages
+        if(props.offerFormData.offerAmount) {     // Display inputed info if user goes back from next form pages
             setOfferAmount(props.offerFormData.offerAmount)
             setLoanAmount(props.offerFormData.loanAmount)
             setDisableLoan(props.offerFormData.disableLoan)
@@ -120,7 +120,7 @@ function OfferForm2(props) {
         if(offerAmount !== "" && loanAmount !== "" && contributionAmount !== "") {
             const salaryOk = salary !=='' ? salary : 0
             props.offerSaveFormData(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk);
-            props.offerNextStep();
+            props.modifyStep(3);
             setOfferRedir(true);
 
         } else {
@@ -152,7 +152,7 @@ function OfferForm2(props) {
 
                             <form>
 
-                                <h2 className="newoffer-subsection-title"> Offre </h2>
+                                <h2 className="newoffer-subsection-title-first"> Offre </h2>
                                 <div className="newoffer-input-step2">
                                     <div className="formLabel-offer step-2-label">
                                         <p className='formLabel-offer step-2'>Mon offre est faite au prix NET vendeur de:</p>
@@ -218,23 +218,25 @@ function OfferForm2(props) {
                                 
                             </form>
                             {offerFormError}
-                            <Button
-                                type="primary"
-                                className="button-back"
-                                onClick={() => {
-                                    setOfferBackRedir(true)
-                                    props.offerPreviousStep()
-                                }}
-                            >
-                                Précédent
-                            </Button> 
-                            <Button
-                                onClick={()=> handleClick()}
-                                type="primary"
-                                className="button-validate"
-                            >
-                                Suivant
-                            </Button>
+                            <div className="form-buttons">
+                                <Button
+                                    type="primary"
+                                    className="button-back"
+                                    onClick={() => {
+                                        setOfferBackRedir(true)
+                                        props.modifyStep(1)
+                                    }}
+                                >
+                                    Précédent
+                                </Button> 
+                                <Button
+                                    onClick={()=> handleClick()}
+                                    type="primary"
+                                    className="button-validate"
+                                >
+                                    Suivant
+                                </Button>
+                            </div>
 
                         </Col>
                         <Col className="newoffer-ad-card"xs={0} md={8}>
@@ -258,11 +260,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        offerNextStep : function() { 
-            dispatch( {type: 'offerNextStep'} ) 
-        },
-        offerPreviousStep : function() {
-            dispatch( {type: 'offerPrevStep'} )
+        modifyStep : function(step) { 
+            dispatch( {type: 'modifyStep', futureStep: step} ) 
         },
         offerSaveFormData : function(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk) { 
             dispatch({
