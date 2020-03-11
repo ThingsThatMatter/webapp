@@ -19,10 +19,6 @@ import CreateFormSix from './screens/Agent/CreateForm6';
 import agentSignIn from './screens/Agent/SignIn'
 import agentSignUp from './screens/Agent/SignUp'
 
-import Spinner from './screens/Agent/Spin'
-
-
-import setToken from './actions/token.actions'
 
 function AgentRoutes(props) {
 
@@ -84,7 +80,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch){
     return {
         setToken: function(token){
-            dispatch(setToken(token))
+            dispatch({
+                type: 'setToken',
+                token
+            })
         }
     }
 }

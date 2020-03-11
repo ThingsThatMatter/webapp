@@ -26,7 +26,7 @@ function Home(props) {
         const adsFetch = async () => {
         const ads = await fetch('/user/ads', {
             method: 'GET',
-            headers: {'token': props.token}
+            headers: {'token': props.userToken}
         })
         const body = await ads.json();
         setAdsListFromDb(body.data.ads)
@@ -222,7 +222,7 @@ function Home(props) {
 
   function mapStateToProps(state) {
     return { 
-        token : state.token
+        userToken : state.userToken
     }
   }
   
