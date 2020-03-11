@@ -30,114 +30,139 @@ function AdDesc(props) {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
-  const [slotsDisplay, setSlotsDisplay] = useState([])
+  const [slotsDisplay, setSlotsDisplay] = useState([]);
 
   useEffect(() => {
-    const dbFetch = async () => {
-      const data = await fetch(`/user/ad/5e5e7acc9e95c72c1a48542b/public`);
-      const body = await data.json();
 
-      setAdDetails(body);
-      setAdPhotos(body.photos);
-      setAdDocuments(body.files);
-      props.setIdAd(body.data.ad._id); 
+    if (props.userToken === '') { 
 
-    
-    const timeslots = body.timeSlots
-    console.log(timeslots)
-    const daySlots = []
+      const dbFetchPublic = async () => {
+        const data = await fetch(`/user/ad/${props.match.params.id}/public`);
+        const body = await data.json();
 
-    for(let i=0 ; i < timeslots.length ; i++) {
+        console.log('COUCOU LA ROUTE PUBLIQUE')
 
-      const year = timeslots[i].start.slice(0,4)
-      let month = Number(timeslots[i].start.slice(5,7))-1
-      const day = timeslots[i].start.slice(8,10)
-      const hour1 = timeslots[i].start.slice(11,13)
-      const min1 = timeslots[i].start.slice(14,16)
-      const hour2 = timeslots[i].end.slice(11,13)
-      const min2 = timeslots[i].end.slice(14,16)
+        setAdDetails(body.data);
+        setAdPhotos(body.data.photos);
+        setAdDocuments(body.data.files);
 
-      const date = new Date(year, month, day)
+        props.setIdAd(body.data._id); 
 
-      const index = daySlots.findIndex((e) => {
+        console.log(props)
+        console.log(body.data)
+      };
+      dbFetchPublic();
+      /// Fin de la condition dbFetchPublic
 
-      return e.day.getTime() == date.getTime()
-    })
-      
-    if( timeslots[i].booked === false) {
-      if( index !== -1 ) {
-        daySlots[index].slots.push({
-        start : hour1+min1,
-        end : hour2+min2,
-        timeslot : timeslots[i]._id
+
+    } else {
+
+
+      const dbFetchPrivate = async () => {
+        const data = await fetch(`/user/ad/${props.match.params.id}`);
+        const body = await data.json();
+
+
+        console.log('COUCOU LA ROUTE PRIVEE')
+
+        console.log(body)
+
+        setAdDetails(body);
+        setAdPhotos(body.photos);
+        setAdDocuments(body.files);
+
+      const timeslots = body.timeSlots
+      console.log(timeslots)
+      const daySlots = []
+
+      for(let i=0 ; i < timeslots.length ; i++) {
+
+        const year = timeslots[i].start.slice(0,4)
+        let month = Number(timeslots[i].start.slice(5,7))-1
+        const day = timeslots[i].start.slice(8,10)
+        const hour1 = timeslots[i].start.slice(11,13)
+        const min1 = timeslots[i].start.slice(14,16)
+        const hour2 = timeslots[i].end.slice(11,13)
+        const min2 = timeslots[i].end.slice(14,16)
+
+        const date = new Date(year, month, day)
+
+        const index = daySlots.findIndex((e) => {
+          return e.day.getTime() == date.getTime()
         })
-      } else {
-        daySlots.push({
-          day: date,
-          slots : [{
-            start : hour1+ min1, 
+        
+        if( timeslots[i].booked === false) {
+          if( index !== -1 ) {
+            daySlots[index].slots.push({
+            start : hour1+min1,
             end : hour2+min2,
             timeslot : timeslots[i]._id
-          }]
-        })
+            })
+          } else {
+            daySlots.push({
+              day: date,
+              slots : [{
+                start : hour1+ min1, 
+                end : hour2+min2,
+                timeslot : timeslots[i]._id
+              }]
+            })
+          }
+        }
       }
-    }
-      
-    }
 
-    console.log("daySlots", daySlots)
+      console.log("daySlots", daySlots)
 
-    daySlots.sort((a,b) => {
-      return (a.day - b.day)
-    })
-
-    const format = (number) => {
-      if(number < 10) {
-        console.log(number)
-        return `0${number}`
-      }
-    }
-
-    const pickerClick = async (timeslot) => {
-
-      const response = await fetch(`/user/ad/${body._id}/visit`, {
-        method : "put",
-        headers: {
-          'Content-Type': 'application/json',
-          token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk' // A METTRE A JOUT AVEC LE TOKEN DU STORE REDUX
-        },
-        body: JSON.stringify({
-          timeslot : timeslot
-        })
+      daySlots.sort((a,b) => {
+        return (a.day - b.day)
       })
-      let jolieResponse = await response.json()
-      console.log("Reponse", jolieResponse)
-    }
 
-      const mapSlots = daySlots.map((e, i) => {
+      const format = (number) => {
+        if(number < 10) {
+          console.log(number)
+          return `0${number}`
+        }
+      }
 
-         return <Col span={6} key={i}>
+      const pickerClick = async (timeslot) => {
 
-           <div className="picker-day">
-           {`${format(e.day.getDate())}/${format(e.day.getMonth()+1)}`}
-           </div>
-
-            {
-              e.slots.map((f, i) => (
-                <div key={i} className="picker-slot" onClick={() => pickerClick(f.timeslot)}>
-                  {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
-                </div>
-              ))
-            }
-           
-           </Col>
+        const response = await fetch(`/user/ad/${body._id}/visit`, {
+          method : "put",
+          headers: {
+            'Content-Type': 'application/json',
+            token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk' // A METTRE A JOUT AVEC LE TOKEN DU STORE REDUX
+          },
+          body: JSON.stringify({
+            timeslot : timeslot
+          })
         })
+        let jolieResponse = await response.json()
+        console.log("Reponse", jolieResponse)
+      }
 
-      setSlotsDisplay(mapSlots)
+        const mapSlots = daySlots.map((e, i) => {
 
-    };
-    dbFetch();
+          return <Col span={6} key={i}>
 
+            <div className="picker-day">
+            {`${format(e.day.getDate())}/${format(e.day.getMonth()+1)}`}
+            </div>
+
+              {
+                e.slots.map((f, i) => (
+                  <div key={i} className="picker-slot" onClick={() => pickerClick(f.timeslot)}>
+                    {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
+                  </div>
+                ))
+              }
+            
+            </Col>
+          })
+
+        setSlotsDisplay(mapSlots)
+      };
+      dbFetchPrivate();
+    } /// Fin de la condition dbFetchPrivate
   }, []);
 
   /* Price formatting */
@@ -396,7 +421,12 @@ function AdDesc(props) {
               <div className="timeslot-picker">
                 <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
                   <Row className="slot-row">
+
+                  {props.userToken === '' ?
+                    <p>Accès privé</p>
+                  :
                     <AdDescSidebarLogout/>
+                  }
 
                     {slotsDisplay}
                   </Row>
