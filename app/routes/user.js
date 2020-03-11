@@ -67,22 +67,24 @@ router.get('/ads', async function(req, res, next) {
       };
     } else {
 
-      adsFromUser.ads.forEach( e => {      //filter timeslots and offers to only keep user's
+      adsFromUser.ads.forEach( e => {      //filter timeslots and offers to only keep user's ones
+
         let visits = e.timeSlots.filter( f => {
           if (f.user.length > 0) {
             let users = f.user.map( g => {return g.toString()})
-            //console.log(a.indexOf(adsFromUser._id.toString()))
             if (users.indexOf(adsFromUser._id.toString()) > -1) {
               f.user = adsFromUser._id 
             } else {f = null}
             return f
           }
         })
+        e.timeSlots = visits
+
         let offers = e.offers.filter( g => {
           return String(g.user) === String(adsFromUser._id)
         })
-        e.timeSlots = visits
         e.offers = offers
+
       })
 
       status = 200;
@@ -108,22 +110,66 @@ router.get('/ads', async function(req, res, next) {
 })
 
 
-/* GET ad  */
+/* GET ad  */ // Attention cet ad n'est pas utilisable partout : on ne récupère que les timeslots et offre du buyer
 router.get('/ad/:id', async function(req, res, next) {
 
-  try {
-    let ad = await adModel.findById(req.params.id)
-    status = 200;
-    response = ad  
+  const adsFromUser = await userModel
+    .findOne({ token:req.headers.token })
+    .populate('ads')
+    .exec()
+
+  // try {
+
+    if(!adsFromUser) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      const user = {
+        lastname: adsFromUser.lastname,
+        firstname: adsFromUser.firstname
+      }
+
+      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id)[0]
+
+      let visits = ad.timeSlots.filter( f => {
+        if (f.user.length > 0) {
+          let users = f.user.map( g => {return g.toString()})
+          if (users.indexOf(adsFromUser._id.toString()) > -1) {
+            f.user = adsFromUser._id 
+          } else {f = null}
+          return f
+        }
+      })
+      ad.timeSlots = visits
+
+      let offers = ad.offers.filter( g => {
+        return String(g.user) === String(adsFromUser._id)
+      })
+      ad.offers = offers
+      
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: {
+          ad: ad,
+          user: user
+        }
+      }
     }
 
-   catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
-  }
+
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
 
   res.status(status).json(response);
 

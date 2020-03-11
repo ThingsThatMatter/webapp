@@ -53,8 +53,8 @@ function Home() {
     adsCopy = adsCopy.map( (e,i) => {
         
         let visitMessage;
-        var visitEndDate = dateCreate(e.timeSlots[0].end)
-        var visitStartDate = dateCreate(e.timeSlots[0].start)
+        const visitEndDate = dateCreate(e.timeSlots[0].end)
+        const visitStartDate = dateCreate(e.timeSlots[0].start)
         if (visitEndDate > new Date() ) {
             visitMessage = 
                 <p className="annonce-messages-buyer">

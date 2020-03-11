@@ -546,13 +546,13 @@ function CreateFormFive(props) {
     );
   }
 
-  function mapStateToProps(state) {
-    return { 
-        step : state.step,
-        formData: state.formData,
-        token: state.token
-    }
+function mapStateToProps(state) {
+  return { 
+      step : state.step,
+      formData: state.formData,
+      token: state.token
   }
+}
 
 function mapDispatchToProps(dispatch) {
   return {

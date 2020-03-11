@@ -258,7 +258,6 @@ function RendezVous(props) {
         body: `timeslot=${slots}`
       })
       const body = await updateTimeslots.json()
-      console.log(body)
       if (body.message === 'OK') {
         setDisplaySlots(!displaySlots)
         setAppointmentModalOkLoading(false)
@@ -494,7 +493,7 @@ function RendezVous(props) {
                 destroyOnClose= {true}
                 width= "50%"
                 closable={true}
-                maskl={true}
+                mask={true}
                 maskClosable={true}
                 onCancel={handleCancel}
             >

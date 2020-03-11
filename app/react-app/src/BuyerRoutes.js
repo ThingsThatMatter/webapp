@@ -9,6 +9,9 @@ import Home from './screens/Buyer/Home'
 import AdDesc from './screens/Buyer/AdDesc'
 import Visits from './screens/Buyer/Visits'
 import Offers from './screens/Buyer/Offers'
+import OfferForm1 from './screens/Buyer/OfferForm1'
+import OfferForm2 from './screens/Buyer/OfferForm2'
+import OfferForm3 from './screens/Buyer/OfferForm3'
 
 import setToken from './actions/token.actions'
 
@@ -63,6 +66,9 @@ function BuyerRoutes(props) {
                 <Route component={AdDesc} path="/ad/:id" />
                 <Route component={Visits} path="/visits" />
                 <Route component={Offers} path="/offers" />
+                <Route component={OfferForm1} path="/newoffer/step1" />
+                <Route component={OfferForm2} path="/newoffer/step2" />
+                <Route component={OfferForm3} parth="/newoffer/step3" />
             </Switch>
         </Router>
           
