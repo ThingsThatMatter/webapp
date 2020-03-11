@@ -50,8 +50,7 @@ function CreateFormOne(props) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button handleClick
     }
 
-    console.log("form 1", props.formData)
-    console.log(street, postal, city, pref)
+    console.log(props.edit)
 
     return (
 
@@ -72,13 +71,12 @@ function CreateFormOne(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
                             
                             <p className='formLabel'>Numéro et rue</p>
                             <label >
-                                <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance"/>
+                                <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance" className="short"/>
                             </label>
 
                             <p className='formLabel'>Code postal</p>
@@ -88,7 +86,7 @@ function CreateFormOne(props) {
 
                             <p className='formLabel'>Ville</p>
                             <label >
-                                <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris"/>
+                                <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris" className="short"/>
                             </label>
 
                             <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
@@ -102,10 +100,10 @@ function CreateFormOne(props) {
                             
                         </form>
                         {formError} 
-                        <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
-                         
-                    </div>
-               
+
+                        <div className="form-buttons">
+                            <Button onClick={()=> handleClick()} type="primary" className="button-primary">Suivant</Button>
+                        </div>
                 </Content>  
 
          </Layout>
@@ -118,7 +116,9 @@ function CreateFormOne(props) {
 
   function mapStateToProps(state) {
     return { 
-        formData: state.formData
+        formData: state.formData,
+        step : state.step,
+        edit: state.edit
     }
   }
 
@@ -127,8 +127,8 @@ function CreateFormOne(props) {
       nextStep : function() { 
         dispatch( {type: 'nextStep'} ) 
       },
-      saveFormData : function(street, postal, pref, city, adID) { 
-        dispatch( {type: 'saveFormData', address: street, postCode: postal, city: city, typeAddress: pref, adID: adID } ) 
+      saveFormData : function(street, postal, city, pref, adID) { 
+        dispatch( {type: 'saveFormData', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
     }
 
     }

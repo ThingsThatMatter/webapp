@@ -51,6 +51,139 @@ function CreateFormSix(props) {
         // }
       }
 
+       const imagesUpload = props.formData.photos.map((e, i) => (
+        <div className="each-slide">
+            <div key={i} style={{'backgroundImage': `url(http://localhost:3000/pro/tempfiles/?name=${props.formData.adID}-${e})`}}> </div>
+        </div>
+        ))
+     
+        const imagesDB = props.formData.photosDB.map((e, i) => (
+        <div className="each-slide">
+            <div key={i} style={{'backgroundImage': `url(${e})`}}> </div>
+        </div>
+        ))
+
+        const allPhotos = [...imagesUpload, ...imagesDB]
+
+        const buttonCreate = <Button type="primary" className="button-validate" 
+        onClick={async() => {
+
+            const key = "updatable"
+
+            message.loading({ content: 'Création en cours...', key });
+
+            let rawResponse = await fetch("/pro/ad", {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': props.token
+                },
+                body: JSON.stringify(
+                    {
+                    adID: props.formData.adID,
+                    price: props.formData.price,
+                    fees: props.formData.fees,
+                    feesPayer: props.formData.feesPayer,
+                    type: props.formData.type,
+                    title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price),
+                    description: props.formData.description,
+                    typeAddress: props.formData.typeAddress,
+                    address: props.formData.address,
+                    postcode: props.formData.postcode,
+                    city: props.formData.city,
+                    photos: props.formData.photos,
+                    video: props.formData.video,
+                    area: props.formData.area,
+                    rooms: props.formData.rooms ,
+                    bedrooms: props.formData.bedrooms,
+                    advantages: props.formData.advantages,
+                    dpe: props.formData.dpe,
+                    ges: props.formData.ges,
+                    files: props.formData.files,
+                    color : props.formData.color,
+                    timeSlots: props.formData.timeSlots
+                    }
+                )
+            })
+
+            let response = await rawResponse.json()
+
+            if(response.message === "OK") {
+                message.success({ content: "annonce créée !", key, duration: 2 });
+                setRedir(true)
+                props.clear()
+                props.clearSteps()
+
+            } else {
+                message.error(response.details);
+            }
+
+            }}>Créer et diffuser l'annonce
+            </Button>
+
+
+        const buttonEdit = <Button type="primary" className="button-validate" 
+        onClick={async() => {
+
+            const key = "updatable"
+
+            message.loading({ content: 'Edition en cours...', key });
+
+            let rawResponse = await fetch(`/pro/ad/${props.formData._id}`, {
+                method: 'put',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'token': props.token
+                },
+                body: JSON.stringify(
+                    {
+                    adID: props.formData.adID,
+                    price: props.formData.price,
+                    fees: props.formData.fees,
+                    feesPayer: props.formData.feesPayer,
+                    type: props.formData.type,
+                    title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price),
+                    description: props.formData.description,
+                    typeAddress: props.formData.typeAddress,
+                    address: props.formData.address,
+                    postcode: props.formData.postcode,
+                    city: props.formData.city,
+                    photos: props.formData.photos,
+                    video: props.formData.video,
+                    area: props.formData.area,
+                    rooms: props.formData.rooms ,
+                    bedrooms: props.formData.bedrooms,
+                    advantages: props.formData.advantages,
+                    dpe: props.formData.dpe,
+                    ges: props.formData.ges,
+                    files: props.formData.files,
+                    color : props.formData.color,
+                    timeSlots: props.formData.timeSlots,
+                    photosDB: props.formData.photosDB,
+                    filesDB: props.formData.filesDB
+                    }
+                )
+            })
+
+            let response = await rawResponse.json()
+
+            if(response.message === "OK") {
+                
+                message.success({ content: "annonce editée !", key, duration: 2 });
+                setRedir(true)
+                props.clearSteps()
+                props.clearEdit()
+                props.clear()
+
+            } else {
+                message.error(response.details);
+            }
+
+            }}>Editer l'annonce
+            </Button>
+
+    
+
 
     if(redir === true) {
         return <Redirect to="/pro"/> // Triggered by button-add handleClick
@@ -70,7 +203,8 @@ function CreateFormSix(props) {
     })
 
     console.log("form 6", props.formData)
-    console.log(avantages)
+    console.log(allPhotos)    
+
     return (
 
         <Layout>
@@ -90,9 +224,10 @@ function CreateFormSix(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div className='detail'>
-                        <p>{props.formData.type.toUpperCase()}</p>
-                        <p>{props.formData.address} {props.formData.postCode}</p> {props.formData.typeAddress === false && <p>(uniquement le quartier sera communiqué sur les plateformes)</p>}
+                    <div style={{margin : "3em 0"}}>
+
+                    <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
+
                     </div>
 
                     <div className="section">
@@ -104,7 +239,7 @@ function CreateFormSix(props) {
                             <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" alt="chambres" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
                         </div>
                         
-                        {props.formData.advantages && <div className="dark-row">
+                        {avantages.length > 0 && <div className="dark-row">
 
                         <div className="row">
                         {avantages}
@@ -120,13 +255,7 @@ function CreateFormSix(props) {
 
                                 <Slide {...properties}>
 
-                                {
-                                    props.formData.photos.map((e, i) => (
-                                    <div className="each-slide">
-                                        <div key={i} style={{'backgroundImage': `url(http://localhost:3000/pro/tempfiles/?name=${props.formData.adID}-${e})`}}> </div>
-                                    </div>
-                                    ))
-                                }
+                                {allPhotos}
 
                                 </Slide>
                             </div>
@@ -177,6 +306,8 @@ function CreateFormSix(props) {
                         </div>
                     </div>
 
+                    <div className="form-buttons">
+
                     <Button type="primary" className="button-back"
                         onClick={() => {
                             setBackRedir(true)
@@ -185,59 +316,8 @@ function CreateFormSix(props) {
                         >
                         Précédent</Button>  
 
-                        <Button type="primary" className="button-validate" 
-                        onClick={async() => {
-
-                            const key = "updatable"
-
-                            message.loading({ content: 'Création en cours...', key });
-
-                            let rawResponse = await fetch("/pro/ad", {
-                                method: 'post',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'token': props.token
-                                },
-                                body: JSON.stringify(
-                                    {
-                                    adID: props.formData.adID,
-                                    price: props.formData.price,
-                                    fees: props.formData.fees,
-                                    type: props.formData.type,
-                                    title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price),
-                                    description: props.formData.description,
-                                    typeAddress: props.formData.typeAddress,
-                                    address: props.formData.address,
-                                    postcode: props.formData.postcode,
-                                    city: props.formData.city,
-                                    photos: props.formData.photos,
-                                    video: props.formData.video,
-                                    area: props.formData.area,
-                                    rooms: props.formData.rooms ,
-                                    bedrooms: props.formData.bedrooms,
-                                    advantages: props.formData.advantages,
-                                    dpe: props.formData.dpe,
-                                    ges: props.formData.ges,
-                                    files: props.formData.files,
-                                    color : props.formData.color,
-                                    timeSlots: props.formData.timeslots
-                                    }
-                                )
-                            })
-
-                            let response = await rawResponse.json()
-
-                            if(response.message === "OK") {
-
-                                message.success({ content: "annonce créée !", key, duration: 2 });
-                                setRedir(true)
-                                props.clear()
-
-                            } else {
-                                message.error(response.details);
-                            }
-
-                            }}>Créer et diffuser l'annonce</Button>
+                        {props.edit === true ? buttonEdit : buttonCreate}
+                    </div>
                            
                 </Content>  
 
@@ -254,18 +334,26 @@ function CreateFormSix(props) {
       clear : function() { 
         dispatch( {type: 'clear'} ) 
       },
+      clearSteps : function() { 
+        dispatch( {type: 'clearSteps'} ) 
+      },
       previousStep : function() {
         dispatch( {type: 'prevStep'} )
+    },
+    clearEdit : function() {
+        dispatch({type: 'clearEdit'})
     }
 
     }
   }
 
+
   function mapStateToProps(state) {
     return {
         step : state.step,
         formData: state.formData,
-        token: state.token
+        token: state.token,
+        edit: state.edit
     }
   }
 

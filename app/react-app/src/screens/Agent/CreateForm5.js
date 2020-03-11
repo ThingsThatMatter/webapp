@@ -332,6 +332,8 @@ function CreateFormFive(props) {
       props.saveFormData(newEvents, adColor)
       setRedir(true)
   }
+  
+  console.log(props.step)
 
     return (
 
@@ -509,7 +511,8 @@ function CreateFormFive(props) {
 
             </div>
             
-            <div className= "new-offer-step5-buttons-block">
+            <div className="form-buttons">
+
               <Button
                 type="primary" 
                 className="button-back"
@@ -521,15 +524,16 @@ function CreateFormFive(props) {
                 Précédent
               </Button>  
 
-              <span
-                className = "new-offer-step5-skip"
+              <Button
+                type="primary" 
+                className="button-skip"
                 onClick= { () => {
                   setRedir(true)
                   props.nextStep()
                 }}
               >
                 Passer cette étape
-              </span>
+              </Button>
 
               <Button
                 type="primary"
@@ -563,9 +567,10 @@ function mapDispatchToProps(dispatch) {
         dispatch( {type: 'prevStep'} )
     },
     saveFormData : function(timeslots, color) { 
+      console.log(timeslots)
       dispatch( {
           type: 'saveFormData5',
-          timeslots : timeslots,
+          timeslots : timeslots !== null ? timeslots : [],
           color: color
       } ) } 
   }

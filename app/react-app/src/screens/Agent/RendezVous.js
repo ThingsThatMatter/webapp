@@ -380,8 +380,8 @@ function RendezVous(props) {
     <Layout>
       <Sidebar/>
         <Layout className='main-content'>
-          <Content style={{ margin: '2em 3em' }}>
-            <div className='pageTitle'>Gérer mes Rendez-Vous</div>
+          <Content>
+            <h1 className='pageTitle'>Les rendez-vous</h1>
 
             <div className="calendar-header">
                 <div className="calendar-headerNavLeft">

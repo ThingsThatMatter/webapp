@@ -238,6 +238,7 @@ router.post('/ad', async function(req, res, next) {
         visitStatus: false,
         price: req.body.price,
         fees: req.body.fees,
+        feesPayer: req.body.feesPayer,
         type: req.body.type,
         title: req.body.title,
         description: req.body.description,
@@ -297,31 +298,73 @@ router.post('/ad', async function(req, res, next) {
 router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
-    let parseTimeslots = JSON.parse(req.body.timeSlots);
+
+    console.log(req.body.photosDB, req.body.filesDB)
+
+    let findAgent = await agentModel.findOne({ token: req.headers.token });
+
+      let adID = req.body.adID
+
+      let photos = req.body.photos
+      let photosUrl = []
+  
+      
+      for(i=0; i<photos.length ; i++) {
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${photos[i]}`, {use_filename: true, unique_filename: false});
+        photosUrl.push(resultCloudinary.url)
+      }
+  
+      for(i=0; i < photos.length ; i++) {
+        fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
+      }
+
+      photosUrl = [...photosUrl, ...req.body.photosDB]
+
+      console.log("photos uploaded to cloudinary", photosUrl)
+  
+      let files = req.body.files
+      let filesUrl = []
+      
+      for(i=0; i < files.length ; i++) {
+        var resultCloudinary = await cloudinary.uploader.upload(`./temp/${adID}-${files[i]}`, {use_filename: true, unique_filename: false});
+        filesUrl.push(resultCloudinary.url)
+      }
+  
+      for(i=0; i< files.length ; i++) {
+        fs.unlinkSync(`./temp/${adID}-${files[i]}`);
+      }
+
+      filesUrl = [...filesUrl, ...req.body.filesDB]
+      console.log("files uploaded to cloudinary", filesUrl)
 
     let updateAd = await adModel.updateOne(
       { _id: req.params.id_ad }, 
       { 
         color: req.body.color,
+        onlineStatus: true,
+        offerStatus: false,
+        visitStatus: false,
         price: req.body.price,
         fees: req.body.fees,
+        feesPayer: req.body.feesPayer,
         type: req.body.type,
         title: req.body.title,
         description: req.body.description,
+        typeAddress: req.body.typeAddress,
         address: req.body.address,
         postcode: req.body.postcode,
         city: req.body.city,
-        photos: req.body.photos,
+        photos: photosUrl,
         video: req.body.video,
         area: req.body.area,
         rooms: req.body.rooms,
         bedrooms: req.body.bedrooms,
-        advantages: req.body.advantages,
+        advantages : req.body.advantages,
         options: req.body.options,
         dpe: req.body.dpe,
         ges: req.body.ges,
-        files: req.body.files,
-        timeSlots: parseTimeslots
+        files: filesUrl,
+        timeSlots: req.body.timeSlots
       }
     );
     
@@ -332,6 +375,7 @@ router.put('/ad/:id_ad', async function(req, res, next) {
     }
 
   } catch(e) {
+    console.log(e)
     status = 500;
     response = {
       message: 'Internal error',
@@ -864,6 +908,8 @@ router.post('/upload', async function(req, res, next) {
 
 });
 
+// DELETE images from temp folder 
+
 router.delete('/upload/:name', async function(req, res, next) {
 
   console.log(req.params)
@@ -874,11 +920,25 @@ router.delete('/upload/:name', async function(req, res, next) {
 
 });
 
-router.get('/tempfiles', async function(req, res, next) { // ne marche pas pour l'instant
+// GET images from temp folder
+
+router.get('/tempfiles', async function(req, res, next) { 
 
   console.log(req.query.name)
 
   res.sendFile(path.join(__dirname, `../temp/${req.query.name}`));
+
+});
+
+// DELETE images from cloudinary
+
+router.delete('/image/:name', async function(req, res, next) {
+
+  console.log(req.params.name)
+
+  const requestCloudinary = await cloudinary.uploader.destroy(req.params.name)  
+
+  res.json(requestCloudinary)
 
 });
 

@@ -1,6 +1,8 @@
 import React, {useState, useEffect} from 'react'
+import { Button } from 'antd';
 import {Link} from 'react-router-dom'
-import {UserOutlined} from '@ant-design/icons'
+import {UserOutlined,HomeOutlined} from '@ant-design/icons'
+import { Affix } from 'antd';
 
 
 
@@ -11,6 +13,7 @@ function UserNavHeader(props) {
     const [offersClass, setOffersClass] = useState(null)
     const [accountClass, setAccountClass] = useState(null)
 
+
     useEffect( () => {
         const addClass = () => {
             switch (props.current) {
@@ -19,9 +22,6 @@ function UserNavHeader(props) {
                     break;
                 case 'Visites':
                     setVisitsClass('nav-header-link-main')
-                    break;
-                case 'Offres':
-                    setOffersClass('nav-header-link-main')
                     break;
                 case 'Compte':
                     setAccountClass('nav-header-link-main')
@@ -32,21 +32,40 @@ function UserNavHeader(props) {
     }, [])
 
     return (
-        <header className="nav-header">
-            <div className="nav-header-logo">Logo</div>
+        <Affix offsetTop={0}>
+            <header className="nav-header">
+                <div className="nav-header-logo"><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
 
-            <nav className="nav-header-menu">
-                <ul className="nav-header-content nav-header-block-link">
-                    <li><Link className={`nav-header-link ${propertiesClass}`} to="/">Biens consultés</Link></li>
-                    <li><Link className={`nav-header-link ${visitsClass}`} to="/visits">Visites</Link></li>
-                    <li><Link className={`nav-header-link ${offersClass}`} to="/offers">Offres</Link></li>
-                </ul>
-                <div className="nav-header-account nav-header-block-account">
-                    <p className={`nav-header-link ${accountClass}`}> Connexion </p>
-                    <UserOutlined />
-                </div>
-            </nav>
-        </header>
+                <nav className="nav-header-menu">
+                    <ul className="nav-header-content nav-header-block-link">
+                        <li><Link className={`nav-header-link ${propertiesClass}`} to="/">Mes biens</Link></li>
+                        <li><Link className={`nav-header-link ${visitsClass}`} to="/visits">Mes visites</Link></li>
+                    </ul>
+                    <ul className="nav-header-content nav-header-block-link">
+                        <li style={{margin:"0 10px 0 0"}}>
+                            <Link to="/sign-in" 
+                            style={{ 
+                                backgroundColor: "#355c7d", 
+                                color: "#fff", 
+                                padding: "5px 10px",
+                                border: "2px solid #355c7d"
+                            }}>
+                            <UserOutlined /> Connexion</Link></li>
+                        <li>
+                            <Link to="/pro" 
+                            style={{ 
+                                backgroundColor: "#fff", 
+                                color: "#355c7d", 
+                                padding: "5px 10px",
+                                border: "2px solid #355c7d"
+                            }}>
+                            <HomeOutlined /> Espace PRO</Link>
+                        </li>
+                    </ul>
+                        
+                </nav>
+            </header>
+        </Affix>
     )
 }
 

@@ -22,7 +22,8 @@ function CreateFormTwo(props) {
     const [fileList, setFileList] = useState([])
     const [video, setVideo] = useState("")
     const [emission, setEmission] = useState(0)
-    const [conso, setConso] = useState(0)
+    const [conso, setConso] = useState(0)   
+    const [photosDB, setPhotosDB] = useState([])   
 
     const [currentPage, setCurrentPage] = useState(0)
     const [redir, setRedir] = useState(false)
@@ -31,6 +32,7 @@ function CreateFormTwo(props) {
 
 
     useEffect(() => {
+
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
 
         if(props.formData.rooms) {     // Display inputed info if user goes back from next form pages
@@ -45,6 +47,12 @@ function CreateFormTwo(props) {
             setEmission(props.formData.ges)
             setConso(props.formData.dpe)
         }
+
+        if(props.edit === true) {
+            setFileList([])
+            setPhotosDB(props.formData.photos)
+        }
+
       },[]);
 
     const options = [
@@ -53,12 +61,44 @@ function CreateFormTwo(props) {
         {label : "Terrasse", value : "terrasse"}
     ]
 
-     
+    const photosUploaded = fileList.map((e, i) => (
+        <div key={i}>{e} 
+            <DeleteOutlined 
+            onClick={async () => {
+                const request = await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
+                    method: "delete"
+                })
+                const response = await request.json()
+                if(response === "deleted") {
+                    setFileList(fileList.filter((f) =>  f !== e ))
+                }
+            }}
+            />
+        </div>)
+        )
+
+    const photosFromDB = photosDB.map((e, i) => (
+        <div key={i}>{e.split('-')[1]} 
+            <DeleteOutlined 
+            onClick={async () => {
+                const request = await fetch(`/pro/image/${e.split('upload/')[1].split('/')[1].split('.')[0]}`, {
+                    method: "delete"
+                })
+                const response = await request.json()
+                console.log(response)
+                if(response.result === "ok") {
+                    setPhotosDB(photosDB.filter((f) =>  f !== e ))
+                }
+            }}
+            />
+        </div>)
+        )
+
     const handleClick = () => {
 
-        if(type !== "" && area !== 0 && rooms !== 0 && desc !== "" && fileList.length > 0  ) {
+        if(type !== "" && area !== 0 && rooms !== 0 && desc !== "" && (fileList.length > 0 || photosDB.length > 0) ) {
             props.nextStep();
-            props.saveFormData(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso)
+            props.saveFormData(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso, photosDB)
             setRedir(true)
 
         } else {
@@ -73,11 +113,8 @@ function CreateFormTwo(props) {
         return <Redirect to="/pro/createform/step1"/> // Triggered by button-back handleClick
     }
 
-  
-    console.log("form 2", props.formData)
-
-    console.log(props.formData.avantages)
-
+    console.log(photosDB)
+    console.log(photosFromDB)
     return (
 
         <Layout>
@@ -97,7 +134,6 @@ function CreateFormTwo(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
                             
@@ -163,33 +199,29 @@ function CreateFormTwo(props) {
                                 onChange={(e) => setDesc(e.target.value)} 
                                 value={desc}
                                 placeholder="En plein coeur du 18ème arrondissement de Paris..."
+                                className="short"
                                 />
                             </label>
 
-                            <p className='formLabel'>Photos</p>
+                            <p className='formLabel'>Photos (10 max)</p>
                             <Dragger
-                            name= 'file'
-                            accept= ".png,.jpeg"
-                            multiple= {true}
-                            showUploadList= {false}
-                            action='/pro/upload'
-                            method='post'
-                            data={{token : props.formData.adID}}
-                            onChange={(info) => {
-                                const { status } = info.file;
-                                if (status !== 'uploading') {
-                                console.log(info.file);
-                                if(fileList.findIndex((e) => e === info.file.name) === -1){
+                                name= 'file'
+                                accept= ".png,.jpeg,.pdf"
+                                multiple= {true}
+                                showUploadList= {false}
+                                action='/pro/upload'
+                                method='post'
+                                data={{token : props.formData.adID}}
+                                onChange={(info) => {
+                                    const { status } = info.file;
+                                    if (status === 'done') {
+                                    message.success(`${info.file.name} file uploaded successfully.`);
                                     setFileList([...fileList, info.file.name])
-                                }
-                                
-                                }
-                                if (status === 'done') {
-                                message.success(`${info.file.name} file uploaded successfully.`);
-                                } else if (status === 'error') {
-                                message.error(`${info.file.name} file upload failed.`);
-                            }}}
-                            >
+                                    } else if (status === 'error') {
+                                    message.error(`${info.file.name} file upload failed.`);
+                                }}}
+                                className="short"
+                                >
                                 <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
                                 </p>
@@ -198,24 +230,18 @@ function CreateFormTwo(props) {
                                 Format acceptés : png et jpeg
                                 </p>
                             </Dragger>
-                            {fileList.map((e, i) => (
-                            <div key={i}>{e} <DeleteOutlined
-                            onClick={async () => {
-                                setFileList(fileList.filter((f) =>  f !== e ))
-                                await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
-                                    method: "delete"
-                                })
-                            }}
-                            />
-                            </div>)
-                            )}
+                            {photosUploaded}
+                            {photosFromDB}
+                          
 
                             <p className='formLabel'>Lien vers vidéo (optionnel)</p>
                             <label >
                                 <Input 
                                 onChange={(e) => setVideo(e.target.value)} 
                                 value={video} 
-                                placeholder="http://"/>
+                                placeholder="http://"
+                                className="short"
+                                />
                             </label>
 
                             <p className='formLabel'>Emission de gaz à effet de serre (optionnel)</p>
@@ -243,17 +269,17 @@ function CreateFormTwo(props) {
                         </form>
                         {formError}
 
-                        <Button type="primary" className="button-back"
-                        onClick={() => {
-                            setBackRedir(true)
-                            props.previousStep()
-                        }}
-                        >
-                        Précédent</Button>  
+                        <div className="form-buttons">
+                            <Button type="primary" className="button-back"
+                            onClick={() => {
+                                setBackRedir(true)
+                                props.previousStep()
+                            }}
+                            >
+                            Précédent</Button>  
 
-                        <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
-                        
-                    </div>
+                            <Button type="primary" onClick={() => handleClick()}>Suivant</Button>
+                        </div>
                            
                 </Content>  
 
@@ -268,7 +294,8 @@ function CreateFormTwo(props) {
   function mapStateToProps(state) {
     return { 
         step : state.step,
-        formData: state.formData
+        formData: state.formData,
+        edit: state.edit
     }
   }
 
@@ -280,7 +307,7 @@ function CreateFormTwo(props) {
       previousStep : function() {
           dispatch( {type: 'prevStep'} )
       },
-      saveFormData : function(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso) { 
+      saveFormData : function(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso, photosDB) { 
         dispatch( {
             type: 'saveFormData2',
             typeBien: type,
@@ -292,7 +319,8 @@ function CreateFormTwo(props) {
             photos: fileList,
             video : video,
             ges: emission,
-            dpe : conso
+            dpe : conso,
+            photosDB : photosDB
         } ) } 
     }
   }

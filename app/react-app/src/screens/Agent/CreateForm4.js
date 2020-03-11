@@ -17,6 +17,7 @@ function CreateFormFour(props) {
     const [currentPage, setCurrentPage] = useState(0)
     const [redir, setRedir] = useState(false)
     const [backRedir, setBackRedir] = useState(false)
+    const [skipRedir, setSkipRedir] = useState(false)
     const [formError, setFormError] = useState("")
 
 
@@ -36,7 +37,12 @@ function CreateFormFour(props) {
         if(feesPayer !== "" && price !== 0 && fees !== 0) {
             props.nextStep();
             props.saveFormData(feesPayer, price, fees)
-            setRedir(true)
+            if(props.edit === true) {
+                props.nextStep();
+                setSkipRedir(true)
+            } else {
+                setRedir(true)
+            }       
 
         } else {
             setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
@@ -44,12 +50,18 @@ function CreateFormFour(props) {
     }
 
     if(redir === true) {
-        return <Redirect to="/pro/createform/step5"/> // Triggered by button-add handleClick
+        return <Redirect to="/pro/createform/step5"/> // When button "suivant" is clicked
     }
-    if(backRedir === true) {
-        return <Redirect to="/pro/createform/step3"/> // Triggered by button-back handleClick
+    if(skipRedir === true) {
+
+        return <Redirect to="/pro/createform/step6"/> // If in edit mode, skip to step 6 (recap)
     }
 
+    if(backRedir === true) {
+        return <Redirect to="/pro/createform/step3"/> // When butti-on "retour" is clicked
+    }
+
+    console.log(props.step)
     console.log("form 4", props.formData)
 
     return (
@@ -70,8 +82,6 @@ function CreateFormFour(props) {
                             <Step title="Créneaux" />
                             <Step title="Récap" />
                     </Steps>
-
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
                             
@@ -124,18 +134,19 @@ function CreateFormFour(props) {
                         </form>
                         {formError}
 
-                        <Button type="primary" className="button-back"
-                        onClick={() => {
-                            setBackRedir(true);
-                            props.previousStep();
-                        }}
-                        >
-                        Précédent</Button>  
+                        <div className="form-buttons">
 
-                        <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
-                        
-                    </div>
-                           
+                            <Button type="primary" className="button-back"
+                            onClick={() => {
+                                setBackRedir(true);
+                                props.previousStep();
+                            }}
+                            >
+                            Précédent</Button>  
+
+                            <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
+                        </div>
+                                                   
                 </Content>  
 
          </Layout>
@@ -149,7 +160,8 @@ function CreateFormFour(props) {
   function mapStateToProps(state) {
     return { 
         step : state.step,
-        formData: state.formData
+        formData: state.formData,
+        edit: state.edit
     }
   }
 

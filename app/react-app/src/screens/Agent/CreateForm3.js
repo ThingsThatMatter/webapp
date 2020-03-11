@@ -17,17 +17,39 @@ function CreateFormThree(props) {
     const [backRedir, setBackRedir] = useState(false)
 
     const[fileList, setFileList] = useState([])
+    const[filesDB, setFilesDB] = useState([])
 
     useEffect(() => {
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
         if(props.formData.files) {
             setFileList(props.formData.files)
         }
+
+        if(props.edit === true) {
+            setFileList([])
+            setFilesDB(props.formData.files)
+        }
       },[]);
 
+      const filesFromDB = filesDB.map((e, i) => (
+        <div key={i}>{e.split('-')[1]} 
+            <DeleteOutlined 
+            onClick={async () => {
+                const request = await fetch(`/pro/image/${e.split('upload/')[1].split('/')[1].split('.')[0]}`, {
+                    method: "delete"
+                })
+                const response = await request.json()
+                if(response.result === "ok") {
+                    setFilesDB(filesDB.filter((f) =>  f !== e ))
+                }
+            }}
+            />
+        </div>)
+        )
+
     const handleClick = () => {
-            props.saveFormData(fileList)
-            props.nextStep();
+            props.saveFormData(fileList, filesDB)
+            props.nextStep()
             setRedir(true)    
     }
 
@@ -37,7 +59,8 @@ function CreateFormThree(props) {
     if(backRedir === true) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button-back handleClick
     }
-
+    
+    console.log(props.step)
     console.log("form 3", props.formData)
     return (
 
@@ -58,11 +81,10 @@ function CreateFormThree(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
 
-                            <p className='formLabel'>Documents (Optionnel)</p>
+                        <p className='formLabel'>Documents (Optionnel)</p>
                             <Dragger
                             name= 'file'
                             accept= ".png,.jpeg,.pdf"
@@ -73,18 +95,14 @@ function CreateFormThree(props) {
                             data={{token : props.formData.adID}}
                             onChange={(info) => {
                                 const { status } = info.file;
-                                if (status !== 'uploading') {
-                                console.log(info.file);
-                                if(fileList.findIndex((e) => e === info.file.name) === -1){
-                                    setFileList([...fileList, info.file.name])
-                                }
-                                
-                                }
                                 if (status === 'done') {
                                 message.success(`${info.file.name} file uploaded successfully.`);
+                                setFileList([...fileList, info.file.name])
                                 } else if (status === 'error') {
                                 message.error(`${info.file.name} file upload failed.`);
                             }}}
+                            className="short"
+                            
                             >
                                 <p className="ant-upload-drag-icon">
                                 <InboxOutlined />
@@ -95,32 +113,38 @@ function CreateFormThree(props) {
                                 </p>
                             </Dragger>
                             {fileList.map((e, i) => (
-                            <div>{e} <DeleteOutlined 
-                            onClick={async () => {
-                                setFileList(fileList.filter((f) =>  f !== e ))
-                                await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
-                                    method: "delete"
-                                })
-                            }}
-                            />
+                            <div key={i}>{e} 
+                                <DeleteOutlined 
+                                onClick={async () => {
+                                    const request = await fetch(`/pro/upload/${props.formData.adID}-${e}`, {
+                                        method: "delete"
+                                    })
+                                    const response = await request.json()
+                                    if(response === "deleted") {
+                                        setFileList(fileList.filter((f) =>  f !== e ))
+                                    }
+                                }}
+                                />
                             </div>)
                             )}
+                            {filesFromDB}
+
+                          
   
                         </form>
 
-                        <Button type="primary" className="button-back"
-                        onClick={() => {
-                            setBackRedir(true)
-                            props.previousStep()
-                        }}
-                        >
-                        Précédent</Button> 
+                        <div className="form-buttons">
+                            <Button type="primary" className="button-back"
+                            onClick={() => {
+                                setBackRedir(true)
+                                props.previousStep()
+                            }}
+                            >
+                            Précédent</Button> 
 
-                        <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
-                    </div>
-              
-                
-                
+                            <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
+                        </div>
+                       
                    
                 </Content>  
 
@@ -133,7 +157,7 @@ function CreateFormThree(props) {
   }
 
   function mapStateToProps(state) {
-    return { step : state.step, formData : state.formData }
+    return { step : state.step, formData : state.formData, edit : state.edit }
   }
 
     function mapDispatchToProps(dispatch) {
@@ -144,10 +168,11 @@ function CreateFormThree(props) {
         previousStep : function() {
             dispatch( {type: 'prevStep'} )
         },
-        saveFormData : function(fileList) { 
+        saveFormData : function(fileList, filesDB) { 
         dispatch( {
             type: 'saveFormData3',
-            files : fileList
+            files: fileList,
+            filesDB: filesDB 
         } ) 
     }
 
