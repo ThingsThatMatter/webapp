@@ -99,7 +99,7 @@ function AdDesc() {
         method : "put",
         headers: {
           'Content-Type': 'application/json',
-          token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk'
+          token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk' // A METTRE A JOUT AVEC LE TOKEN DU STORE REDUX
         },
         body: JSON.stringify({
           timeslot : timeslot
