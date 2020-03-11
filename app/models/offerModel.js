@@ -2,12 +2,16 @@ var mongoose = require('./bdd');
 
 var offerSchema = mongoose.Schema({
     creationDate: Date,
-    customer: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
+    user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     singleBuyer: Boolean,
-    lastname1: String,
-    firstname1: String,
-    lastname2: String,
-    firstname2: String,
+    lastName1: String,
+    firstName1: String,
+    lastName2: String,
+    firstName2: String,
+    address: String,
+    postCode: String,
+    city: String,
+    amount: Number,
     loan: Boolean,
     loanAmount: Number,
     contributionAmount: Number,
@@ -18,9 +22,8 @@ var offerSchema = mongoose.Schema({
     notaryEmail: String,
     validityPeriod: Number,
     location: String,
-    message: String,
-    status: String, /* pending, acceped, rejected, expired*/ 
-    feesPayer: String /* buyer, seller */
+    comments: String,
+    status: String /* pending, acceped, rejected, expired*/ 
 });
 
 var offerModel = mongoose.model('offers', offerSchema);

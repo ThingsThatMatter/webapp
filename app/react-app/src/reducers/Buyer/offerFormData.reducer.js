@@ -4,13 +4,13 @@ export default function(offerFormData = {}, action) {
     
       var newData = {
         ...offerFormData,
-        firstname1: action.firstName1,
-        lastname1: action.lastName1,
+        firstName1: action.firstName1,
+        lastName1: action.lastName1,
         showSecondBuyer: action.showSecondBuyer,
-        firstname2: action.firstName2,
-        lastname2: action.lastName2,
+        firstName2: action.firstName2,
+        lastName2: action.lastName2,
         address: action.address,
-        postcode: action.postal,
+        postCode: action.postal,
         city: action.city
       }
       return newData;
@@ -39,9 +39,8 @@ export default function(offerFormData = {}, action) {
         }
         return newData;
 
-    } else if (action.type == 'clear') {
-        let newData = {}
-        return newData;
+    } else if (action.type === 'offerClear') {
+        return {};
       
     } else {
         return offerFormData;

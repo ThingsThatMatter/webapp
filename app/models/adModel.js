@@ -18,13 +18,15 @@ var questionSchema = mongoose.Schema({
 
 var offerSchema = mongoose.Schema({
     creationDate: Date,
-    status: String,
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     singleBuyer: Boolean,
-    lastname1: String,
-    firstname1: String,
-    lastname2: String,
-    firstname2: String,
+    lastName1: String,
+    firstName1: String,
+    lastName2: String,
+    firstName2: String,
+    address: String,
+    postCode: String,
+    city: String,
     amount: Number,
     loan: Boolean,
     loanAmount: Number,
@@ -36,7 +38,8 @@ var offerSchema = mongoose.Schema({
     notaryEmail: String,
     validityPeriod: Number,
     location: String,
-    message: String
+    comments: String,
+    status: String /* pending, acceped, rejected, expired*/ 
 });
 
 var adSchema = mongoose.Schema({

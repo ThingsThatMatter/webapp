@@ -87,7 +87,7 @@ router.post('/sign-in', async function(req, res, next) {
     } else {
 
       const findAgent = await agentModel.findOne({ email:req.body.email });
-      if(findAgent === null) {
+      if(!findAgent) {
         status = 401;
         response = {
           message: 'Authentification error',
@@ -142,7 +142,7 @@ router.post('/sign-up', async function(req, res, next) {
         email: req.body.email
       })
 
-      if(findAgent != null){
+      if(!findAgent){
         status = 401;
         response = {
           message: 'User already exists',
@@ -199,7 +199,7 @@ router.post('/ad', async function(req, res, next) {
 
     let findAgent = await agentModel.findOne({ token: req.headers.token });
 
-    if(findAgent === null) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
@@ -397,7 +397,7 @@ router.delete('/ad/:id_ad', async function(req, res, next) {
   try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(findAgent.length === 0) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
@@ -528,7 +528,7 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next) {
 
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(findAgent.length === 0) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
@@ -589,7 +589,7 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', async function(req, res, next)
 
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(findAgent.length === 0) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
@@ -636,8 +636,6 @@ router.get('/ads/timeslots', async function(req, res, next) {
       { $unwind: "$timeSlots" },
       { $match: { 'timeSlots.agent' : findAgent._id } }
     ]).exec();
-
-    console.log(timeslotsFromAgent)
 
     if(!timeslotsFromAgent) { 
       status = 401;
@@ -745,7 +743,7 @@ router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
   try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(findAgent.length === 0) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
@@ -789,7 +787,7 @@ router.put('/ad/:id_ad/offer/:id_offer/decline', async function(req, res, next) 
   try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(findAgent.length === 0) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
@@ -827,7 +825,7 @@ router.put('/ad/:id_ad/offer/:id_offer/cancel', async function(req, res, next) {
   // try {
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(findAgent.length === 0) { 
+    if(!findAgent) { 
       status = 401;
       response = {
         message: 'Bad token',
