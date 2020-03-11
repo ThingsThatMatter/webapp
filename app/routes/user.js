@@ -241,7 +241,7 @@ router.get('/ad/:id', async function(req, res, next) {
     .populate('ads')
     .exec()
 
-  // try {
+  try {
 
     if(!adsFromUser) { 
       status = 401;
@@ -285,14 +285,13 @@ router.get('/ad/:id', async function(req, res, next) {
       }
     }
 
-
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
   res.status(status).json(response);
 
@@ -382,39 +381,71 @@ router.get('/ad/visit', async function(req, res, next) {
 });
 
 /* POST offer */
-router.put('/ad/:id_ad/offer', async function(req, res, next) {
+router.post('/ad/:id_ad/offer', async function(req, res, next) {
 
-  let userToFind = await userModel.findOne({ token:req.body.token });
+  let userToFind = await userModel.findOne({ token:req.headers.token });
 
-  let offer = {
-    creationDate: new Date,
-    status: 'pending',
-    user: userToFind._id,
-    singleBuyer: req.body.singleBuyer,
-    lastname1: req.body.lastname1,
-    firstname1: req.body.firstname1,
-    lastname2: req.body.lastname2,
-    firstname2: req.body.firstname2,
-    amount: req.body.amount,
-    loan: req.body.loan,
-    loanAmount: req.body.loanAmount,
-    contributionAmount: req.body.contributionAmount,
-    monthlyPay: req.body.monthlyPay,
-    notary: req.body.notary,
-    notaryName: req.body.notaryName,
-    notaryAddress: req.body.notaryAddress,
-    notaryEmail: req.body.notaryEmail,
-    validityPeriod: req.body.validityPeriod,
-    location: req.body.location,
-    message: req.body.message
-  }
+  // try {
 
-  let newOffer = await adModel.updateOne(
-      { _id: req.params.id_ad }, 
-      { $push: { offers: offer } }
-  );
+    if(!userToFind) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+      console.log(req.body)
 
-  res.json(newOffer);
+      let offer = {
+        creationDate: new Date,
+        status: 'pending',
+        user: userToFind._id,
+        singleBuyer: req.body.singleBuyer,
+        lastName1: req.body.lastName1,
+        firstName1: req.body.firstName1,
+        lastName2: req.body.lastName2,
+        firstName2: req.body.firstName2,
+        address: req.body.address,
+        postCode: req.body.postCode,
+        city: req.body.city,
+        amount: req.body.amount,
+        loan: req.body.loan,
+        loanAmount: req.body.loanAmount,
+        contributionAmount: req.body.contributionAmount,
+        monthlyPay: req.body.monthlyPay,
+        notary: req.body.notary,
+        notaryName: req.body.notaryName,
+        notaryAddress: req.body.notaryAddress,
+        notaryEmail: req.body.notaryEmail,
+        validityPeriod: req.body.validityPeriod,
+        location: req.body.location,
+        comments: req.body.comments
+      }
+
+      let newOffer = await adModel.updateOne(
+          { _id: req.params.id_ad }, 
+          { $push: { offers: offer } }
+      )
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: {
+          offer: newOffer
+        }
+      }
+
+    }
+  
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
+
+  res.status(status).json(response);
 
 });
 

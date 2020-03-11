@@ -109,13 +109,13 @@ function OfferForm1(props) {
 useEffect(() => {
 
     if(props.offerFormData) {     // Display inputed info if user goes back from next form pages
-        setFirstName1(props.offerFormData.firstname1)
-        setLastName1(props.offerFormData.lastname1)
+        setFirstName1(props.offerFormData.firstName1)
+        setLastName1(props.offerFormData.lastName1)
         setShowSecondBuyer(props.offerFormData.showSecondBuyer)
-        setFirstName2(props.offerFormData.firstname2)
-        setLastName2(props.offerFormData.lastname2)
+        setFirstName2(props.offerFormData.firstName2)
+        setLastName2(props.offerFormData.lastName2)
         setAddress(props.offerFormData.address)
-        setPostal(props.offerFormData.postcode)
+        setPostal(props.offerFormData.postCode)
         setCity(props.offerFormData.city)
     }
   },[]);
@@ -125,7 +125,7 @@ useEffect(() => {
 const handleClick = () => {
     if(firstName1 !== "" && lastName1 !== "" && address !== "" && postal !== "" && city !== "") {
         props.offerSaveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city);
-        props.offerNextStep();
+        props.modifyStep(2);
         setOfferRedir(true);
 
     } else {
@@ -164,7 +164,14 @@ if(offerRedir === true) {
                                 </label>
 
                                 <label>
-                                    <Checkbox className="second-buyer" onChange={ e => setShowSecondBuyer(e.target.checked)} checked={showSecondBuyer} >
+                                    <Checkbox
+                                        className="second-buyer"
+                                        onChange={ e => {
+                                            setShowSecondBuyer(e.target.checked)
+                                            setFirstName2('')
+                                            setLastName2('')
+                                        }}
+                                        checked={showSecondBuyer} >
                                         J'ajoute un second acheteur
                                     </Checkbox>
                                 </label>
@@ -199,9 +206,10 @@ if(offerRedir === true) {
                                 </label>
                                 
                             </form>
-                            {offerFormError} 
-                            <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
-
+                            {offerFormError}
+                            <div className="form-buttons">
+                                <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
+                            </div>
                         </Col>
                         <Col className="newoffer-ad-card"xs={0} md={8}>
                         {ad}
@@ -220,12 +228,12 @@ function mapStateToProps(state) {
         newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData
     }
-  }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
-        offerNextStep : function() { 
-            dispatch( {type: 'offerNextStep'} ) 
+        modifyStep : function(step) { 
+            dispatch( {type: 'modifyStep', futureStep: step} ) 
         },
         offerSaveFormData : function(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city) {
             dispatch({
@@ -236,7 +244,7 @@ function mapDispatchToProps(dispatch) {
     }
   }
     
-  export default connect(
+export default connect(
     mapStateToProps, 
     mapDispatchToProps
-  )(OfferForm1);
+)(OfferForm1);
