@@ -14,8 +14,6 @@ import OfferForm1 from './screens/Buyer/OfferForm1'
 import OfferForm2 from './screens/Buyer/OfferForm2'
 import OfferForm3 from './screens/Buyer/OfferForm3'
 
-import setToken from './actions/token.actions'
-
 function BuyerRoutes(props) {
 
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
@@ -23,21 +21,21 @@ function BuyerRoutes(props) {
     const checkToken = async () => {
         const getToken = await fetch('/user/user-access', {
             method: 'GET',
-            headers: {'token': cookies.token}
+            headers: {'token': cookies.userToken}
             })
         const body = await getToken.json()
         if (body.message === 'OK') {
-            props.setToken(body.data.token)
+            props.setUserToken(body.data.token)
         }
     }
 
-    if (cookies.token) { // si il y a un cookie, on vérifie qu'il existe bien en base
+    if (cookies.userToken) { // si il y a un cookie, on vérifie qu'il existe bien en base
         checkToken()
     }
 
     const PrivateRoute = ({ component: Component, ...rest }) => (
         <Route {...rest} render={(state) => (
-            props.token !== '' 
+            props.userToken !== '' 
             ? <Component {...state} />
             : <Redirect to='/sign' />
         )} />
@@ -64,14 +62,17 @@ function BuyerRoutes(props) {
 
 function mapStateToProps(state) {
     return { 
-        token : state.token
+        userToken : state.userToken
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        setToken: function(token){
-            dispatch(setToken(token))
+        setUserToken: function(token){
+            dispatch({
+                type: 'setToken',
+                token
+            })
         }
     }
 }

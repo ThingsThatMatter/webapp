@@ -39,7 +39,7 @@ h1, h2, h3, h4, h5, h6 {
 
 h1 {
   font-size: 2.7em;
-  margin-bottom: 2em;
+  margin-bottom: 1.5em;
 }
 
 h1:after {
@@ -212,6 +212,10 @@ p {
   margin: 0 auto;
 }
 
+.pro-sign-layout > .ant-row > .ant-col {
+  margin: 0 auto;
+}
+
 .logo-ttm-sign {
   margin: 3em 1em 1em 1em;
   font-size: 35px;
@@ -223,7 +227,6 @@ p {
   padding: 2em;
   background-color: #f0f2f5;
   border-radius: 5px;
-  box-shadow: 0 0 10px #888;
 }
 .pro-sign-box-title {
   color: #355c7d;

@@ -2,6 +2,8 @@ import React, {useState} from 'react';
 import {Redirect, Link} from 'react-router-dom'
 import { Form, Input, Button, Collapse, Col, Row } from "antd";
 
+import Spinner from './Spin'
+
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
@@ -36,8 +38,8 @@ function SignUp(props) {
         const body = await postNewUser.json()
 
         if (body.message === 'OK') {
-            setCookie('token', body.data.token, {path:'/'})
-            props.setToken(body.data.token)
+            setCookie('userToken', body.data.token, {path:'/'})
+            props.setUserToken(body.data.token)
             setToRedirect(true)
         } else {
             setMsgErrorSignin(body.details)
@@ -54,8 +56,8 @@ function SignUp(props) {
         const body = await checkUser.json()
 
         if (body.message === 'OK') {
-            setCookie('token', body.data.token, {path:'/'})
-            props.setToken(body.data.token)
+            setCookie('userToken', body.data.token, {path:'/'})
+            props.setUserToken(body.data.token)
             setToRedirect(true)
         } else {
             setMsgErrorSignin(body.details)
@@ -65,6 +67,12 @@ function SignUp(props) {
     if (toRedirect) { // if login OK (from form) redirect to home
         return <Redirect to='/' /> 
     } else {
+        if (typeof cookies.userToken !== 'undefined' && props.userToken === '') {
+            return <Spinner />
+        } else if (typeof cookies.userToken !== 'undefined' && props.userToken !== '') {  //if landing on signin and has a valid token : does not work
+            return <Redirect to='/' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
+        }
+        else {
 
         return (
             <div className="user-sign-layout">
@@ -191,26 +199,27 @@ function SignUp(props) {
                     </Form>
                     <a
                         className="forgotten-password"
-                        href="#">Mot de passe oublié
+                        href="#">Mot de passe oublié ?
                     </a>
                 </div>
                 </Col>
                 </Row>
             </div>
         )
+        }
     }
 }
 
 function mapStateToProps(state, ownProps) {
     return { 
-        token : state.token,
+        userToken : state.userToken,
         cookies: ownProps.cookies
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-      setToken: function(token){
+    setUserToken: function(token){
         dispatch({type: 'setUserToken', token})
       }
     }
