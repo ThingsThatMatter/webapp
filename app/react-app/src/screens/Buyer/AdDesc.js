@@ -27,30 +27,22 @@ function AdDesc() {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
-  const [timeslots, setTimeslots] = useState([])
   const [slotsDisplay, setSlotsDisplay] = useState([])
-
-  let toggleStyle = { fontWeight: 600, color: "#1476E1", fontSize: "18px" };
-
-  if (toggle === false) {
-    toggleStyle = { fontWeight: 500, color: "#6F6E6E", fontSize: "18px" };
-  }
 
   useEffect(() => {
     const dbFetch = async () => {
-      const data = await fetch(`/user/ad/5e667918c8cd1041d8dabb4d`);
+      const data = await fetch(`/user/ad/5e5e7acc9e95c72c1a48542b/public`);
       const body = await data.json();
 
       setAdDetails(body);
       setAdPhotos(body.photos);
       setAdDocuments(body.files);
-      setTimeslots(body.timeSlots);
-    };
-    dbFetch();
+    
+    const timeslots = body.timeSlots
     console.log(timeslots)
     const daySlots = []
 
-    for(let i=0 ; i<timeslots.length ; i++) {
+    for(let i=0 ; i < timeslots.length ; i++) {
 
       const year = timeslots[i].start.slice(0,4)
       let month = Number(timeslots[i].start.slice(5,7))-1
@@ -64,35 +56,82 @@ function AdDesc() {
 
       const index = daySlots.findIndex((e) => {
 
-      console.log(e.day.getTime() == date.getTime());
-
-      return e.day.getTime() == date.getTime();
+      return e.day.getTime() == date.getTime()
     })
       
+    if( timeslots[i].booked === false) {
       if( index !== -1 ) {
         daySlots[index].slots.push({
-        start : [hour1, min1], end : [hour2,min2]
+        start : hour1+min1,
+        end : hour2+min2,
+        timeslot : timeslots[i]._id
         })
       } else {
         daySlots.push({
           day: date,
-          slots : [{start : [hour1, min1], end : [hour2,min2]}]
+          slots : [{
+            start : hour1+ min1, 
+            end : hour2+min2,
+            timeslot : timeslots[i]._id
+          }]
         })
       }
     }
-
-    console.log(daySlots)
       
-      const mapSlots = daySlots.map((e) => (
-         <div>{e.day}</div>
-      )
-      )
+    }
 
+    console.log("daySlots", daySlots)
 
+    daySlots.sort((a,b) => {
+      return (a.day - b.day)
+    })
+
+    const format = (number) => {
+      if(number < 10) {
+        console.log(number)
+        return `0${number}`
+      }
+    }
+
+    const pickerClick = async (timeslot) => {
+
+      const response = await fetch(`/user/ad/${body._id}/visit`, {
+        method : "put",
+        headers: {
+          'Content-Type': 'application/json',
+          token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk'
+        },
+        body: JSON.stringify({
+          timeslot : timeslot
+        })
+      })
+      let jolieResponse = await response.json()
+      console.log("Reponse", jolieResponse)
+    }
+
+      const mapSlots = daySlots.map((e, i) => {
+
+         return <Col span={6} key={i}>
+
+           <div className="picker-day">
+           {`${format(e.day.getDate())}/${format(e.day.getMonth()+1)}`}
+           </div>
+
+            {
+              e.slots.map((f, i) => (
+                <div key={i} className="picker-slot" onClick={() => pickerClick(f.timeslot)}>
+                  {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
+                </div>
+              ))
+            }
+           
+           </Col>
+        })
 
       setSlotsDisplay(mapSlots)
 
-   
+    };
+    dbFetch();
 
   }, []);
 
@@ -350,18 +389,14 @@ function AdDesc() {
               xl={{ span: 6 }}
             >
               <div className="timeslot-picker">
-                <p>Sélectionnez un créneau de visite</p>
-                <Row>
-                  <div>
-                        {slotsDisplay}
-                  </div>
-                  
-                 
-                 
-                </Row>
+                <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
+                  <Row className="slot-row">
+                  {slotsDisplay}
+                  </Row>
 
-                
+
               </div>
+
             </Col>
           </Row>
         </Content>
