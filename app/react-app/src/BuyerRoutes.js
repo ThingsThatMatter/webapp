@@ -9,89 +9,75 @@ import Home from './screens/Buyer/Home'
 import AdDesc from './screens/Buyer/AdDesc'
 import Visits from './screens/Buyer/Visits'
 import Offers from './screens/Buyer/Offers'
+import buyerSign from './screens/Buyer/Sign'
 import OfferForm1 from './screens/Buyer/OfferForm1'
 import OfferForm2 from './screens/Buyer/OfferForm2'
 import OfferForm3 from './screens/Buyer/OfferForm3'
 
-import setToken from './actions/token.actions'
-
 function BuyerRoutes(props) {
 
-    // const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
-    // const checkToken = async () => {
-    //     const getToken = await fetch('/pro/user-access', {
-    //         method: 'GET',
-    //         headers: {'token': cookies.token}
-    //         })
-    //     const body = await getToken.json()
-    //     if (body.message === 'OK') {
-    //         props.setToken(body.data.token)
-    //     } else {
-    //         //removeCookie('token')
-    //         //props.setToken('')
-    //         //setMsgErrorSignin(body.details) Afficher un message d'erreur à l'utilisateur
-    //     }
-    // }
+    const checkToken = async () => {
+        const getToken = await fetch('/user/user-access', {
+            method: 'GET',
+            headers: {'token': cookies.userToken}
+            })
+        const body = await getToken.json()
+        if (body.message === 'OK') {
+            props.setUserToken(body.data.token)
+        }
+    }
 
-    // if (cookies.token) { // si il y a un cookie, on vérifie qu'il existe bien en base
-    //     checkToken()
-    // }
+    if (cookies.userToken) { // si il y a un cookie, on vérifie qu'il existe bien en base
+        checkToken()
+    }
 
-    // const PrivateRoute = ({ component: Component, ...rest }) => (
-    //     <Route {...rest} render={(state) => (
-    //         props.token !== '' 
-    //         ? <Component {...state} />
-    //         : <Redirect to='/pro/signin' />
-    //     )} />
-    // )
+    const PrivateRoute = ({ component: Component, ...rest }) => (
+        <Route {...rest} render={(state) => (
+            props.userToken !== '' 
+            ? <Component {...state} />
+            : <Redirect to='/sign' />
+        )} />
+    )
     
     return (
 
         <Router>
             <Switch>
-                {/* <PrivateRoute component={Home} path="/pro" exact />
-                <PrivateRoute component={Offres} path="/pro/offres" exact/>
-                <PrivateRoute component={RendezVous} path="/pro/rendezvous" exact/>
-                <PrivateRoute component={Questions} path="/pro/questions" exact/>
-                <PrivateRoute component={AdDesc} path="/pro/addesc/:id" exact/>
-                <PrivateRoute component={CreateFormOne} path="/pro/createform/step1" exact/>
-                <PrivateRoute component={CreateFormTwo} path="/pro/createform/step2" exact/>
-                <PrivateRoute component={CreateFormThree} path="/pro/createform/step3" exact/>
-                <PrivateRoute component={CreateFormFour} path="/pro/createform/step4" exact/>
-                <PrivateRoute component={CreateFormFive} path="/pro/createform/step5" exact/>
-                <PrivateRoute component={CreateFormSix} path="/pro/createform/step6" exact/> */}
+                <PrivateRoute component={Home} path="/" exact/>
+                <PrivateRoute component={AdDesc} path="/ad/:id" />
+                <PrivateRoute component={Visits} path="/visits" />
+                <PrivateRoute component={Offers} path="/offers" />
+                <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
+                <PrivateRoute component={OfferForm2} path="/newoffer/step2" exact/>
+                <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
 
-                <Route component={Home} path="/" exact/>
-                <Route component={AdDesc} path="/ad/:id" exact/>
-                <Route component={Visits} path="/visits" exact/>
-                <Route component={Offers} path="/offers" exact/>
-                <Route component={OfferForm1} path="/newoffer/step1" exact/>
-                <Route component={OfferForm2} path="/newoffer/step2" exact/>
-                <Route component={OfferForm3} path="/newoffer/step3" exact/>
+                <Route component={buyerSign} path="/sign" />
             </Switch>
         </Router>
           
     );
 }
 
-// function mapStateToProps(state) {
-//     return { 
-//         token : state.token
-//     }
-// }
+function mapStateToProps(state) {
+    return { 
+        userToken : state.userToken
+    }
+}
 
-// function mapDispatchToProps(dispatch){
-//     return {
-//         setToken: function(token){
-//             dispatch(setToken(token))
-//         }
-//     }
-// }
+function mapDispatchToProps(dispatch){
+    return {
+        setUserToken: function(token){
+            dispatch({
+                type: 'setToken',
+                token
+            })
+        }
+    }
+}
 
-// export default connect(
-//     mapStateToProps,
-//     mapDispatchToProps
-// )(AgentRoutes)
-
-export default BuyerRoutes
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(BuyerRoutes)

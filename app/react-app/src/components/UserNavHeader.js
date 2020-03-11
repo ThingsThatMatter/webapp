@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { Button } from 'antd';
 import {Link} from 'react-router-dom'
-import {UserOutlined,HomeOutlined} from '@ant-design/icons'
+import {StopOutlined,HomeOutlined} from '@ant-design/icons'
 import { Affix } from 'antd';
 
 
@@ -50,7 +50,7 @@ function UserNavHeader(props) {
                                 padding: "5px 10px",
                                 border: "2px solid #355c7d"
                             }}>
-                            <UserOutlined /> Connexion</Link></li>
+                            <StopOutlined /> Déconnexion</Link></li>
                         <li>
                             <Link to="/pro" 
                             style={{ 

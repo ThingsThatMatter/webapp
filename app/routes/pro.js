@@ -16,7 +16,6 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 12;
 
 
-
 cloudinary.config({ 
   cloud_name: 'dp4mkibm2', 
   api_key: '692324412372859', 
@@ -91,7 +90,7 @@ router.post('/sign-in', async function(req, res, next) {
         status = 401;
         response = {
           message: 'Authentification error',
-          details: "L'email ou le mot de passe fournis sont incorrects"
+          details: "Erreur d'authentification"
         }
       } else {
         const pwdMatch = await bcrypt.compare(req.body.password, findAgent.password);
@@ -108,7 +107,7 @@ router.post('/sign-in', async function(req, res, next) {
           status = 401;
           response = {
             message: 'Authentification error',
-            details: "L'email ou le mot de passe fournis sont incorrects"
+            details: "Erreur d'authentification"
           }
         }   
       }

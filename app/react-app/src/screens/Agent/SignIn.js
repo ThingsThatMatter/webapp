@@ -1,12 +1,10 @@
 import React, {useState} from 'react';
-import {Redirect} from 'react-router-dom'
-import {Form, Input, Button } from 'antd';
+import {Redirect,Link} from 'react-router-dom'
+import {Form, Input, Button, Row, Col} from 'antd';
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 import Spinner from './Spin'
-
-import setToken from '../../actions/token.actions'
 
 function SignIn(props) {
 
@@ -46,8 +44,14 @@ function SignIn(props) {
 
     return (
         <div className="pro-sign-layout">
-            <div className="pro-sign-content">
-                <div className="logo-ttm-sign">LOGO</div>
+             <div className="nav-header-logo" style={{margin:"30px 0"}}><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
+             <Row>
+                    <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 8 }}
+                    lg={{ span: 8 }}
+                    xl={{ span: 8 }}
+                    >
                 <div className="pro-sign-box">
                     <div className="pro-sign-box-title">
                         Se Connecter
@@ -84,7 +88,6 @@ function SignIn(props) {
                         <Form.Item >
                             <Button 
                                 type="primary"
-                                className="button-validate button-sign-validate"
                                 onClick={() => handleSubmitSignin()}
                             >
                                 Connexion
@@ -93,10 +96,11 @@ function SignIn(props) {
                     </Form>
                     <a
                         className="forgotten-password"
-                        href="#">Mot de passe oublié
+                        href="#">Mot de passe oublié ?
                     </a>
                 </div>
-            </div>
+                    </Col>
+                </Row>
         </div>
     )}}
 }
@@ -110,7 +114,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch){
     return {
         setToken: function(token){
-            dispatch(setToken(token))
+            dispatch({type: 'setToken', token})
         }
     }
 }
