@@ -71,13 +71,12 @@ function CreateFormOne(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
                             
                             <p className='formLabel'>Numéro et rue</p>
                             <label >
-                                <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance"/>
+                                <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance" className="short"/>
                             </label>
 
                             <p className='formLabel'>Code postal</p>
@@ -87,7 +86,7 @@ function CreateFormOne(props) {
 
                             <p className='formLabel'>Ville</p>
                             <label >
-                                <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris"/>
+                                <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris" className="short"/>
                             </label>
 
                             <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
@@ -101,10 +100,10 @@ function CreateFormOne(props) {
                             
                         </form>
                         {formError} 
-                        <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
-                         
-                    </div>
-               
+
+                        <div className="form-buttons">
+                            <Button onClick={()=> handleClick()} type="primary" className="button-primary">Suivant</Button>
+                        </div>
                 </Content>  
 
          </Layout>

@@ -226,7 +226,7 @@ function CreateFormSix(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{margin : "20px 0"}}>
+                    <div style={{margin : "3em 0"}}>
 
                     <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
 
@@ -308,6 +308,8 @@ function CreateFormSix(props) {
                         </div>
                     </div>
 
+                    <div className="form-buttons">
+
                     <Button type="primary" className="button-back"
                         onClick={() => {
                             setBackRedir(true)
@@ -317,6 +319,7 @@ function CreateFormSix(props) {
                         Précédent</Button>  
 
                         {props.edit === true ? buttonEdit : buttonCreate}
+                    </div>
                            
                 </Content>  
 

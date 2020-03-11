@@ -130,9 +130,7 @@ function Home(props) {
             <h1 className='pageTitle'>Mes biens</h1>
             <Button
               onClick={() => setNavToCreateAd(true)}
-              type="primary"
-              ghost
-              className= "button-add"
+              type="secondary"
             >
               Ajouter un bien
               <PlusCircleOutlined />

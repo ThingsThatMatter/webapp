@@ -1,11 +1,5 @@
 @import url('https://fonts.googleapis.com/css?family=Raleway:400,800&display=swap');
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Raleway',sans-serif;
-  font-weight: 800;
-  color: #052040;
-}
-
 body {
   font-family: 'Raleway',sans-serif;
   font-weight: 400;
@@ -18,9 +12,70 @@ body {
 }
 
 a {
+  color: #355c7d;
+  text-decoration: none;
+  background-color: transparent;
+  outline: none;
+  cursor: pointer;
+  -webkit-transition: color 0.3s;
+  transition: color 0.3s;
+  -webkit-text-decoration-skip: objects;
   word-wrap: break-word;
 }
 
+a:hover, a:focus, a:active { 
+  color: #000;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  position:relative;
+  display:inline-block;
+  font-family: 'Raleway',sans-serif;
+  font-weight: 800;
+  display: block;
+  color: #355c7d;
+  line-height: 1em;
+}
+
+h1 {
+  font-size: 2.7em;
+  margin-bottom: 2em;
+}
+
+h1:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 100%;
+  margin: 20px auto;
+  width: 120px;
+  height: 6px;
+  background: #f8b195;
+}
+
+h2 {
+  font-size: 2.3em;
+  margin: 0.83em 0;
+}
+h3 {
+  font-size: 1.9em;
+  margin: 1em 0;
+}
+h4 {
+  font-size: 1.4em;
+  margin: 1.33em 0;
+}
+h5 {
+  font-size: 0.95em;
+  margin: 1.67em 0;
+}
+h6 {
+  font-size: 0.7em;
+  margin: 2.33em 0;
+}
+.ant-layout-content {
+  margin: 2em 3em;
+}
 .ant-row {
   padding: 2em 0;
 }
@@ -31,20 +86,12 @@ a {
 
 /* TITRES DE PAGES*/
 
-.pageTitle {
-  font-weight: 900;
-  font-size: 35px;
-  margin: 0;
-  color: #000;
-  margin-bottom: 1em;
-}
-
 .pageSubTitle {
   font-weight: 700;
   font-size: 1.5em;
   margin: 0;
   color: #ffff;
-  background-color: #052040;
+  background-color: #355c7d;
   width: fit-content;
   padding: 10px 20px;
 }
@@ -74,7 +121,21 @@ p {
 .logo {
   padding: 30px;
 }
-
+.ant-layout-sider {
+  position: relative;
+  min-width: 0;
+  background: #355c7d;
+  -webkit-transition: all 0.2s;
+  transition: all 0.2s;
+}
+.ant-menu-dark, .ant-menu-dark .ant-menu-sub {
+  color: rgba(255, 255, 255, 0.65);
+  background: #355c7d;
+}
+.ant-menu.ant-menu-dark .ant-menu-item-selected, .ant-menu-submenu-popup.ant-menu-dark .ant-menu-item-selected {
+  background-color: #f8b195;
+  font-weight: 700;
+}
 .sidebar {
   min-width: 300px;
   max-width: 300px;
@@ -87,6 +148,12 @@ p {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.logo-ttm img {
+  max-width: 80px;
+  left: 10px;
+  bottom: 10px;
+  position: absolute;
 }
 .main-content {
   width: 100%;
@@ -126,7 +193,7 @@ p {
 /* Sign-in sign-up Agent */
 .pro-sign-layout {
   height: 100vh;
-  background-color: #052040;
+  background-color: #355c7d;
   color: #FFF
 }
 .pro-sign-content {
@@ -150,17 +217,103 @@ p {
   box-shadow: 0 0 30px #000;
 }
 .pro-sign-box-title {
-  color: #052040;
+  color: #355c7d;
   margin-bottom:1em;
   font-size: 25px;
   font-weight: bold;
   text-align: center;
 }
 
-
+input.short-input {
+  max-width: 500px;
+}
 
 .ant-form-vertical .ant-form-item-label, .ant-col-24.ant-form-item-label, .ant-col-xl-24.ant-form-item-label {
   padding: 0 0 5px;
+}
+
+.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot {
+  background: #f8b195;
+}
+
+.ant-steps-item-process .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot {
+  background: #f8b195;
+}
+
+input.short, .ant-input.short, .ant-upload.short {
+  max-width: 500px;
+}
+
+.form-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: 2em;
+}
+
+.form-buttons button {
+  margin-right: 20px;
+}
+
+button.ant-btn-primary {
+  display: block;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  line-height: 14px;
+  background-color: #355c7d;
+  border-color: #355c7d;
+  color: #fff;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+button.ant-btn-primary:hover, button.ant-btn-primary:active, button.ant-btn-primary:focus {
+  background-color: #fff;
+  border-color: #355c7d;
+  color: #355c7d;
+}
+
+button.ant-btn-secondary {
+  display: block;
+  padding: 8px 16px;
+  text-transform: uppercase;
+  line-height: 14px;
+  background-color: #f8b195;
+  border-color: #f8b195;
+  color: #fff;
+  text-shadow: none;
+  box-shadow: none;
+}
+
+button.ant-btn-secondary:hover, button.ant-btn-secondary:active, button.ant-btn-secondary:focus {
+  background-color: #fff;
+  border-color: #f8b195;
+  color: #f8b195;
+}
+
+button.button-back {
+  background-color: #bdbdbd;
+  border-color: #bdbdbd;
+  color: #fff;
+}
+
+button.button-skip {
+  background-color: #fff;
+  border-color: #bdbdbd;
+  color: #bdbdbd;
+}
+
+button.button-decline {
+  background-color: #f67280;
+  border-color: #f67280;
+  color: #fff;
+}
+
+button.button-decline:hover, button.button-decline:active, button.button-decline:focus {
+  background-color: #fff;
+  border-color: #f67280;
+  color: #f67280;
 }
 
 .button-sign-validate {
@@ -169,13 +322,13 @@ p {
 }
 
 .sign-error-text {
-  color: #ff6b6b;
+  color: #f67280;
   margin-bottom: 20px;
 }
 
 .forgotten-password {
   text-align: center;
-  color:#052040;
+  color:#355c7d;
   font-size: 13px;
 }
 
@@ -446,12 +599,12 @@ p.offre-buyer-name {
 .ads-list-title {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .button-add {
   font-size: 18px;
-  color: #052040 !important;
+  color: #355c7d !important;
   font-weight: 600;
   border:0
 }
@@ -567,22 +720,29 @@ p.offre-buyer-name {
 }
 
 .ant-btn-background-ghost.ant-btn-primary {
-  color: #001428;
+  color: #355c7d;
   background-color: transparent;
-  border-color: #001428;
+  border-color: #355c7d;
   text-shadow: none;
+}
+
+.ant-badge-count {
+  background: #f67280;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  line-height: 18px;
 }
 
 .agent-resume button {
   margin: 0;
-  border: 2px solid #001428;
+  border: 2px solid #355c7d;
   line-height: 13px;
 }
 
 .agent-resume .ant-btn-primary:hover, .agent-resume .ant-btn-primary:focus {
   color: #fff !important;
-  border-color: #001428;
-  background-color: #001428 !important;
+  border-color: #355c7d;
+  background-color: #355c7d !important;
 }
 
 .agent-action {
@@ -615,7 +775,7 @@ p.offre-buyer-name {
 .ant-collapse-header{
     font-weight: 700;
     font-size: 1.5em;
-    color: #052040;
+    color: #355c7d;
   }
 
 
@@ -630,22 +790,21 @@ p.offre-buyer-name {
 /* -----------------------------------------------------------BUYER APP--------------------------------------------------------------- */
 
 .user-layout {
-  background-color: #FFF;
+  background-color: #f0f2f5;
 }
 
 /* Header */
 .nav-header {
   display: flex;
-  align-items: center;
-  width: 100vw;
-  height: 3em;
-  background-color: #349fa4;
+  background-color: #f8b195;
   font-size: 16px;
+  padding: 1em 2em;
 }
 
-.nav-header-logo {
-  margin-left:2em;
+.nav-header-logo img {
+  max-width: 100px;
 }
+
 .nav-header-menu {
   display:flex;
   width: 100%;
@@ -665,27 +824,70 @@ p.offre-buyer-name {
   margin:0;
   list-style-type: none;
 }
-  .nav-header-link {
-    color: #666;
-    margin-right: 2em;
-  }
-  .nav-header-link:hover {
-    color: #052040;
-  }
 
-  .nav-header-link-main {
-    font-size: 18px;
-    font-weight: 500;
-    color: #052040;
-    text-decoration: underline;
-  }
-
-.nav-header-account {
+.nav-header-link {
+  font-weight: 400;
+  color: #fff;
   margin-right: 2em;
 }
+.nav-header-link:hover {
+  color: #355c7d;
+}
 
+.nav-header-link-main {
+  font-weight: 700;
+}
+
+.nav-header-account {
+  background-color: #fff;
+  color: #355c7d;
+  padding: 5px;
+}
+
+.nav-header-account span {
+  margin: 0 5px;
+}
+
+.nav-header-account.nav-header-block-account:hover {
+  background-color: #355c7d;
+  color: #fff;
+  cursor: pointer;
+}
+
+.go-back {
+  display: block;
+  margin-bottom: 2em;
+}
 
 /* HomePage */
+
+.offers-row, .visit-row, .ads-row  {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0;
+}
+
+h1.userTitle  {
+  color: #355c7d;
+}
+
+.offers-row, .visit-row {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4em;
+  padding-bottom: 4em;
+}
+
+.offers-row::-webkit-scrollbar, .visit-row::-webkit-scrollbar, .ads-row::-webkit-scrollbar {
+  background-color: transparent;
+  height: 2vmin;
+}
+
+.offers-row::-webkit-scrollbar-thumb, .visit-row::-webkit-scrollbar-thumb, .ads-row::-webkit-scrollbar-thumb {
+  background-color: #e7e7e7;
+  border-radius: 1vmin;
+}
 
 .annonce-text-buyer {
   padding: 1em 1em 0 1em;
@@ -715,24 +917,32 @@ p.offre-buyer-name {
 }
 
 .annonce-status-buyer {
-  background-color: #f1f1f1;
-  color: #555
+  background-color: #355c7d;
+  text-align: center;
 }
 
 .annonce-messages-buyer {
-  padding: 0.5em 1em 0 1em;
-  line-height: 110%;
+  color: #fff;
 }
 
 .annonce-messages-buyer-offer-accepted {
-  color: #41bb41;
+  color: #fff;
   font-weight: 700;
+  position: absolute;
+  background-color: #41bb41;
+  padding: 10px 15px;
+  border-radius: 10px 0 10px 0;
 }
 
 .annonce-messages-buyer-offer-declined {
-  color: #ff6b6b;
-  font-weight: 500;
+  color: #fff;
+  font-weight: 700;
+  position: absolute;
+  background-color: #ff6b6b;
+  padding: 10px 15px;
+  border-radius: 10px 0 10px 0;
 }
+
 
 /* Buyer pages styles  */
   
@@ -753,14 +963,8 @@ p.offre-buyer-name {
 }
 
 .timeslot-picker {
-  width: 280px;
-  height: 280px;
-  margin-left: 10px;
-  margin-top: 73px;
   background: #F7F8F9;
-  position: fixed;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   justify-content: center;
-  
 }

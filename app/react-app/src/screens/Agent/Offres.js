@@ -97,7 +97,7 @@ function Offres(props) {
         </Button>
         :
         <div className="modal-footer-buttons">
-        <Button className="button-decline" onClick={handleDeclineOffer}>
+        <Button type="primary" className="button-decline" onClick={handleDeclineOffer}>
             Refuser l'offre
         </Button>
         <Button type="primary" className="button-validate" onClick={handleAcceptOffer}>
@@ -119,7 +119,7 @@ function Offres(props) {
         let sortedOffers = offersList.map((e,i) => {
             return (
             <div key={i} className='offer-section'>
-                <h2 className='title'>{e.title} - {e.area}m<sup>2</sup> - {e.address} {e.postcode} {e.city} - {priceFormatter.format(e.price)}</h2>
+                <h2 className='title'>{e.title} - {e.area}m<sup>2</sup> - {e.address} - {priceFormatter.format(e.price)}</h2>
                 
                     <Row gutter={16} className="offer-carrousel">
                         { e.offers.map( (f,i) => {
@@ -188,7 +188,7 @@ function Offres(props) {
             <Sidebar/>
 
             <Layout className='main-content'>
-                <Content style={{ margin: '2em 3em' }}>
+                <Content>
                 <h1 className='pageTitle'>Les offres</h1>
 
                     {sortedOffers}

@@ -81,7 +81,6 @@ function CreateFormThree(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                    <div style={{width : "60%", marginLeft: 25, marginTop: "2%"}}>
 
                         <form>
 
@@ -102,6 +101,7 @@ function CreateFormThree(props) {
                                 } else if (status === 'error') {
                                 message.error(`${info.file.name} file upload failed.`);
                             }}}
+                            className="short"
                             
                             >
                                 <p className="ant-upload-drag-icon">
@@ -133,19 +133,18 @@ function CreateFormThree(props) {
   
                         </form>
 
-                        <Button type="primary" className="button-back"
-                        onClick={() => {
-                            setBackRedir(true)
-                            props.previousStep()
-                        }}
-                        >
-                        Précédent</Button> 
+                        <div className="form-buttons">
+                            <Button type="primary" className="button-back"
+                            onClick={() => {
+                                setBackRedir(true)
+                                props.previousStep()
+                            }}
+                            >
+                            Précédent</Button> 
 
-                        <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
-                    </div>
-              
-                
-                
+                            <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
+                        </div>
+                       
                    
                 </Content>  
 
