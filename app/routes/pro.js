@@ -16,7 +16,6 @@ const bcrypt = require('bcryptjs');
 const saltRounds = 12;
 
 
-
 cloudinary.config({ 
   cloud_name: 'dp4mkibm2', 
   api_key: '692324412372859', 
@@ -199,6 +198,13 @@ router.post('/ad', async function(req, res, next) {
 
     let findAgent = await agentModel.findOne({ token: req.headers.token });
 
+    if(findAgent === null) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
       let adID = req.body.adID
 
       let photos = req.body.photos
@@ -213,8 +219,6 @@ router.post('/ad', async function(req, res, next) {
       for(i=0; i < photos.length ; i++) {
         fs.unlinkSync(`./temp/${adID}-${photos[i]}`);
       }
-
-      console.log("photos uploaded to cloudinary", photosUrl)
   
       let files = req.body.files
       let filesUrl = []
@@ -228,7 +232,8 @@ router.post('/ad', async function(req, res, next) {
         fs.unlinkSync(`./temp/${adID}-${files[i]}`);
       }
 
-      console.log("files uploaded to cloudinary", filesUrl)
+      let timeslots = req.body.timeSlots
+      timeslots.forEach(e => e.agent = findAgent._id)
   
       let tempAd = new adModel ({
         creationDate: new Date,
@@ -256,7 +261,7 @@ router.post('/ad', async function(req, res, next) {
         dpe: req.body.dpe,
         ges: req.body.ges,
         files: filesUrl,
-        timeSlots: req.body.timeSlots
+        timeSlots: timeslots
       });
   
       let newAd = await tempAd.save();
@@ -278,16 +283,14 @@ router.post('/ad', async function(req, res, next) {
         data: newAd
       }
 
-    
     }
-    catch(e) {
-    status = 500;
-
-    console.log(e)
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    
+  } catch(e) {
+      status = 500;
+      response = {
+        message: 'Internal error',
+        details: 'Le serveur a rencontré une erreur.'
+      };
   }
 
   res.status(status).json(response);

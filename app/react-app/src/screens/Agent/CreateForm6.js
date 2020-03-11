@@ -101,7 +101,7 @@ function CreateFormSix(props) {
                     ges: props.formData.ges,
                     files: props.formData.files,
                     color : props.formData.color,
-                    timeSlots: props.formData.timeSlots
+                    timeSlots: props.formData.timeslots
                     }
                 )
             })
@@ -158,7 +158,7 @@ function CreateFormSix(props) {
                     ges: props.formData.ges,
                     files: props.formData.files,
                     color : props.formData.color,
-                    timeSlots: props.formData.timeSlots,
+                    timeSlots: props.formData.timeslots,
                     photosDB: props.formData.photosDB,
                     filesDB: props.formData.filesDB
                     }
