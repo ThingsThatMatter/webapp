@@ -336,6 +336,60 @@ router.get('/ad/:id', async function(req, res, next) {
 
 });
 
+/* GET public ad  */ // A modifier pour ne pas renvoyer les infos confidentielles de l'ad (id des users et offres)
+router.get('/ad/:id/public', async function(req, res, next) {
+
+  const ad = await adModel
+    .findById(req.params.id)
+  
+    console.log(ad)
+
+  // try {
+
+      // let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id)[0]
+
+      // let visits = ad.timeSlots.filter( f => {
+      //   if (f.user.length > 0) {
+      //     let users = f.user.map( g => {return g.toString()})
+      //     if (users.indexOf(adsFromUser._id.toString()) > -1) {
+      //       f.user = adsFromUser._id 
+      //     } else {f = null}
+      //     return f
+      //   }
+      // })
+      // ad.timeSlots = visits
+
+      // let offers = ad.offers.filter( g => {
+      //   return String(g.user) === String(adsFromUser._id)
+      // })
+      // ad.offers = offers
+      
+
+      // status = 200;
+      // response = {
+      //   message: 'OK',
+      //   data: {
+      //     ad: ad,
+      //     user: user
+      //   }
+      // }
+    
+
+
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
+
+  // res.status(status).json(response);
+  res.json(ad);
+
+
+});
+
 /* GET offers */
 router.get('/offers', async function(req, res, next) {
 
@@ -434,12 +488,14 @@ router.post('/ad/:id_ad/offer', async function(req, res, next) {
 });
 
 /* POST visite */
-router.put('/ad/visit', async function(req, res, next) {
+router.put('/ad/:id_ad/visit', async function(req, res, next) {
 
-    let userToFind = await userModel.findOne({ token:req.body.token });
+    console.log("token",req.headers.token,"id_ad", req.params.id_ad,"id timeslot", req.body.timeslot)
+
+    let userToFind = await userModel.findOne({ token:req.headers.token });
 
     let newVisit = await adModel.updateOne(
-      { _id: req.body.ad, "timeSlots._id": req.body.timeslot }, 
+      { _id: req.params.id_ad, "timeSlots._id": req.body.timeslot }, 
       { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : userToFind._id } }
     )
     res.json(newVisit)

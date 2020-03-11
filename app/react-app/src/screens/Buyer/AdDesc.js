@@ -8,6 +8,7 @@ import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
 
 
 import { connect } from "react-redux";
+import { getInputClassName } from "antd/lib/input/Input";
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -29,32 +30,115 @@ function AdDesc(props) {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
+  const [slotsDisplay, setSlotsDisplay] = useState([])
 
-  let toggleStyle = { fontWeight: 600, color: "#1476E1", fontSize: "18px" };
+  useEffect(() => {
+    const dbFetch = async () => {
+      const data = await fetch(`/user/ad/5e5e7acc9e95c72c1a48542b/public`);
+      const body = await data.json();
 
-  if (toggle === false) {
-    toggleStyle = { fontWeight: 500, color: "#6F6E6E", fontSize: "18px" };
-  }
+      setAdDetails(body);
+      setAdPhotos(body.photos);
+      setAdDocuments(body.files);
+      props.setIdAd(body.data.ad._id); 
 
-  useEffect( () => {
-    const adsFetch = async () => {
-    const ads = await fetch(`/user/ad/${props.match.params.id}`, {
-        method: 'GET',
-        headers: {'token': props.userToken}
+    
+    const timeslots = body.timeSlots
+    console.log(timeslots)
+    const daySlots = []
+
+    for(let i=0 ; i < timeslots.length ; i++) {
+
+      const year = timeslots[i].start.slice(0,4)
+      let month = Number(timeslots[i].start.slice(5,7))-1
+      const day = timeslots[i].start.slice(8,10)
+      const hour1 = timeslots[i].start.slice(11,13)
+      const min1 = timeslots[i].start.slice(14,16)
+      const hour2 = timeslots[i].end.slice(11,13)
+      const min2 = timeslots[i].end.slice(14,16)
+
+      const date = new Date(year, month, day)
+
+      const index = daySlots.findIndex((e) => {
+
+      return e.day.getTime() == date.getTime()
     })
-    const body = await ads.json();
+      
+    if( timeslots[i].booked === false) {
+      if( index !== -1 ) {
+        daySlots[index].slots.push({
+        start : hour1+min1,
+        end : hour2+min2,
+        timeslot : timeslots[i]._id
+        })
+      } else {
+        daySlots.push({
+          day: date,
+          slots : [{
+            start : hour1+ min1, 
+            end : hour2+min2,
+            timeslot : timeslots[i]._id
+          }]
+        })
+      }
+    }
+      
+    }
 
-    setAdDetails(body.data.ad);
-    setAdPhotos(body.data.ad.photos);
-    setAdDocuments(body.data.ad.files);  
-    props.setIdAd(body.data.ad._id); 
-  }
-    adsFetch()
-}, [])
+    console.log("daySlots", daySlots)
 
+    daySlots.sort((a,b) => {
+      return (a.day - b.day)
+    })
 
-console.log(props.idAd)
+    const format = (number) => {
+      if(number < 10) {
+        console.log(number)
+        return `0${number}`
+      }
+    }
 
+    const pickerClick = async (timeslot) => {
+
+      const response = await fetch(`/user/ad/${body._id}/visit`, {
+        method : "put",
+        headers: {
+          'Content-Type': 'application/json',
+          token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk' // A METTRE A JOUT AVEC LE TOKEN DU STORE REDUX
+        },
+        body: JSON.stringify({
+          timeslot : timeslot
+        })
+      })
+      let jolieResponse = await response.json()
+      console.log("Reponse", jolieResponse)
+    }
+
+      const mapSlots = daySlots.map((e, i) => {
+
+         return <Col span={6} key={i}>
+
+           <div className="picker-day">
+           {`${format(e.day.getDate())}/${format(e.day.getMonth()+1)}`}
+           </div>
+
+            {
+              e.slots.map((f, i) => (
+                <div key={i} className="picker-slot" onClick={() => pickerClick(f.timeslot)}>
+                  {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
+                </div>
+              ))
+            }
+           
+           </Col>
+        })
+
+      setSlotsDisplay(mapSlots)
+
+    };
+    dbFetch();
+
+  }, []);
 
   /* Price formatting */
   const priceFormatter = new Intl.NumberFormat("fr", {
@@ -80,7 +164,10 @@ console.log(props.idAd)
         </a>
       </div>
     );
-  });
+  });  
+
+  
+
 
   return (
     <Layout className="user-layout">
@@ -307,12 +394,16 @@ console.log(props.idAd)
               xl={{ span: 6 }}
             >
               <div className="timeslot-picker">
-                <AdDescSidebarLogout/>
-                  {/* 
-                        1) extraire jours >= today. les mettre dans un objet et dans un tableau [{jour : 02/01/2020, créneaux : [{id: id, start: 8h30, end: 9h00}, ...], ...]
-                        
-                         */}
+                <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
+                  <Row className="slot-row">
+                    <AdDescSidebarLogout/>
+
+                    {slotsDisplay}
+                  </Row>
+
+
               </div>
+
             </Col>
           </Row>
         </Content>

@@ -29,6 +29,7 @@ function Home(props) {
             headers: {'token': props.userToken}
         })
         const body = await ads.json();
+        console.log(body)
         setAdsListFromDb(body.data.ads)
         }
         adsFetch()
