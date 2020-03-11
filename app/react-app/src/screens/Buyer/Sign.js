@@ -10,8 +10,6 @@ import {useCookies} from 'react-cookie'
 
 function SignUp(props) {
 
-    console.log(props)
-
     const [signupEmail, setSignupEmail] = useState(null)
     const [signupPassword, setSignupPassword] = useState(null)
 
@@ -65,14 +63,21 @@ function SignUp(props) {
     }
 
     if (toRedirect) { // if login OK (from form) redirect to home
-        return <Redirect to='/' /> 
+        
+        if (props.idAd === '') {
+            return <Redirect to={{pathname: `/ad/${props.idAd}`}} />
+        } else {
+            return <Redirect to='/' /> 
+        }
+
     } else {
         if (typeof cookies.userToken !== 'undefined' && props.userToken === '') {
             return <Spinner />
-        } else if (typeof cookies.userToken !== 'undefined' && props.userToken !== '') {  //if landing on signin and has a valid token : does not work
+
+        } else if (typeof cookies.userToken !== 'undefined' && props.userToken !== '') { 
             return <Redirect to='/' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
-        }
-        else {
+
+        } else {
 
         return (
             <div className="user-sign-layout">
@@ -213,7 +218,8 @@ function SignUp(props) {
 function mapStateToProps(state, ownProps) {
     return { 
         userToken : state.userToken,
-        cookies: ownProps.cookies
+        cookies: ownProps.cookies,
+        idAd: state.idAd
     }
 }
 

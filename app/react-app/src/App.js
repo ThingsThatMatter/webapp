@@ -14,8 +14,9 @@ import edit from './reducers/Agent/edit.reducer'
 import newOfferStep from './reducers/Buyer/newOfferStep.reducer'
 import offerFormData from './reducers/Buyer/offerFormData.reducer'
 import userToken from './reducers/Buyer/authentification.reducer'
+import idAd from './reducers/Buyer/idAd.reducer'
 
-const store = createStore(combineReducers({step, formData, token, edit, newOfferStep, offerFormData, userToken}))
+const store = createStore(combineReducers({step, formData, token, edit, newOfferStep, offerFormData, userToken, idAd}))
 
 function App() {
 

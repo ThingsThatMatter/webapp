@@ -143,7 +143,6 @@ function Offres(props) {
                                 color = '#116BD9';
                             }
                             
-                            console.log(f)
                         return (
                             <Col key = {i} 
                                 onClick={ () => { 

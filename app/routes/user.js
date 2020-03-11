@@ -172,6 +172,44 @@ router.post('/sign-up', async function(req, res, next) {
   
 });
 
+/* POST ad id in user's table */
+router.put('/ad/:id_ad', async function(req, res, next) {
+
+  try {
+    let findAd = await userModel.findOne({ token : req.headers.token, "ads": req.params.id_ad });
+
+    if(!findAd) { 
+      status = 401;
+      response = {
+        message: 'Already exists',
+        details: 'Annonce déjà existante'
+      };
+    } else {
+
+      let newAd = await userModel.updateOne(
+        { token : req.headers.token },
+        { $push : { 'ads' : req.params.id_ad } }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: newAd
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
 /* GET ads */
 router.get('/ads', async function(req, res, next) {
 

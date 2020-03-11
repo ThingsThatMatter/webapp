@@ -144,10 +144,13 @@ p {
   -o-transition: all 0.3s;
   transition: all 0.3s;
   position: relative;
-  flex-grow: 1 !important;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  position: -webkit-sticky;
+  position: sticky;
+  top: 0px;
+  height: 100vh;
 }
 .logo-ttm img {
   max-width: 80px;
@@ -967,6 +970,15 @@ h1.userTitle  {
   font-weight: 700;
   position: absolute;
   background-color: #ff6b6b;
+  padding: 10px 15px;
+  border-radius: 10px 0 10px 0;
+}
+
+.annonce-messages-buyer-offer-pending {
+  color: #fff;
+  font-weight: 700;
+  position: absolute;
+  background-color: #df8a44;
   padding: 10px 15px;
   border-radius: 10px 0 10px 0;
 }

@@ -49,7 +49,6 @@ function Home(props) {
     adsCopy = adsCopy.sort((a,b) => {
         return (dateCreate(a.creationDate) - dateCreate(b.creationDate))
     })
-    console.log(adsCopy)
     //rend
 
     let adsOffers = [];
@@ -86,7 +85,7 @@ function Home(props) {
                             <div className="annonce-price-container">
                                 <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                             </div>
-                            <p className="annonce-address-title">{e.title}</p>
+                            <p className="annonce-address-title">{e.address}</p>
                             <p className="annonce-address-sub">{e.postcode} {e.city}</p>
                         </div>
                         <div className="annonce-infos-buyer">
@@ -132,7 +131,7 @@ function Home(props) {
                             <div className="annonce-price-container">
                                 <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                             </div>
-                            <p className="annonce-address-title">{e.title}</p>
+                            <p className="annonce-address-title">{e.address}</p>
                             <p className="annonce-address-sub">{e.postcode} {e.city}</p>
                         </div>
                         <div className="annonce-infos-buyer">
@@ -159,7 +158,7 @@ function Home(props) {
                         <div className="annonce-price-container">
                             <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                         </div>
-                        <p className="annonce-address-title">{e.title}</p>
+                        <p className="annonce-address-title">{e.address}</p>
                         <p className="annonce-address-sub">{e.postcode} {e.city}</p>
                     </div>
                     <div className="annonce-infos-buyer">

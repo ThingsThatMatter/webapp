@@ -46,7 +46,7 @@ function BuyerRoutes(props) {
         <Router>
             <Switch>
                 <PrivateRoute component={Home} path="/" exact/>
-                <PrivateRoute component={AdDesc} path="/ad/:id" />
+                <Route component={AdDesc} path="/ad/:id" />
                 <PrivateRoute component={Visits} path="/visits" />
                 <PrivateRoute component={Offers} path="/offers" />
                 <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
@@ -70,7 +70,7 @@ function mapDispatchToProps(dispatch){
     return {
         setUserToken: function(token){
             dispatch({
-                type: 'setToken',
+                type: 'setUserToken',
                 token
             })
         }

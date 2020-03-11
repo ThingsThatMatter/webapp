@@ -3,7 +3,9 @@ import { Button } from 'antd';
 import {Link} from 'react-router-dom'
 import {StopOutlined,HomeOutlined} from '@ant-design/icons'
 import { Affix } from 'antd';
+import {connect} from 'react-redux'
 
+import {useCookies} from 'react-cookie'
 
 
 function UserNavHeader(props) {
@@ -13,6 +15,7 @@ function UserNavHeader(props) {
     const [offersClass, setOffersClass] = useState(null)
     const [accountClass, setAccountClass] = useState(null)
 
+    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
     useEffect( () => {
         const addClass = () => {
@@ -31,6 +34,11 @@ function UserNavHeader(props) {
         addClass()
     }, [])
 
+    const reset = () => {
+        props.setUserToken('');
+        removeCookie('userToken');
+    }
+
     return (
         <Affix offsetTop={0}>
             <header className="nav-header">
@@ -43,14 +51,15 @@ function UserNavHeader(props) {
                     </ul>
                     <ul className="nav-header-content nav-header-block-link">
                         <li style={{margin:"0 10px 0 0"}}>
-                            <Link to="/sign-in" 
+                            <Button 
+                            onClick={() => reset()}
                             style={{ 
                                 backgroundColor: "#355c7d", 
                                 color: "#fff", 
                                 padding: "5px 10px",
                                 border: "2px solid #355c7d"
                             }}>
-                            <StopOutlined /> Déconnexion</Link></li>
+                            <StopOutlined /> Déconnexion</Button></li>
                         <li>
                             <Link to="/pro" 
                             style={{ 
@@ -69,4 +78,16 @@ function UserNavHeader(props) {
     )
 }
 
-export default UserNavHeader
+
+function mapDispatchToProps(dispatch){
+    return {
+    setUserToken: function(token){
+        dispatch({type: 'setUserToken', token})
+      }
+    }
+  }
+  
+export default connect(
+    null,
+    mapDispatchToProps
+)(UserNavHeader)

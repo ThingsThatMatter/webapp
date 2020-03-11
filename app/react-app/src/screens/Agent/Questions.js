@@ -1,7 +1,8 @@
 import React from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout} from 'antd';
+import { Layout } from 'antd';
 
+const { Content } = Layout;
 
 
 function Questions() {
@@ -9,11 +10,12 @@ function Questions() {
   
         <Layout>
 
-
             <Sidebar/>
 
             <Layout className='main-content'>
-            <p>Questions</p>
+                <Content>
+                    <h1 className='pageTitle'>Les messages</h1>
+                </Content>         
             </Layout>
             
         

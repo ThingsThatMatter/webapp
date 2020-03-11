@@ -4,6 +4,9 @@ import { Slide } from "react-slideshow-image";
 import { Redirect, Link } from "react-router-dom";
 import UserNavHeader from "../../components/UserNavHeader";
 
+import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
+
+
 import { connect } from "react-redux";
 
 const { Content } = Layout;
@@ -20,7 +23,7 @@ const properties = {
   }
 };
 
-function AdDesc() {
+function AdDesc(props) {
   const [toggle, setToggle] = useState(true);
   const [adDetails, setAdDetails] = useState({});
 
@@ -33,18 +36,25 @@ function AdDesc() {
     toggleStyle = { fontWeight: 500, color: "#6F6E6E", fontSize: "18px" };
   }
 
-  useEffect(() => {
-    const dbFetch = async () => {
-      const data = await fetch(`/user/ad/5e667918c8cd1041d8dabb4d`);
-      const body = await data.json();
+  useEffect( () => {
+    const adsFetch = async () => {
+    const ads = await fetch(`/user/ad/${props.match.params.id}`, {
+        method: 'GET',
+        headers: {'token': props.userToken}
+    })
+    const body = await ads.json();
 
-      setAdDetails(body);
-      setAdPhotos(body.photos);
-      setAdDocuments(body.files);
-    };
+    setAdDetails(body.data.ad);
+    setAdPhotos(body.data.ad.photos);
+    setAdDocuments(body.data.ad.files);  
+    props.setIdAd(body.data.ad._id); 
+  }
+    adsFetch()
+}, [])
 
-    dbFetch();
-  }, []);
+
+console.log(props.idAd)
+
 
   /* Price formatting */
   const priceFormatter = new Intl.NumberFormat("fr", {
@@ -72,7 +82,6 @@ function AdDesc() {
     );
   });
 
-  console.log(adDetails);
   return (
     <Layout className="user-layout">
       <UserNavHeader current="Biens consultés" />
@@ -298,8 +307,8 @@ function AdDesc() {
               xl={{ span: 6 }}
             >
               <div className="timeslot-picker">
-                <p>Sélectionnez un créneau de visite</p>
-                {/* 
+                <AdDescSidebarLogout/>
+                  {/* 
                         1) extraire jours >= today. les mettre dans un objet et dans un tableau [{jour : 02/01/2020, créneaux : [{id: id, start: 8h30, end: 9h00}, ...], ...]
                         
                          */}
@@ -312,15 +321,22 @@ function AdDesc() {
   );
 }
 
-// function mapStateToProps(state) {
-//     return {
-//         token : state.token
-//     }
-// }
+function mapStateToProps(state) {
+  return { 
+      userToken : state.userToken,
+      idAd : state.idAd
+  }
+}
 
-// export default connect(
-//     mapStateToProps,
-//     null
-// )(AdDesc)
+function mapDispatchToProps(dispatch){
+  return {
+    setIdAd: function(id){
+      dispatch({type: 'setIdAd', id})
+    }
+  }
+}
 
-export default AdDesc;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AdDesc)
