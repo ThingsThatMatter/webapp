@@ -1,15 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { Layout, Button, Switch, Collapse, Col, Row } from "antd";
-import { Slide } from "react-slideshow-image";
-import { Redirect, Link } from "react-router-dom";
-import UserNavHeader from "../../components/UserNavHeader";
-import TimeslotPicker from "../../components/Buyer - AdDesc/TimeslotPicker";
+import React, { useState, useEffect } from 'react';
+import { Layout, Button, Switch, Collapse, Col, Row } from 'antd';
+import { Slide } from 'react-slideshow-image';
+import { Redirect, Link } from 'react-router-dom';
+import UserNavHeader from '../../components/UserNavHeader';
 
-
-import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
-
-import {useCookies} from 'react-cookie'
-
+import LoggedOut from '../../components/Buyer - AdDesc/LoggedOut'
+import TimeslotPicker from '../../components/Buyer - AdDesc/TimeslotPicker'
 
 import { connect } from "react-redux";
 import { getInputClassName } from "antd/lib/input/Input";
@@ -30,69 +26,46 @@ const properties = {
 
 function AdDesc(props) {
 
-  const [toggle, setToggle] = useState(true);
   const [adDetails, setAdDetails] = useState({});
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
   const [adID, setAdID] = useState('')
-  const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+  const [loggedIn, setLoggedIn] = useState(false)
 
+/* -----------------------------------------------LOAD AD FROM DB------------------------------------------ */
 
   useEffect(() => {
 
-    if (props.userToken === '') { 
-
       const dbFetchPublic = async () => {
-        const data = await fetch(`/user/ad/${props.match.params.id}/public`);
+        const data = await fetch(`/user/ad/${props.match.params.ad_id}/public`);
         const body = await data.json();
-
-        console.log('COUCOU LA ROUTE PUBLIQUE')
 
         setAdDetails(body.data);
         setAdPhotos(body.data.photos);
         setAdDocuments(body.data.files);
         setAdID(body.data._id);
 
-        props.setIdAd(body.data._id); 
-
-        console.log(props)
-        console.log(body.data)
       };
       dbFetchPublic();
-      /// Fin de la condition dbFetchPublic
 
-
-    } else {
-
-
-      const dbFetchPrivate = async () => {
-        const data = await fetch(`/user/ad/${props.match.params.id}`);
-        const body = await data.json();
-
-
-        console.log('COUCOU LA ROUTE PRIVEE')
-
-        console.log(body)
-
-        setAdDetails(body);
-        setAdPhotos(body.photos);
-        setAdDocuments(body.files);
-
-
-        const saveAdUser = await fetch(`/user/ad/${body._id}`, {
+      const dbFetch = async () => {
+        const saveAdUser = await fetch(`/user/ad/${props.match.params.ad_id}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
         })
-    
-        const ad = await saveAdUser.json()
+  
+        const body = await saveAdUser.json()
+        console.log(body)
+        if (body.message === 'OK') {
+          console.log('tto')
+          setLoggedIn(true)
+        } else {
+          // Il faudra gérer un message d'erreur
+        }
+      }
+      dbFetch()
 
-        console.log(props.userToken)
-
-
-      };
-      dbFetchPrivate();
-    } /// Fin de la condition dbFetchPrivate
   }, []);
 
   /* Price formatting */
@@ -119,7 +92,15 @@ function AdDesc(props) {
         </a>
       </div>
     );
-  });  
+  });
+  
+  /* -----------------------------------------------HANDLE SIDEBAR------------------------------------------ */
+  let sidebar ;
+  if (loggedIn === false) {
+    sidebar = <LoggedOut/>
+  } else {
+    sidebar = <TimeslotPicker adID={adID}/>
+  }
 
 
   return (
@@ -347,7 +328,7 @@ function AdDesc(props) {
               xl={{ span: 6 }}
             >
             
-            <TimeslotPicker adID={adID} />
+            {sidebar}
 
             </Col>
           </Row>
@@ -364,15 +345,7 @@ function mapStateToProps(state) {
   }
 }
 
-function mapDispatchToProps(dispatch){
-  return {
-    setIdAd: function(id){
-      dispatch({type: 'setIdAd', id})
-    }
-  }
-}
-
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  null
 )(AdDesc)

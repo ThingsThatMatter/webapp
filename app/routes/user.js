@@ -173,43 +173,42 @@ router.post('/sign-up', async function(req, res, next) {
 });
 
 /* POST ad id in user's table */
-router.put('/ad/:id_ad', async function(req, res, next) {
+router.put('/ad/:ad_id', async function(req, res, next) {
 
-  try {
+  // try {
 
-    let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.id_ad });
+    let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.ad_id });
     console.log(req.headers.token)
-    console.log(req.params.id_ad)
+    console.log(req.params.ad_id)
 
     console.log(findAd)
 
-    if(!findAd) { 
-      status = 401;
-      response = {
-        message: 'Already exists',
-        details: 'Annonce déjà existante'
-      };
-    } else {
-
-      // let newAd = await userModel.updateOne(
-      //   { token : req.headers.token },
-      //   { $push : { 'ads' : req.params.id_ad } }
-      // );
-
+    if(findAd) { 
       status = 200;
       response = {
         message: 'OK',
-        data: 'hello'
+        details: 'Annonce déjà consultée et sauvegardée'
+      };
+    } else {
+
+      let newAd = await userModel.updateOne(
+        { token : req.headers.token },
+        { $push : { 'ads' : req.params.ad_id } }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK'
       }
     };
 
-  } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
-  }
+  // } catch(e) {
+  //   status = 500;
+  //   response = {
+  //     message: 'Internal error',
+  //     details: 'Le serveur a rencontré une erreur.'
+  //   };
+  // }
 
   res.status(status).json(response);
 
@@ -277,7 +276,7 @@ router.get('/ads', async function(req, res, next) {
 
 
 /* GET ad for a user only with its visit and offer  */ 
-router.get('/ad/:id_ad/private', async function(req, res, next) {
+router.get('/ad/:ad_id/private', async function(req, res, next) {
 
   try {
 
@@ -300,7 +299,7 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
       }
       console.log(adsFromUser)
 
-      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id_ad)[0]
+      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.ad_id)[0]
 
       let visits = ad.timeSlots.filter( f => {
         if (f.user.length > 0) {
@@ -340,11 +339,11 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
 });
 
 /* GET public ad  */ 
-router.get('/ad/:id_ad/public', async function(req, res, next) {
+router.get('/ad/:ad_id/public', async function(req, res, next) {
 
   try {
 
-    let adFromDb = await adModel.findById(req.params.id_ad);
+    let adFromDb = await adModel.findById(req.params.ad_id);
 
     if(!adFromDb) { 
       status = 401;
@@ -376,11 +375,11 @@ router.get('/ad/:id_ad/public', async function(req, res, next) {
 });
 
 /* GET available timeslots for an ad */
-router.get('/ad/:id_ad/timeslots', async function(req,res,next) {
+router.get('/ad/:ad_id/timeslots', async function(req,res,next) {
 
   try {
   
-    let adFromDb = await adModel.findById(req.params.id_ad);
+    let adFromDb = await adModel.findById(req.params.ad_id);
 
     if(!adFromDb) { 
       status = 401;
@@ -439,7 +438,7 @@ router.get('/ad/visit', async function(req, res, next) {
 });
 
 /* POST offer */
-router.post('/ad/:id_ad/offer', async function(req, res, next) {
+router.post('/ad/:ad_id/offer', async function(req, res, next) {
 
   try {
 
@@ -481,7 +480,7 @@ router.post('/ad/:id_ad/offer', async function(req, res, next) {
       }
 
       let newOffer = await adModel.updateOne(
-          { _id: req.params.id_ad }, 
+          { _id: req.params.ad_id }, 
           { $push: { offers: offer } }
       )
 
@@ -507,14 +506,14 @@ router.post('/ad/:id_ad/offer', async function(req, res, next) {
 });
 
 /* PUT visite */
-router.put('/ad/:id_ad/visit', async function(req, res, next) {
+router.put('/ad/:ad_id/visit', async function(req, res, next) {
 
-    console.log("token",req.headers.token,"id_ad", req.params.id_ad,"id timeslot", req.body.timeslot)
+    console.log("token",req.headers.token,"ad_id", req.params.ad_id,"id timeslot", req.body.timeslot)
 
     let userToFind = await userModel.findOne({ token:req.headers.token });
 
     let newVisit = await adModel.updateOne(
-      { _id: req.params.id_ad, "timeSlots._id": req.body.timeslot }, 
+      { _id: req.params.ad_id, "timeSlots._id": req.body.timeslot }, 
       { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : userToFind._id } }
     )
     res.json(newVisit)

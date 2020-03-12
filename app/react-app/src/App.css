@@ -389,6 +389,7 @@ button.button-decline:hover, button.button-decline:active, button.button-decline
 
 .pop-confirm-buttons {
   display: inline !important;
+  line-height: 0 !important;
 }
 
 .add-slot-alert-fail-db {
