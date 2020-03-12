@@ -149,7 +149,6 @@ router.post('/sign-up', async function(req, res, next) {
 
         saveUser = await newUser.save()
 
-        console.log(saveUser)
         status = 200;
         response = {
           message: 'OK',
@@ -177,30 +176,35 @@ router.put('/ad/:ad_id', async function(req, res, next) {
 
   // try {
 
-    let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.ad_id });
-    console.log(req.headers.token)
-    console.log(req.params.ad_id)
+    if (req.headers.token) {
 
-    console.log(findAd)
+      let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.ad_id });
 
-    if(findAd) { 
-      status = 200;
-      response = {
-        message: 'OK',
-        details: 'Annonce déjà consultée et sauvegardée'
+      if(findAd) { 
+        status = 200;
+        response = {
+          message: 'OK',
+          details: 'Annonce déjà consultée et sauvegardée'
+        };
+      } else {
+
+        let newAd = await userModel.updateOne(
+          { token : req.headers.token },
+          { $push : { 'ads' : req.params.ad_id } }
+        );
+
+        status = 200;
+        response = {
+          message: 'OK'
+        }
       };
     } else {
-
-      let newAd = await userModel.updateOne(
-        { token : req.headers.token },
-        { $push : { 'ads' : req.params.ad_id } }
-      );
-
-      status = 200;
+      status = 401;
       response = {
-        message: 'OK'
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       }
-    };
+    }
 
   // } catch(e) {
   //   status = 500;
@@ -285,8 +289,6 @@ router.get('/ad/:ad_id/private', async function(req, res, next) {
       .populate('ads')
       .exec()
 
-    console.log('adsFromUser : ' + adsFromUser)
-
     if(!adsFromUser) { 
       status = 401;
       response = {
@@ -302,9 +304,6 @@ router.get('/ad/:ad_id/private', async function(req, res, next) {
 
       let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.ad_id)[0]
 
-      console.log('ad : ' + ad)
-
-
       let visits = ad.timeSlots.filter( f => {
         if (f.user.length > 0) {
           let users = f.user.map( g => {return g.toString()})
@@ -316,15 +315,10 @@ router.get('/ad/:ad_id/private', async function(req, res, next) {
       })
       ad.timeSlots = visits
 
-      console.log('visit : ' + visits)
-
-
       let offers = ad.offers.filter( g => {
         return String(g.user) === String(adsFromUser._id)
       })
       ad.offers = offers
-
-      console.log('offer : ' + offers)
       
       status = 200;
       response = {
@@ -387,8 +381,6 @@ router.get('/ad/:ad_id/public', async function(req, res, next) {
 router.get('/ad/:ad_id/timeslots', async function(req,res,next) {
 
   try {
-
-    console.log("id", req.params.id_ad)
   
     let adFromDb = await adModel.findById(req.params.ad_id);
 
@@ -462,7 +454,6 @@ router.post('/ad/:ad_id/offer', async function(req, res, next) {
         details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       };
     } else {
-      console.log(req.body)
 
       let offer = {
         creationDate: new Date,
@@ -519,13 +510,38 @@ router.post('/ad/:ad_id/offer', async function(req, res, next) {
 /* PUT visite */
 router.put('/ad/:ad_id/visit', async function(req, res, next) {
 
+  // try {
+
     let userToFind = await userModel.findOne({ token:req.headers.token });
 
-    let newVisit = await adModel.updateOne(
-      { _id: req.params.ad_id, "timeSlots._id": req.body.timeslot }, 
-      { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : userToFind._id } }
-    )
-    res.json(newVisit)
+    if(!userToFind) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let newVisit = await adModel.updateOne(
+        { _id: req.params.ad_id, "timeSlots._id": req.body.timeslot }, 
+        { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : userToFind._id } }
+      )
+      
+      status = 200;
+      response = {
+        message: 'OK'
+      }
+    }
+
+// } catch(e) {
+//   status = 500;
+//   response = {
+//     message: 'Internal error',
+//     details: 'Le serveur a rencontré une erreur.'
+//   };
+// }
+
+res.status(status).json(response);
 
 });
 

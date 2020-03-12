@@ -5,12 +5,14 @@ import { Redirect, Link } from "react-router-dom";
 export default function TimeslotPicker(props) {
 
 const [slotsDisplay, setSlotsDisplay] = useState([]);
+console.log(props)
+
 
     useEffect(() => {
 
         const getTimeslots = async () => {
 
-            let response = await fetch(`/user/ad/${props.adID}/timeslots`)
+            let response = await fetch(`/user/ad/${props.adId}/timeslots`)
             
             let cleanresponse = await response.json()
 
@@ -30,20 +32,9 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
 
                 now.setHours(now.getHours() + 1)
 
-                console.log("now+1h:", now)
-                console.log("millisecondes :", now.getTime())
-                
-                console.log("timeslot:", fullDate)
-                console.log("millisecondes:", fullDate.getTime())
-                
-
-                console.log(fullDate.getTime() > now.getTime())
-
                 return fullDate.getTime() > now.getTime()
 
             })
-
-            console.log('filtered', timeslots)
 
         const daySlots = []
 
@@ -95,19 +86,23 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
         }
 
         const pickerClick = async (timeslot) => {
-            console.log("token:",props.token)
-        const response = await fetch(`/user/ad/${props.adID}/visit`, {
-            method : "put",
-            headers: {
-            'Content-Type': 'application/json',
-            'token' : props.token
-            },
-            body: JSON.stringify({
-            timeslot : timeslot
+            const response = await fetch(`/user/ad/${props.adId}/visit`, {
+                method : "put",
+                headers: {
+                'Content-Type': 'application/json',
+                'token' : props.token
+                },
+                body: JSON.stringify({
+                timeslot : timeslot
+                })
             })
-        })
-        let jsonResponse = await response.json()
-        console.log("Reponse", jsonResponse)
+            let body = await response.json()
+            if (body.message === 'OK') {
+                props.goToVisitParent()
+            }
+            else {
+                // Afficher un message d'erreur
+            }
         }
 
         const mapSlots = daySlots.map((e, i) => {
@@ -138,10 +133,8 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
             
             </Col>
             })
-
             setSlotsDisplay(mapSlots);
         };
-
         getTimeslots();
 
 }, [])
@@ -158,7 +151,3 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
 );
 
 }
-
-
-
-    

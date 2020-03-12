@@ -4,9 +4,8 @@ import { Slide } from 'react-slideshow-image';
 import { Redirect, Link } from 'react-router-dom';
 import UserNavHeader from '../../components/UserNavHeader';
 
-import LoggedOut from '../../components/Buyer - AdDesc/LoggedOut'
-import SidebarBuyer from "../../components/Buyer - AdDesc/SidebarBuyer";
-
+import LoggedOut from '../../components/buyerAdDesc/LoggedOut'
+import SidebarBuyer from "../../components/buyerAdDesc/SidebarBuyer";
 
 import { connect } from "react-redux";
 
@@ -30,7 +29,6 @@ function AdDesc(props) {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
-  const [adID, setAdID] = useState('')
   const [loggedIn, setLoggedIn] = useState(false)
 
 /* -----------------------------------------------LOAD AD FROM DB------------------------------------------ */
@@ -48,22 +46,27 @@ function AdDesc(props) {
       };
       dbFetchPublic();
 
-      const dbFetchPrivate = async () => {
-        const saveAdUser = await fetch(`/user/ad/${props.match.params.ad_id}`, {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
-        })
-  
-        const body = await saveAdUser.json()
-        if (body.message === 'OK') {
-          setLoggedIn(true)
-        } else {
-          // Il faudra gérer un message d'erreur
-        }
-      }
-      dbFetchPrivate()
-
   }, []);
+
+  useEffect(() => {
+
+    const saveAd = async () => {
+      const saveAdUser = await fetch(`/user/ad/${props.match.params.ad_id}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
+      })
+
+      const body = await saveAdUser.json()
+      console.log(body)
+      if (body.message === 'OK') {
+        setLoggedIn(true)
+      } else {
+        // Il faudra gérer un message d'erreur
+      }
+    }
+    saveAd()
+
+}, [props.userToken]);
 
   /* Price formatting */
   const priceFormatter = new Intl.NumberFormat("fr", {
@@ -96,9 +99,8 @@ function AdDesc(props) {
   if (loggedIn === false) {
     sidebar = <LoggedOut/>
   } else {
-    sidebar = <SidebarBuyer adID={adID}/>
+    sidebar = <SidebarBuyer adId={props.match.params.ad_id} userToken={props.userToken}/>
   }
-
 
   return (
     <Layout className="user-layout">
