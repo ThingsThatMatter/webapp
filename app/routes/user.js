@@ -379,6 +379,8 @@ router.get('/ad/:id_ad/public', async function(req, res, next) {
 router.get('/ad/:id_ad/timeslots', async function(req,res,next) {
 
   try {
+
+    console.log("id", req.params.id_ad)
   
     let adFromDb = await adModel.findById(req.params.id_ad);
 
@@ -508,6 +510,8 @@ router.post('/ad/:id_ad/offer', async function(req, res, next) {
 
 /* PUT visite */
 router.put('/ad/:id_ad/visit', async function(req, res, next) {
+
+    console.log(req.headers)
 
     console.log("token",req.headers.token,"id_ad", req.params.id_ad,"id timeslot", req.body.timeslot)
 

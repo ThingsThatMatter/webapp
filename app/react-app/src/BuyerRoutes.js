@@ -53,7 +53,7 @@ function BuyerRoutes(props) {
                 <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
 
                 <Route component={buyerSign} path="/sign" />
-                <Route component={AdDesc} path="/ad/:id" />
+                <Route component={AdDesc} path="/ad/:ad_id" />
             </Switch>
         </Router>
           

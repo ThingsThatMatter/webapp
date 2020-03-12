@@ -35,16 +35,14 @@ function AdDesc(props) {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
-  const [adID, setAdID] = useState('')
   const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
 
   useEffect(() => {
 
-    if (props.userToken === '') { 
 
       const dbFetchPublic = async () => {
-        const data = await fetch(`/user/ad/${props.match.params.id}/public`);
+        const data = await fetch(`/user/ad/${props.match.params.ad_id}/public`);
         const body = await data.json();
 
         console.log('COUCOU LA ROUTE PUBLIQUE')
@@ -52,7 +50,6 @@ function AdDesc(props) {
         setAdDetails(body.data);
         setAdPhotos(body.data.photos);
         setAdDocuments(body.data.files);
-        setAdID(body.data._id);
 
         props.setIdAd(body.data._id); 
 
@@ -60,39 +57,7 @@ function AdDesc(props) {
         console.log(body.data)
       };
       dbFetchPublic();
-      /// Fin de la condition dbFetchPublic
 
-
-    } else {
-
-
-      const dbFetchPrivate = async () => {
-        const data = await fetch(`/user/ad/${props.match.params.id}`);
-        const body = await data.json();
-
-
-        console.log('COUCOU LA ROUTE PRIVEE')
-
-        console.log(body)
-
-        setAdDetails(body);
-        setAdPhotos(body.photos);
-        setAdDocuments(body.files);
-
-
-        const saveAdUser = await fetch(`/user/ad/${body._id}`, {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
-        })
-    
-        const ad = await saveAdUser.json()
-
-        console.log(props.userToken)
-
-
-      };
-      dbFetchPrivate();
-    } /// Fin de la condition dbFetchPrivate
   }, []);
 
   /* Price formatting */
@@ -347,7 +312,7 @@ function AdDesc(props) {
               xl={{ span: 6 }}
             >
             
-            <TimeslotPicker adID={adID} />
+            <TimeslotPicker adID={props.match.params.ad_id} token={props.userToken} />
 
             </Col>
           </Row>
