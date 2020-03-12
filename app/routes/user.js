@@ -474,7 +474,7 @@ router.post('/ad/:id_ad/offer', async function(req, res, next) {
 
 });
 
-/* POST visite */
+/* PUT visite */
 router.put('/ad/:id_ad/visit', async function(req, res, next) {
 
     console.log("token",req.headers.token,"id_ad", req.params.id_ad,"id timeslot", req.body.timeslot)

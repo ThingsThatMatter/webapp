@@ -3,6 +3,8 @@ import { Layout, Button, Switch, Collapse, Col, Row } from "antd";
 import { Slide } from "react-slideshow-image";
 import { Redirect, Link } from "react-router-dom";
 import UserNavHeader from "../../components/UserNavHeader";
+import TimeslotPicker from "../../components/Buyer - AdDesc/TimeslotPicker";
+
 
 import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
 
@@ -27,13 +29,13 @@ const properties = {
 };
 
 function AdDesc(props) {
+
   const [toggle, setToggle] = useState(true);
   const [adDetails, setAdDetails] = useState({});
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
-  const [slotsDisplay, setSlotsDisplay] = useState([]);
-
+  const [adID, setAdID] = useState('')
   const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
 
@@ -50,6 +52,7 @@ function AdDesc(props) {
         setAdDetails(body.data);
         setAdPhotos(body.data.photos);
         setAdDocuments(body.data.files);
+        setAdID(body.data._id);
 
         props.setIdAd(body.data._id); 
 
@@ -76,95 +79,6 @@ function AdDesc(props) {
         setAdPhotos(body.photos);
         setAdDocuments(body.files);
 
-      const timeslots = body.timeSlots
-      console.log(timeslots)
-      const daySlots = []
-
-      for(let i=0 ; i < timeslots.length ; i++) {
-
-        const year = timeslots[i].start.slice(0,4)
-        let month = Number(timeslots[i].start.slice(5,7))-1
-        const day = timeslots[i].start.slice(8,10)
-        const hour1 = timeslots[i].start.slice(11,13)
-        const min1 = timeslots[i].start.slice(14,16)
-        const hour2 = timeslots[i].end.slice(11,13)
-        const min2 = timeslots[i].end.slice(14,16)
-
-        const date = new Date(year, month, day)
-
-        const index = daySlots.findIndex((e) => {
-          return e.day.getTime() == date.getTime()
-        })
-        
-        if( timeslots[i].booked === false) {
-          if( index !== -1 ) {
-            daySlots[index].slots.push({
-            start : hour1+min1,
-            end : hour2+min2,
-            timeslot : timeslots[i]._id
-            })
-          } else {
-            daySlots.push({
-              day: date,
-              slots : [{
-                start : hour1+ min1, 
-                end : hour2+min2,
-                timeslot : timeslots[i]._id
-              }]
-            })
-          }
-        }
-      }
-
-      console.log("daySlots", daySlots)
-
-      daySlots.sort((a,b) => {
-        return (a.day - b.day)
-      })
-
-      const format = (number) => {
-        if(number < 10) {
-          console.log(number)
-          return `0${number}`
-        }
-      }
-
-      const pickerClick = async (timeslot) => {
-
-        const response = await fetch(`/user/ad/${body._id}/visit`, {
-          method : "put",
-          headers: {
-            'Content-Type': 'application/json',
-            token : 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk' // A METTRE A JOUT AVEC LE TOKEN DU STORE REDUX
-          },
-          body: JSON.stringify({
-            timeslot : timeslot
-          })
-        })
-        let jolieResponse = await response.json()
-        console.log("Reponse", jolieResponse)
-      }
-
-        const mapSlots = daySlots.map((e, i) => {
-
-          return <Col span={6} key={i}>
-
-            <div className="picker-day">
-            {`${format(e.day.getDate())}/${format(e.day.getMonth()+1)}`}
-            </div>
-
-              {
-                e.slots.map((f, i) => (
-                  <div key={i} className="picker-slot" onClick={() => pickerClick(f.timeslot)}>
-                    {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
-                  </div>
-                ))
-              }
-            
-            </Col>
-          })
-
-        setSlotsDisplay(mapSlots)
 
         const saveAdUser = await fetch(`/user/ad/${body._id}`, {
           method: 'PUT',
@@ -432,21 +346,8 @@ function AdDesc(props) {
               lg={{ span: 6 }}
               xl={{ span: 6 }}
             >
-              <div className="timeslot-picker">
-                <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
-                  <Row className="slot-row">
-
-                  {props.userToken === '' ?
-                    <AdDescSidebarLogout/>
-                  :
-                    <p>Voici les créneaux</p>
-                  }
-
-                    {slotsDisplay}
-                  </Row>
-
-
-              </div>
+            
+            <TimeslotPicker adID={adID} />
 
             </Col>
           </Row>
