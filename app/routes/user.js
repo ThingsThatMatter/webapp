@@ -279,7 +279,7 @@ router.get('/ads', async function(req, res, next) {
 /* GET ad for a user only with its visit and offer  */ 
 router.get('/ad/:id_ad/private', async function(req, res, next) {
 
-  // try {
+  try {
 
     const adsFromUser = await userModel
       .findOne({ token:req.headers.token })
@@ -298,8 +298,9 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
         lastname: adsFromUser.lastname,
         firstname: adsFromUser.firstname
       }
+      console.log(adsFromUser)
 
-      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id)[0]
+      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id_ad)[0]
 
       let visits = ad.timeSlots.filter( f => {
         if (f.user.length > 0) {
@@ -317,7 +318,6 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
       })
       ad.offers = offers
       
-
       status = 200;
       response = {
         message: 'OK',
@@ -328,13 +328,13 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
       }
     }
 
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
   res.status(status).json(response);
 });
