@@ -7,6 +7,8 @@ import TimeslotPicker from "../../components/Buyer - AdDesc/TimeslotPicker";
 
 
 import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
+import AdDescSidebarBuyer from "../../components/AdDescSidebarBuyer";
+
 
 import {useCookies} from 'react-cookie'
 
@@ -311,6 +313,26 @@ function AdDesc(props) {
               lg={{ span: 6 }}
               xl={{ span: 6 }}
             >
+
+              <div className="sidebar-buyer">
+              
+                {props.userToken === '' ?
+                  <AdDescSidebarLogout/>
+                :
+                <div>
+                  <div className="timeslot-picker">
+                  <p style={{textAlign : "center", fontWeight: "bold"}}>Sélectionnez un créneau de visite</p>
+                    <Row className="slot-row">
+                      
+                    </Row>
+                  </div>
+
+                  <AdDescSidebarBuyer/>
+
+                </div>
+                }
+                
+              </div>
             
             <TimeslotPicker adID={props.match.params.ad_id} token={props.userToken} />
 

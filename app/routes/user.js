@@ -191,15 +191,15 @@ router.put('/ad/:id_ad', async function(req, res, next) {
       };
     } else {
 
-      // let newAd = await userModel.updateOne(
-      //   { token : req.headers.token },
-      //   { $push : { 'ads' : req.params.id_ad } }
-      // );
-
+      let newAd = await userModel.updateOne(
+        { token : req.headers.token },
+        { $push : { 'ads' : req.params.id_ad } }
+      );
+ 
       status = 200;
       response = {
         message: 'OK',
-        data: 'hello'
+        data: newAd
       }
     };
 
@@ -286,6 +286,8 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
       .populate('ads')
       .exec()
 
+    console.log('adsFromUser : ' + adsFromUser)
+
     if(!adsFromUser) { 
       status = 401;
       response = {
@@ -298,9 +300,11 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
         lastname: adsFromUser.lastname,
         firstname: adsFromUser.firstname
       }
-      console.log(adsFromUser)
 
       let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id_ad)[0]
+
+      console.log('ad : ' + ad)
+
 
       let visits = ad.timeSlots.filter( f => {
         if (f.user.length > 0) {
@@ -313,10 +317,15 @@ router.get('/ad/:id_ad/private', async function(req, res, next) {
       })
       ad.timeSlots = visits
 
+      console.log('visit : ' + visits)
+
+
       let offers = ad.offers.filter( g => {
         return String(g.user) === String(adsFromUser._id)
       })
       ad.offers = offers
+
+      console.log('offer : ' + offers)
       
       status = 200;
       response = {
