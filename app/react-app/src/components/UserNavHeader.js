@@ -34,9 +34,12 @@ function UserNavHeader(props) {
         addClass()
     }, [])
 
+
     const reset = () => {
         props.setUserToken('');
         removeCookie('userToken');
+        console.log(cookies)
+        console.log(props)
     }
 
     return (
@@ -52,14 +55,15 @@ function UserNavHeader(props) {
                     <ul className="nav-header-content nav-header-block-link">
                         <li style={{margin:"0 10px 0 0"}}>
                             <Button 
-                            onClick={() => reset()}
+                            onClick={reset}
                             style={{ 
                                 backgroundColor: "#355c7d", 
                                 color: "#fff", 
                                 padding: "5px 10px",
                                 border: "2px solid #355c7d"
                             }}>
-                            <StopOutlined /> Déconnexion</Button></li>
+                            <StopOutlined /> Déconnexion</Button>
+                        </li>
                         <li>
                             <Link to="/pro" 
                             style={{ 
