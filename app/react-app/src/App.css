@@ -830,6 +830,10 @@ p.offre-buyer-name {
 }
 
 /* Header */
+.header {
+  z-index: 9999;
+}
+
 .nav-header {
   display: flex;
   background-color: #f8b195;
