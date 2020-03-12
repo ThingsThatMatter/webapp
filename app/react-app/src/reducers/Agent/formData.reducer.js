@@ -48,7 +48,7 @@ export default function(formData = {}, action) {
         return newData;
     
     } else if (action.type === 'saveFormData5') {
-        const timeslots = action.timeslots.map( e => {
+        const timeSlots = action.timeSlots.map( e => {
           const {start, end, priv} = e
           return {
             start: start,
@@ -60,7 +60,7 @@ export default function(formData = {}, action) {
 
         var newData = {
             ...formData,
-            timeslots,
+            timeSlots,
             color: action.color
         }
         return newData;

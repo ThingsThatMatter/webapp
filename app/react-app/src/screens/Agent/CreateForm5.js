@@ -572,7 +572,7 @@ function mapDispatchToProps(dispatch) {
       console.log(timeslots)
       dispatch( {
           type: 'saveFormData5',
-          timeslots : timeslots !== null ? timeslots : [],
+          timeSlots : timeslots !== null ? timeslots : [],
           color: color
       } ) } 
   }
