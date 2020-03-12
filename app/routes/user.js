@@ -27,9 +27,9 @@ let response;
 /* Check token to access app*/
 router.get('/user-access', async function(req, res, next) {
 
-  let findUser = await userModel.findOne({ token:req.headers.token });
-  
   try {
+
+    let findUser = await userModel.findOne({ token:req.headers.token });
 
     if(!findUser) { 
       status = 401;
@@ -176,6 +176,7 @@ router.post('/sign-up', async function(req, res, next) {
 router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
+
     let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.id_ad });
     console.log(req.headers.token)
     console.log(req.params.id_ad)
@@ -214,15 +215,15 @@ router.put('/ad/:id_ad', async function(req, res, next) {
 
 });
 
-/* GET ads */
+/* GET ads for a user with its timeslots and offers */
 router.get('/ads', async function(req, res, next) {
 
-  const adsFromUser = await userModel
-    .findOne({ token:req.headers.token })
-    .populate('ads')
-    .exec()
-
   try {
+
+    const adsFromUser = await userModel
+      .findOne({ token:req.headers.token })
+      .populate('ads')
+      .exec()
 
     if(!adsFromUser) { 
       status = 401;
@@ -260,7 +261,7 @@ router.get('/ads', async function(req, res, next) {
           token: adsFromUser.token
         }
       }
-    };
+    }
 
   } catch(e) {
     status = 500;
@@ -275,95 +276,58 @@ router.get('/ads', async function(req, res, next) {
 })
 
 
-/* GET ad  */ // Attention cet ad n'est pas utilisable partout : on ne récupère que les timeslots et offre du buyer
-router.get('/ad/:id', async function(req, res, next) {
-
-  const ad = await adModel.findById(req.params.id)
-
-  console.log(ad)
-
-  res.json(ad);
-
-  // const adsFromUser = await userModel
-  //   .findOne({ token:req.headers.token })
-  //   .populate('ads')
-  //   .exec()
+/* GET ad for a user only with its visit and offer  */ 
+router.get('/ad/:id_ad/private', async function(req, res, next) {
 
   // try {
 
-  //   if(!adsFromUser) { 
-  //     status = 401;
-  //     response = {
-  //       message: 'Bad token',
-  //       details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-  //     };
-  //   } else {
+    const adsFromUser = await userModel
+      .findOne({ token:req.headers.token })
+      .populate('ads')
+      .exec()
 
-  //     const user = {
-  //       lastname: adsFromUser.lastname,
-  //       firstname: adsFromUser.firstname
-  //     }
+    if(!adsFromUser) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
 
-  //     let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id)[0]
+      const user = {
+        lastname: adsFromUser.lastname,
+        firstname: adsFromUser.firstname
+      }
 
-  //     let visits = ad.timeSlots.filter( f => {
-  //       if (f.user.length > 0) {
-  //         let users = f.user.map( g => {return g.toString()})
-  //         if (users.indexOf(adsFromUser._id.toString()) > -1) {
-  //           f.user = adsFromUser._id 
-  //         } else {f = null}
-  //         return f
-  //       }
-  //     })
-  //     ad.timeSlots = visits
+      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.id)[0]
 
-  //     let offers = ad.offers.filter( g => {
-  //       return String(g.user) === String(adsFromUser._id)
-  //     })
-  //     ad.offers = offers
+      let visits = ad.timeSlots.filter( f => {
+        if (f.user.length > 0) {
+          let users = f.user.map( g => {return g.toString()})
+          if (users.indexOf(adsFromUser._id.toString()) > -1) {
+            f.user = adsFromUser._id 
+          } else {f = null}
+          return f
+        }
+      })
+      ad.timeSlots = visits
+
+      let offers = ad.offers.filter( g => {
+        return String(g.user) === String(adsFromUser._id)
+      })
+      ad.offers = offers
       
 
-  //     status = 200;
-  //     response = {
-  //       message: 'OK',
-  //       data: {
-  //         ad: ad,
-  //         user: user
-  //       }
-  //     }
-  //   }
-
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
-
-  // res.status(status).json(response);
-
-
-});
-
-/* GET public ad  */ // A modifier pour ne pas renvoyer les infos confidentielles de l'ad (id des users et offres)
-router.get('/ad/:id/public', async function(req, res, next) {
-
-  // try {
-
-    let adFromDb = await adModel.findById(req.params.id);
-
-    let adPublic = adFromDb;
-
-    adPublic.timeSlots = [];
-    adPublic.offers = [];
-
-    status = 200;
-    response = {
-      message: 'OK',
-      data: adPublic
+      status = 200;
+      response = {
+        message: 'OK',
+        data: {
+          ad: ad,
+          user: user
+        }
+      }
     }
-    
+
   // } catch(e) {
   //   status = 500;
   //   response = {
@@ -373,9 +337,78 @@ router.get('/ad/:id/public', async function(req, res, next) {
   // }
 
   res.status(status).json(response);
-
-
 });
+
+/* GET public ad  */ 
+router.get('/ad/:id_ad/public', async function(req, res, next) {
+
+  try {
+
+    let adFromDb = await adModel.findById(req.params.id_ad);
+
+    if(!adFromDb) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+    adFromDb.timeSlots = [];
+    adFromDb.offers = [];
+
+    status = 200;
+    response = {
+      message: 'OK',
+      data: adFromDb
+    }
+  }
+    
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+});
+
+/* GET available timeslots for an ad */
+router.get('/ad/:id_ad/timeslots', async function(req,res,next) {
+
+  try {
+  
+    let adFromDb = await adModel.findById(req.params.id_ad);
+
+    if(!adFromDb) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: {
+          timeslots: adFromDb.timeSlots
+        }
+      }
+    }
+
+   } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+})
 
 /* GET offers */
 router.get('/offers', async function(req, res, next) {
@@ -408,9 +441,9 @@ router.get('/ad/visit', async function(req, res, next) {
 /* POST offer */
 router.post('/ad/:id_ad/offer', async function(req, res, next) {
 
-  let userToFind = await userModel.findOne({ token:req.headers.token });
+  try {
 
-  // try {
+    let userToFind = await userModel.findOne({ token:req.headers.token });
 
     if(!userToFind) { 
       status = 401;
@@ -459,16 +492,15 @@ router.post('/ad/:id_ad/offer', async function(req, res, next) {
           offer: newOffer
         }
       }
-
     }
   
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
 
   res.status(status).json(response);
 
