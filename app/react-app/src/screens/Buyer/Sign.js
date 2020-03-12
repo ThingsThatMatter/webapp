@@ -63,9 +63,8 @@ function SignUp(props) {
     }
 
     if (toRedirect) { // if login OK (from form) redirect to home
-
-        if (props.idAd !== '') {
-            return <Redirect to={{pathname: `/ad/${props.idAd}`}} />
+        if (props.adId !== '') {
+            return <Redirect to={{pathname: `/ad/${props.adId}`}} />
         } else {
             return <Redirect to='/' /> 
         }
@@ -73,7 +72,7 @@ function SignUp(props) {
     } else {
         if (typeof cookies.userToken !== 'undefined' && props.userToken === '') {
             return <Spinner />
-
+            
         } else if (typeof cookies.userToken !== 'undefined' && props.userToken !== '') { 
             return <Redirect to='/' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
 
@@ -219,7 +218,7 @@ function mapStateToProps(state, ownProps) {
     return { 
         userToken : state.userToken,
         cookies: ownProps.cookies,
-        idAd: state.idAd
+        adId: state.adId
     }
 }
 

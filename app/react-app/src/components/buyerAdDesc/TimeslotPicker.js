@@ -7,13 +7,13 @@ export default function TimeslotPicker(props) {
 const [slotsDisplay, setSlotsDisplay] = useState([]);
 
 var weekday = new Array(7);
-weekday[0] = "dimanche";
-weekday[1] = "lundi";
-weekday[2] = "mardi";
-weekday[3] = "mercredi";
-weekday[4] = "jeudi";
-weekday[5] = "vendredi";
-weekday[6] = "samedi";
+weekday[0] = "dim";
+weekday[1] = "lun";
+weekday[2] = "mar";
+weekday[3] = "mer";
+weekday[4] = "jeu";
+weekday[5] = "ven";
+weekday[6] = "sam";
 
 var month = new Array();
 month[0] = "janv";
@@ -127,7 +127,7 @@ month[11] = "dec";
                 {weekday[e.day.getDay()]}
                 </div>
                 <div>
-                {`${e.day.getDay()} ${month[e.day.getMonth()+1]}`}
+                {`${e.day.getDate()} ${month[e.day.getMonth()+1]}`}
                 </div>
             </div>
 

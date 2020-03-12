@@ -26,7 +26,12 @@ function BuyerRoutes(props) {
         const body = await getToken.json()
         if (body.message === 'OK') {
             props.setUserToken(body.data.token)
+        } else {
+            // console.log('toto')
+            // removeCookie('userToken')
+            // console.log(cookies)
         }
+
     }
 
     if (cookies.userToken) { // si il y a un cookie, on vérifie qu'il existe bien en base
