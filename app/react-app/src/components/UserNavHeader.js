@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import { Button } from 'antd';
-import {Link} from 'react-router-dom'
+import {Link, Redirect} from 'react-router-dom'
 import {StopOutlined,HomeOutlined} from '@ant-design/icons'
 import { Affix } from 'antd';
 import {connect} from 'react-redux'
@@ -12,8 +12,8 @@ function UserNavHeader(props) {
 
     const [propertiesClass, setPropertiesClass] = useState(null)
     const [visitsClass, setVisitsClass] = useState(null)
-    const [offersClass, setOffersClass] = useState(null)
     const [accountClass, setAccountClass] = useState(null)
+    const [redirHome, setRedirHome] = useState(false)
 
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
@@ -38,8 +38,11 @@ function UserNavHeader(props) {
     const reset = () => {
         props.setUserToken('');
         removeCookie('userToken');
-        console.log(cookies)
-        console.log(props)
+        setRedirHome(true)
+    }
+
+    if (redirHome) {
+        return <Redirect to="/sign"/>
     }
 
     return (

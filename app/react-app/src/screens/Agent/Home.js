@@ -82,7 +82,7 @@ function Home(props) {
       var min = date.slice(14,16)
       return new Date(year, month, day, hour, min)
     }
-    return (dateCreate(a.creationDate) - dateCreate(b.creationDate))
+    return (dateCreate(b.creationDate) - dateCreate(a.creationDate))
   })
     //rend
     adsCopy = adsCopy.map( (e,i) => {
