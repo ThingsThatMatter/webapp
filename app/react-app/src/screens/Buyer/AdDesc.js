@@ -7,8 +7,7 @@ import TimeslotPicker from "../../components/Buyer - AdDesc/TimeslotPicker";
 
 
 import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
-import AdDescSidebarOffer from "../../components/AdDescSidebarOffer";
-import AdDescSidebarRecap from "../../components/AdDescSidebarRecap";
+import AdDescSidebarBuyer from "../../components/AdDescSidebarBuyer";
 
 
 import {useCookies} from 'react-cookie'
@@ -357,13 +356,10 @@ function AdDesc(props) {
                   <p style={{textAlign : "center", fontWeight: "bold"}}>Sélectionnez un créneau de visite</p>
                     <Row className="slot-row">
                       
-                      {slotsDisplay}
                     </Row>
                   </div>
 
-                  <AdDescSidebarOffer/>
-
-                  <AdDescSidebarRecap/>
+                  <AdDescSidebarBuyer/>
 
                 </div>
                 }
