@@ -1077,11 +1077,6 @@ h1.userTitle  {
   color: #355C7D;
 }
 
-.picker-slot:hover {
-  color: #355C7D;
-  background-color: white;
-  border: 1px solid #355C7D;
-}
 
 .slot-row {
   padding : 0 !important;

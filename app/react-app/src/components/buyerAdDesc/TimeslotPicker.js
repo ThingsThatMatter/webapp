@@ -98,15 +98,6 @@ month[11] = "dec";
         return (a.day - b.day)
         })
 
-        const format = (number) => {
-        if(number < 10) {
-            console.log(number)
-            return `0${number}`
-        } else {
-            return number
-        }
-        }
-
         const pickerClick = async (timeslot) => {
             const response = await fetch(`/user/ad/${props.adId}/visit`, {
                 method : "put",
@@ -151,7 +142,7 @@ month[11] = "dec";
                     cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
                     placement="bottomLeft"
                   >
-                    <div key={i} className="picker-slot">
+                    <div key={i} className="picker-slot" >
                     {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
                     </div>
                     </Popconfirm>
