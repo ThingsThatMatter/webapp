@@ -6,6 +6,7 @@ import UserNavHeader from "../../components/UserNavHeader";
 
 import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
 import AdDescSidebarOffer from "../../components/AdDescSidebarOffer";
+import AdDescSidebarRecap from "../../components/AdDescSidebarRecap";
 
 
 import {useCookies} from 'react-cookie'
@@ -439,7 +440,7 @@ function AdDesc(props) {
                 :
                 <div>
                   <div className="timeslot-picker">
-                  <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
+                  <p style={{textAlign : "center", fontWeight: "bold"}}>Sélectionnez un créneau de visite</p>
                     <Row className="slot-row">
                       
                       {slotsDisplay}
@@ -447,6 +448,8 @@ function AdDesc(props) {
                   </div>
 
                   <AdDescSidebarOffer/>
+
+                  <AdDescSidebarRecap/>
 
                 </div>
                 }

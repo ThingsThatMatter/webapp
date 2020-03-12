@@ -11,6 +11,7 @@ function AdDescSidebarOffer(props) {
     const [toRedirect, setToRedirect] = useState(false);
 
     const [visitDetails, setVisitDetails] = useState();
+    const [offerDetails, setOfferDetails] = useState();
 
     const dateCreate = (date) => {
         var year = date.slice(0,4)
@@ -29,26 +30,34 @@ function AdDescSidebarOffer(props) {
             })
             const body = await checkVisit.json()
 
-            let theChoosenAd = body.data.ad.timeSlots[0];
+            let theChoosenAd = body.data.ad;
 
-            var visitEndDate = dateCreate(theChoosenAd.end)
-            var visitStartDate = dateCreate(theChoosenAd.start)
-            if (visitEndDate > new Date() ) {
-                setVisitDetails(
-                    <p>
-                        Visite prévue le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
-                    </p>
-                )
-            } else {
-                setVisitDetails(
+            var visitStartDate = dateCreate(theChoosenAd.timeSlots[0].start)
+            setVisitDetails(
+                <p>Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}</p>
+            )
+
+            /* Offer status translation */
+            const statusInFrench = {
+                'pending' : 'En attente',
+                'declined' : 'Refusée',
+                'accepted' : 'Acceptée'
+            }
+            const statusTranslate = (state) => statusInFrench[state]
+
+            if ( theChoosenAd.offers.length > 0) {
+                const offerDate = dateCreate(theChoosenAd.offers[0].creationDate)
+                const offerStatus = statusTranslate(theChoosenAd.offers[0].status)
+                setOfferDetails(
                     <div>
-                        <p>
-                            Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
-                        </p>
-                        <Button type="primary" onClick={() => pushOffer()}>Faire une offre</Button>
+                        <p>Offre déposée le {offerDate.toLocaleDateString('fr-FR')} à {offerDate.toLocaleTimeString('fr-FR')}</p>
+                        <p>Statut de l'offre : {offerStatus}</p>
                     </div>
                 )
             }
+
+
+
         };
         dbFetch();
     }, [])
@@ -63,8 +72,9 @@ function AdDescSidebarOffer(props) {
 
     return (  
         
-        <div className="sidebar-offer">
+        <div className="sidebar-visit">
             {visitDetails}
+            {offerDetails}
         </div>
 
     )
