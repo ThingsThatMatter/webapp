@@ -120,6 +120,7 @@ function Home(props) {
     return <Redirect to={urlAd} />
   }
   
+  console.log(adsListFromDb)
   return (
     
     <Layout>
