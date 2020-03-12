@@ -97,7 +97,7 @@ function AdDesc(props) {
   /* -----------------------------------------------HANDLE SIDEBAR------------------------------------------ */
   let sidebar ;
   if (loggedIn === false) {
-    sidebar = <LoggedOut/>
+    sidebar = <LoggedOut adId={props.match.params.ad_id}/>
   } else {
     sidebar = <SidebarBuyer adId={props.match.params.ad_id} userToken={props.userToken}/>
   }

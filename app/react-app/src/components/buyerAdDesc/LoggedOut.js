@@ -11,6 +11,7 @@ function AdDescSidebarLogout(props) {
     const [toRedirect, setToRedirect] = useState(false);
 
     const handleConnectSidebar = () => {
+        props.setRedirectAdId(props.adId)
         setToRedirect(true)
     }
 
@@ -34,5 +35,16 @@ function AdDescSidebarLogout(props) {
 
     )
 }
+
+function mapDispatchToProps(dispatch){
+    return {
+        setRedirectAdId : function(id) { 
+            dispatch( {type: 'setRedirectAdId', adId: id} ) 
+        }
+    }
+}
   
-export default AdDescSidebarLogout;
+export default connect(
+    null,
+    mapDispatchToProps
+)(AdDescSidebarLogout)
