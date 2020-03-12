@@ -998,8 +998,6 @@ h1.userTitle  {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  position: fixed;
-  
 }
 
 .picker-day {

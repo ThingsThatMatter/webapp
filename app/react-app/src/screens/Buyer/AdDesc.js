@@ -5,6 +5,8 @@ import { Redirect, Link } from "react-router-dom";
 import UserNavHeader from "../../components/UserNavHeader";
 
 import AdDescSidebarLogout from "../../components/AdDescSidebarLogout";
+import AdDescSidebarOffer from "../../components/AdDescSidebarOffer";
+
 
 import {useCookies} from 'react-cookie'
 
@@ -172,9 +174,6 @@ function AdDesc(props) {
         })
     
         const ad = await saveAdUser.json()
-
-        console.log(props.userToken)
-
 
       };
       dbFetchPrivate();
@@ -432,20 +431,26 @@ function AdDesc(props) {
               lg={{ span: 6 }}
               xl={{ span: 6 }}
             >
-              <div className="timeslot-picker">
-                <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
-                  <Row className="slot-row">
 
-                  {props.userToken === '' ?
-                    <AdDescSidebarLogout/>
-                  :
-                    <p>Voici les créneaux</p>
-                  }
+              <div className="sidebar-buyer">
+              
+                {props.userToken === '' ?
+                  <AdDescSidebarLogout/>
+                :
+                <div>
+                  <div className="timeslot-picker">
+                  <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
+                    <Row className="slot-row">
+                      
+                      {slotsDisplay}
+                    </Row>
+                  </div>
 
-                    {slotsDisplay}
-                  </Row>
+                  <AdDescSidebarOffer/>
 
-
+                </div>
+                }
+                
               </div>
 
             </Col>
