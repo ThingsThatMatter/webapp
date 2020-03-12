@@ -7,8 +7,6 @@ import {connect} from 'react-redux'
 import { Layout, Row, Col, Checkbox, InputNumber, Button} from 'antd'
 const {Content} = Layout
 
-var ad_id = '5e5e7acc9e95c72c1a48542b' //will come from redux after
-var tokenTest = 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk'
 
 function OfferForm2(props) {
 
@@ -47,9 +45,9 @@ function OfferForm2(props) {
     /* Get Ad info */
     useEffect( () => {
         const adFetch = async () => {
-          const ad = await fetch(`/user/ad/${ad_id}/private`, {
-            method: 'GET',
-            headers: {'token': tokenTest}
+            const ad = await fetch(`/user/ad/${props.adId}/private`, {
+                method: 'GET',
+                headers: {'token': props.userToken}
         })
           const body = await ad.json();
           setAdFromDb(body.data.ad)
@@ -254,9 +252,11 @@ function OfferForm2(props) {
 function mapStateToProps(state) {
     return { 
         newOfferStep : state.newOfferStep,
-        offerFormData: state.offerFormData
+        offerFormData: state.offerFormData,
+        adId: state.adId,
+        userToken: state.userToken
     }
-  }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
@@ -270,9 +270,9 @@ function mapDispatchToProps(dispatch) {
             })
         } 
     }
-  }
+}
     
-  export default connect(
+export default connect(
     mapStateToProps, 
     mapDispatchToProps
-  )(OfferForm2);
+)(OfferForm2);

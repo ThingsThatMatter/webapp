@@ -182,7 +182,6 @@ function Home(props) {
             <Layout className='user-layout main-content'>
 
             <Content>
-                <Link to="/newoffer/step1">To New Offer</Link>
                     
                     {adsOffers.length > 0 &&
                         <div>

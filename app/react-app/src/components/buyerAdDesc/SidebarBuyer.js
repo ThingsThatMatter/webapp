@@ -68,7 +68,7 @@ function SidebarBuyer(props) {
                                 <p>
                                     Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
                                 </p>
-                                <Button type="primary" onClick={() => setToRedirect(true)}>Déposer une offre</Button>
+                                <Button type="primary" onClick={ () => {setToRedirect(true); props.setOfferAdId(props.adId)}}>Déposer une offre</Button>
                             </div>
                         )
                     } else {
@@ -103,9 +103,15 @@ function SidebarBuyer(props) {
 //     }
 // }
 
-// export default connect(
-//     mapStateToProps,
-//     null
-// )(SidebarBuyer)
+function mapDispatchToProps(dispatch) {
+    return {
+        setOfferAdId : function(id) { 
+            dispatch( {type: 'setOfferAdId', adId: id} ) 
+        }
+    }
+}
 
-export default SidebarBuyer
+export default connect(
+    null,
+    mapDispatchToProps
+)(SidebarBuyer)

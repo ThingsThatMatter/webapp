@@ -9,9 +9,6 @@ import {EditOutlined} from '@ant-design/icons'
 const {Content} = Layout
 const {TextArea} = Input
 
-var ad_id = '5e5e7acc9e95c72c1a48542b' //will come from redux after
-var tokenTest = 'njn2MLOiFPpUhfrAFUh1XeJj5ZBNgFHk'
-
 function OfferForm3(props) {
 
     const [adFromDb, setAdFromDb] = useState(null)
@@ -54,15 +51,15 @@ function OfferForm3(props) {
     /* Get Ad info */
     useEffect( () => {
         const adFetch = async () => {
-          const ad = await fetch(`/user/ad/${ad_id}/private`, {
-            method: 'GET',
-            headers: {'token': tokenTest}
+            const ad = await fetch(`/user/ad/${props.adId}/private`, {
+                method: 'GET',
+                headers: {'token': props.userToken}
         })
           const body = await ad.json();
           setAdFromDb(body.data.ad)
         }
         adFetch()
-      }, [])
+    }, [])
 
     let ad;
     if (adFromDb !== null) {
@@ -155,11 +152,11 @@ function OfferForm3(props) {
 
         message.loading({ content: 'Dépôt de l\'offre en cours...', key });
 
-        let rawResponse = await fetch(`/user/ad/${ad_id}/offer`, {
+        let rawResponse = await fetch(`/user/ad/${props.adId}/offer`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'token': tokenTest
+                'token': props.userToken
             },
             body: JSON.stringify({
 
@@ -194,6 +191,7 @@ function OfferForm3(props) {
             setOfferRedirHome(true)
             props.offerClear()
             props.modifyStep(1)
+            props.setOfferAdId('')
 
         } else {
             message.error(response.details);
@@ -448,6 +446,7 @@ function mapStateToProps(state) {
     return { 
         newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData,
+        adId: state.adId,
         userToken: state.userToken
     }
 }
@@ -465,11 +464,15 @@ function mapDispatchToProps(dispatch) {
         },
         offerClear : function() {
             dispatch({type: 'offerClear'}) 
+        },
+        setOfferAdId : function(id) { 
+            dispatch( {type: 'setOfferAdId', adId: id} ) 
         }
     }
-  }
-    
-  export default connect(
+}
+
+
+export default connect(
     mapStateToProps, 
     mapDispatchToProps
-  )(OfferForm3);
+)(OfferForm3);
