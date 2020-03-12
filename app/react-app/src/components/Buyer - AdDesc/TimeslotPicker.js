@@ -24,14 +24,15 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
                 const hour1 = e.start.slice(11,13)
                 const min1 = e.start.slice(14,16)
 
-                const fullDate = new Date(year, month, hour1, min1)
+                const fullDate = new Date(year, month, day, hour1, min1)
 
                 const now = new Date()
 
                 now.setHours(now.getHours() + 1)
 
-                console.log("now+1h:", now)
-                console.log("millisecondes :", now.getTime())
+                // console.log("now+1h:", now)
+                // console.log("millisecondes :", now.getTime())
+
                 
                 console.log("timeslot:", fullDate)
                 console.log("millisecondes:", fullDate.getTime())
