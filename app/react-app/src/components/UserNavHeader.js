@@ -43,7 +43,7 @@ function UserNavHeader(props) {
     }
 
     return (
-        <Affix offsetTop={0}>
+        <Affix offsetTop={0} className="header">
             <header className="nav-header">
                 <div className="nav-header-logo"><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
 
