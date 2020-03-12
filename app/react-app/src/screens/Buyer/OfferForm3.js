@@ -201,6 +201,19 @@ function OfferForm3(props) {
 
     }
 
+/* -----------------------------------------------MODAL FOOTER-------------------------------------------- */
+    const modalFooter =
+
+        <div>
+            <div className="modal-footer-buttons">            
+                <Button type="primary" className="button-back" onClick={() => setModalVisible(false)}>
+                    Annuler
+                </Button>
+                <Button type= "primary" className="button-validate" onClick={() => createOffer()}>
+                    Déposer l'offre
+                </Button>
+            </div>
+        </div>
 
     return (
   
@@ -298,16 +311,13 @@ function OfferForm3(props) {
                         title= {<p className="newoffer-modal-title">RÉCAPITULATIF DE VOTRE OFFRE</p>}
                         visible={modalVisible}
                         centered
-                        okText="Déposer l'offre"
-                        onOk={() => createOffer()}
-                        cancelText="Annuler"
-                        cancelButtonProps={{type: 'primary', className:'button-back'}}
-                        onCancel={ () => setModalVisible(false)}
+                        footer= {modalFooter}
                         destroyOnClose= {true}
                         width= "80%"
                         closable={true}
                         mask={true}
                         maskClosable={true}
+                        onCancel={() => setModalVisible(false)}
                     >
                         <div className="newoffer-modal">
                             <div className="newoffer-modal-section">

@@ -270,7 +270,6 @@ function CreateFormFive(props) {
   const modalFooter =
 
     <div>
-
       <div className="modal-footer-buttons">
 
         {appointmentModalMode === "edit"
@@ -279,10 +278,12 @@ function CreateFormFive(props) {
               title="Confirmer la suppression du créneau ?"
               onConfirm={confirm}
               okText="Oui"
+              okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
               cancelText="Non"
+              cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
               placement="bottomLeft"
             >
-              <Button className="button-delete modal-footer-button-delete">
+              <Button type="secondary" className="button-delete modal-footer-button-delete">
                 Supprimer
               </Button>
             </Popconfirm> 
