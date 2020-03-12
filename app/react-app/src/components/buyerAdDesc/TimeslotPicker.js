@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Popconfirm, message } from "antd";
+import { Col, Row, Popconfirm, message, Button } from "antd";
 import { Redirect, Link } from "react-router-dom";
 
 export default function TimeslotPicker(props) {
@@ -171,8 +171,9 @@ month[11] = "dec";
             </Row>
     </div>
     :  
-    <div>
-    <p>Aucun créneau de visite disponible pour le moment</p>
+    <div className="sidebar-calendar-content">
+        <p>Aucun créneau de visite</p>
+        <Button type="primary">Contacter mon agent</Button>
     </div>
     }
   </div>

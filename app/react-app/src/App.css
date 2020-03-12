@@ -1011,7 +1011,7 @@ h1.userTitle  {
   text-align: center;
 }
 
-.sidebar-logout, .sidebar-visit, .sidebar-offer, .sidebar-recap {
+.sidebar-logout, .sidebar-visit, .sidebar-offer, .sidebar-recap, .sidebar-calendar-content {
   padding: 1em;
 }
 

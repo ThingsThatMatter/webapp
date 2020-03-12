@@ -32,6 +32,7 @@ function Home(props) {
         const body = await ads.json();
         console.log(body)
         setAdsListFromDb(body.data.ads)
+        console.log('adsListFromDb : ' + adsListFromDb)
         }
         adsFetch()
     }, [])
@@ -51,6 +52,7 @@ function Home(props) {
     adsCopy = adsCopy.sort((a,b) => {
         return (dateCreate(a.creationDate) - dateCreate(b.creationDate))
     })
+    console.log('adsCopy : ' + adsCopy)
     //rend
 
     let adsOffers = [];
@@ -104,6 +106,8 @@ function Home(props) {
         })
     }
 
+    console.log('adsOffers : ' + adsOffers)
+
     let adsVisits = [];
 
     if(adsCopy.timeSlots) {
@@ -149,6 +153,8 @@ function Home(props) {
             )
         })
     }
+
+    console.log('adsVisits : ' + adsVisits)
 
     let adsAll = adsCopy.map( (e,i) => {
 
