@@ -906,7 +906,7 @@ p.offre-buyer-name {
 
 /* HomePage */
 
-.offers-row, .visit-row, .ads-row  {
+.offers-row, .visit-row, .ads-row, .sidebar-calendar .ant-row  {
   display: flex;
   flex-wrap: nowrap;
   overflow-x: auto;
@@ -1058,8 +1058,7 @@ h1.userTitle  {
   justify-content: center;
 }
 
-.picker-day {
-  font-weight: 700;
+.picker-date {
   padding: 5px;
   border-bottom: 1px solid #355C7D;
   text-align: center;
@@ -1081,6 +1080,7 @@ h1.userTitle  {
   background-color: #fff;
   color: #355C7D;
 }
+
 
 .slot-row {
   padding : 0 !important;
