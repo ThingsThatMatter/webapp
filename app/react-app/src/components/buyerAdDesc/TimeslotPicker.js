@@ -1,16 +1,40 @@
 import React, { useState, useEffect } from "react";
-import { Col, Row, Popconfirm } from "antd";
+import { Col, Row, Popconfirm, message } from "antd";
 import { Redirect, Link } from "react-router-dom";
 
 export default function TimeslotPicker(props) {
 
 const [slotsDisplay, setSlotsDisplay] = useState([]);
 
+var weekday = new Array(7);
+weekday[0] = "dimanche";
+weekday[1] = "lundi";
+weekday[2] = "mardi";
+weekday[3] = "mercredi";
+weekday[4] = "jeudi";
+weekday[5] = "vendredi";
+weekday[6] = "samedi";
+
+var month = new Array();
+month[0] = "janv";
+month[1] = "fev";
+month[2] = "mar";
+month[3] = "avr";
+month[4] = "mai";
+month[5] = "juin";
+month[6] = "juil";
+month[7] = "août";
+month[8] = "sept";
+month[9] = "oct";
+month[10] = "nov";
+month[11] = "dec";
+
+
     useEffect(() => {
 
         const getTimeslots = async () => {
 
-            let response = await fetch(`/user/ad/${props.adID}/timeslots`)
+            let response = await fetch(`/user/ad/${props.adId}/timeslots`)
             
             let cleanresponse = await response.json()
 
@@ -30,21 +54,9 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
 
                 now.setHours(now.getHours() + 1)
 
-                // console.log("now+1h:", now)
-                // console.log("millisecondes :", now.getTime())
-
-                
-                console.log("timeslot:", fullDate)
-                console.log("millisecondes:", fullDate.getTime())
-                
-
-                console.log(fullDate.getTime() > now.getTime())
-
                 return fullDate.getTime() > now.getTime()
 
             })
-
-            console.log('filtered', timeslots)
 
         const daySlots = []
 
@@ -96,27 +108,36 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
         }
 
         const pickerClick = async (timeslot) => {
-            console.log("token:",props.token)
-        const response = await fetch(`/user/ad/${props.adID}/visit`, {
-            method : "put",
-            headers: {
-            'Content-Type': 'application/json',
-            'token' : props.token
-            },
-            body: JSON.stringify({
-            timeslot : timeslot
+            const response = await fetch(`/user/ad/${props.adId}/visit`, {
+                method : "put",
+                headers: {
+                'Content-Type': 'application/json',
+                'token' : props.token
+                },
+                body: JSON.stringify({
+                timeslot : timeslot
+                })
             })
-        })
-        let jsonResponse = await response.json()
-        console.log("Reponse", jsonResponse)
+            let body = await response.json()
+            if (body.message === 'OK') {
+                props.goToVisitParent()
+            }
+            else {
+                message.error('Il y a eu une erreur, veuillez rééssayer');
+            }
         }
 
         const mapSlots = daySlots.map((e, i) => {
 
             return <Col span={6} key={i}>
 
-            <div className="picker-day">
-            {`${format(e.day.getDate())}/${format(e.day.getMonth()+1)}`}
+            <div className="picker-date">
+                <div style={{fontWeight : 700, marginBottom : "-5px"}}>
+                {weekday[e.day.getDay()]}
+                </div>
+                <div>
+                {`${e.day.getDay()} ${month[e.day.getMonth()+1]}`}
+                </div>
             </div>
 
                 {
@@ -139,27 +160,31 @@ const [slotsDisplay, setSlotsDisplay] = useState([]);
             
             </Col>
             })
-
             setSlotsDisplay(mapSlots);
         };
-
         getTimeslots();
 
 }, [])
 
+
   return (
 
     <div className="timeslot-picker">
-    <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
-      <Row className="slot-row">
-        {slotsDisplay}
-      </Row>
+    { slotsDisplay.length > 0 ? 
+    <div>
+        <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
+            <Row className="slot-row">
+                {slotsDisplay} 
+            </Row>
+        </div>
+    :  
+    <div>
+    <p>Aucun créneau de visite disponible pour le moment</p>
+    </div>
+    }
   </div>
+   
 
 );
 
 }
-
-
-
-    

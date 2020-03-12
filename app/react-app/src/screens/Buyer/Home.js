@@ -9,6 +9,7 @@ const {Content} = Layout;
 
 
 function Home(props) {
+    console.log(props)
 
     const [adsListFromDb, setAdsListFromDb] = useState([])
 

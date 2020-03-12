@@ -67,6 +67,7 @@ function RendezVous(props) {
         let borderColor
         if (e.booked) {
           backgroundColor = e.color
+          borderColor = e.color
           textColor = "#FFF"
         } else {
           backgroundColor = "#FFF"
@@ -432,9 +433,9 @@ function RendezVous(props) {
 
                 /* Events */
                 events={myEvents}
-                eventColor={'#052040'}
 
                 /* Time Settings */
+                timeZone='UTC'
                 firstDay= {1}
                 hiddenDays={[0]}
                 allDaySlot={false}

@@ -103,9 +103,9 @@ function Home(props) {
               <p className="annonce-address-sub">{e.postcode} {e.city}</p>
           </div>
           <div className="annonce-infos">
-              <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
-              <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
-              <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+              <span className="annonce-area"><img src="http://localhost:3001/expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
+              <span className="annonce-room"><img src="http://localhost:3001/floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
+              <span className="annonce-bedroom"><img src="http://localhost:3001/bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
           </div>
         </div>
       </Col>
