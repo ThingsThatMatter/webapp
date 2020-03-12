@@ -40,10 +40,10 @@ let response;
 /* Check token to access app*/
 router.get('/user-access', async function(req, res, next) {
 
-  let findAgent = await agentModel.findOne({ token:req.headers.token });
-  
   try {
 
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+  
     if(!findAgent) { 
       status = 401;
       response = {

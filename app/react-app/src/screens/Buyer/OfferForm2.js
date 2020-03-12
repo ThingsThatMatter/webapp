@@ -47,7 +47,7 @@ function OfferForm2(props) {
     /* Get Ad info */
     useEffect( () => {
         const adFetch = async () => {
-          const ad = await fetch(`/user/ad/${ad_id}`, {
+          const ad = await fetch(`/user/ad/${ad_id}/private`, {
             method: 'GET',
             headers: {'token': tokenTest}
         })
