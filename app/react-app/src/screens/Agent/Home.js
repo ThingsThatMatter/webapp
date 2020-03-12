@@ -87,7 +87,7 @@ function Home(props) {
     //rend
     adsCopy = adsCopy.map( (e,i) => {
     return (
-      <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
+      <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:8}}>
         <div className="annonce-element" 
               onClick={() => {
                 setUrlAd(`/pro/ad/${e._id}`)
