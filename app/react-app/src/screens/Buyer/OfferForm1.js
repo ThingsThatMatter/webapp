@@ -82,9 +82,9 @@ function OfferForm1(props) {
                 <p className="annonce-address-sub">{adFromDb.postcode} {adFromDb.city}</p>
             </div>
             <div className="annonce-infos-buyer">
-                <span className="annonce-area"><img src="expand.svg" width="20px"/> {adFromDb.area} <span>&nbsp;m2</span></span>
-                <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {adFromDb.rooms} <span>&nbsp;pièces</span></span>
-                <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {adFromDb.bedrooms} <span>&nbsp;chambres</span></span>
+                <span className="annonce-area"><img src="../expand.svg" width="20px"/> {adFromDb.area} <span>&nbsp;m2</span></span>
+                <span className="annonce-room"><img src="../floor-plan.png" width="20px"/> {adFromDb.rooms} <span>&nbsp;pièces</span></span>
+                <span className="annonce-bedroom"><img src="../bed.svg" width="20px"/> {adFromDb.bedrooms} <span>&nbsp;chambres</span></span>
             </div>
             <div className="annonce-status-buyer">
                 {visitMessage}
@@ -140,9 +140,10 @@ if(offerRedir === true) {
     return (
   
         <Layout className="user-layout">
-            <UserNavHeader/> 
-            <Layout className='user-layout main-content'>
-                <Content style={{ margin: '24px 16px 0' }}>
+            <UserNavHeader />
+
+            <Layout className="user-layout main-content">
+                <Content>
                    
                    <Row className="newoffer-stepbar">
                        <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations personnelles </h1>
@@ -150,7 +151,7 @@ if(offerRedir === true) {
                    </Row>
 
                    <Row className="newoffer-form-body" gutter={16}>
-                        <Col xs={24} md={16}>
+                        <Col xs={24} md={12}>
                             <form>
                                 
                                 <p className='formLabel-offer'>Prénom de l'acheteur</p>
@@ -211,14 +212,14 @@ if(offerRedir === true) {
                                 <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
                             </div>
                         </Col>
-                        <Col className="newoffer-ad-card"xs={0} md={8}>
-                        {ad}
+                        <Col className="newoffer-ad-card"xs={0} md={12}>
+                            {ad}
                         </Col>
                    </Row >
 
-                </Content>  
+                   </Content>
             </Layout>
-        </Layout>
+    </Layout>
 
     );
 }

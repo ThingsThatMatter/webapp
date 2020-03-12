@@ -141,12 +141,14 @@ console.log(props)
 
   return (
 
-    <div className="timeslot-picker">
-    <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
-      <Row className="slot-row">
-        {slotsDisplay}
-      </Row>
-  </div>
+    <div className="sidebar-calendar">
+        <div className="sidebar-title">
+            <h4>Sélectionnez un créneau de visite</h4>
+        </div>
+        <Row className="slot-row">
+            {slotsDisplay}
+        </Row>
+    </div>
 
 );
 

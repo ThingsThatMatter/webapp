@@ -20,13 +20,16 @@ function AdDescSidebarLogout(props) {
 
     return (  
         
-        <div className="sidebar-offer">
-            <p>Pour accéder aux visites, veuillez vous connecter.</p>
-            <Button
-            onClick={() => handleConnectSidebar()}
-            >
-            Connexion
-            </Button>
+        <div className="sidebar-buyer">
+            <div className="sidebar-logout">
+                <p>Pour accéder aux visites, veuillez vous connecter.</p>
+                <Button
+                type="primary"
+                onClick={() => handleConnectSidebar()}
+                >
+                Connexion
+                </Button>
+            </div>
         </div>
 
     )

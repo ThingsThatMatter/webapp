@@ -84,9 +84,9 @@ function OfferForm3(props) {
                 <p className="annonce-address-sub">{adFromDb.postcode} {adFromDb.city}</p>
             </div>
             <div className="annonce-infos-buyer">
-                <span className="annonce-area"><img src="expand.svg" width="20px"/> {adFromDb.area} <span>&nbsp;m2</span></span>
-                <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {adFromDb.rooms} <span>&nbsp;pièces</span></span>
-                <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {adFromDb.bedrooms} <span>&nbsp;chambres</span></span>
+                <span className="annonce-area"><img src="../expand.svg" width="20px"/> {adFromDb.area} <span>&nbsp;m2</span></span>
+                <span className="annonce-room"><img src="../floor-plan.png" width="20px"/> {adFromDb.rooms} <span>&nbsp;pièces</span></span>
+                <span className="annonce-bedroom"><img src="../bed.svg" width="20px"/> {adFromDb.bedrooms} <span>&nbsp;chambres</span></span>
             </div>
             <div className="annonce-status-buyer">
                 {visitMessage}
@@ -220,7 +220,7 @@ function OfferForm3(props) {
         <Layout className="user-layout">
             <UserNavHeader/> 
             <Layout className='user-layout main-content'>
-                <Content style={{ margin: '24px 16px 0' }}>
+                <Content>
                    
                    <Row className="newoffer-stepbar">
                        <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations complémentaires </h1>
@@ -228,7 +228,7 @@ function OfferForm3(props) {
                    </Row>
 
                    <Row className="newoffer-form-body" gutter={16}>
-                        <Col xs={24} md={16}>
+                        <Col xs={24} md={12}>
                             <form>
                                 
                                 <h2 className="newoffer-subsection-title-first"> Notaire </h2>
@@ -300,7 +300,7 @@ function OfferForm3(props) {
                                 </Button>
                             </div>
                         </Col>
-                        <Col className="newoffer-ad-card"xs={0} md={8}>
+                        <Col className="newoffer-ad-card"xs={0} md={12}>
                         {ad}
                         </Col>
                    </Row >
