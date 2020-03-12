@@ -285,6 +285,8 @@ router.get('/ad/:ad_id/private', async function(req, res, next) {
       .populate('ads')
       .exec()
 
+    console.log('adsFromUser : ' + adsFromUser)
+
     if(!adsFromUser) { 
       status = 401;
       response = {
@@ -297,9 +299,11 @@ router.get('/ad/:ad_id/private', async function(req, res, next) {
         lastname: adsFromUser.lastname,
         firstname: adsFromUser.firstname
       }
-      console.log(adsFromUser)
 
       let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.ad_id)[0]
+
+      console.log('ad : ' + ad)
+
 
       let visits = ad.timeSlots.filter( f => {
         if (f.user.length > 0) {
@@ -312,10 +316,15 @@ router.get('/ad/:ad_id/private', async function(req, res, next) {
       })
       ad.timeSlots = visits
 
+      console.log('visit : ' + visits)
+
+
       let offers = ad.offers.filter( g => {
         return String(g.user) === String(adsFromUser._id)
       })
       ad.offers = offers
+
+      console.log('offer : ' + offers)
       
       status = 200;
       response = {
@@ -378,6 +387,8 @@ router.get('/ad/:ad_id/public', async function(req, res, next) {
 router.get('/ad/:ad_id/timeslots', async function(req,res,next) {
 
   try {
+
+    console.log("id", req.params.id_ad)
   
     let adFromDb = await adModel.findById(req.params.ad_id);
 
@@ -507,8 +518,6 @@ router.post('/ad/:ad_id/offer', async function(req, res, next) {
 
 /* PUT visite */
 router.put('/ad/:ad_id/visit', async function(req, res, next) {
-
-    console.log("token",req.headers.token,"ad_id", req.params.ad_id,"id timeslot", req.body.timeslot)
 
     let userToFind = await userModel.findOne({ token:req.headers.token });
 

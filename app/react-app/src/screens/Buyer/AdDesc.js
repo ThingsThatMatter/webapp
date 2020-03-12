@@ -5,10 +5,10 @@ import { Redirect, Link } from 'react-router-dom';
 import UserNavHeader from '../../components/UserNavHeader';
 
 import LoggedOut from '../../components/Buyer - AdDesc/LoggedOut'
-import TimeslotPicker from '../../components/Buyer - AdDesc/TimeslotPicker'
+import SidebarBuyer from "../../components/Buyer - AdDesc/SidebarBuyer";
+
 
 import { connect } from "react-redux";
-import { getInputClassName } from "antd/lib/input/Input";
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -44,27 +44,24 @@ function AdDesc(props) {
         setAdDetails(body.data);
         setAdPhotos(body.data.photos);
         setAdDocuments(body.data.files);
-        setAdID(body.data._id);
 
       };
       dbFetchPublic();
 
-      const dbFetch = async () => {
+      const dbFetchPrivate = async () => {
         const saveAdUser = await fetch(`/user/ad/${props.match.params.ad_id}`, {
           method: 'PUT',
           headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
         })
   
         const body = await saveAdUser.json()
-        console.log(body)
         if (body.message === 'OK') {
-          console.log('tto')
           setLoggedIn(true)
         } else {
           // Il faudra gérer un message d'erreur
         }
       }
-      dbFetch()
+      dbFetchPrivate()
 
   }, []);
 
@@ -99,7 +96,7 @@ function AdDesc(props) {
   if (loggedIn === false) {
     sidebar = <LoggedOut/>
   } else {
-    sidebar = <TimeslotPicker adID={adID}/>
+    sidebar = <SidebarBuyer adID={adID}/>
   }
 
 
@@ -327,9 +324,11 @@ function AdDesc(props) {
               lg={{ span: 6 }}
               xl={{ span: 6 }}
             >
-            
-            {sidebar}
 
+              <div className="sidebar-buyer">
+                {sidebar}
+              </div>
+          
             </Col>
           </Row>
         </Content>
