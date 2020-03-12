@@ -169,14 +169,16 @@ month[11] = "dec";
 
   return (
 
-    <div className="timeslot-picker">
-    { slotsDisplay.length > 0 ? 
+    <div className="sidebar-calendar">
+    { slotsDisplay.length > 0 ?
     <div>
-        <h4 style={{textAlign : "center"}}>Sélectionnez un créneau de visite</h4>
+    <div className="sidebar-title">
+        <h4>Sélectionnez un créneau de visite</h4>
+    </div>
             <Row className="slot-row">
                 {slotsDisplay} 
             </Row>
-        </div>
+    </div>
     :  
     <div>
     <p>Aucun créneau de visite disponible pour le moment</p>
