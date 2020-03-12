@@ -57,16 +57,18 @@ function SidebarBuyer(props) {
                 var visitStartDate = dateCreate(ad.timeSlots[0].start)
                 if (visitEndDate > new Date() ) {
                     setComponent(
-                        <p className="sidebar-visit">
-                            Visite prévue le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
-                        </p>
+                        <div className="sidebar-visit">
+                            <p>
+                                Visite prévue le<br/> <strong>{visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}</strong>
+                            </p>
+                        </div>
                     )
                 } else {
                     if (ad.offers.length === 0) {
                         setComponent(
                             <div className="sidebar-offer">
                                 <p>
-                                    Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
+                                    Visite effectuée le<br/> <strong>{visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}</strong>
                                 </p>
                                 <Button type="primary" onClick={ () => {setToRedirect(true); props.setOfferAdId(props.adId)}}>Déposer une offre</Button>
                             </div>
@@ -76,8 +78,9 @@ function SidebarBuyer(props) {
                         const offerStatus = statusTranslate(ad.offers[0].status)
                         setComponent(
                             <div className="sidebar-recap">
-                                <p>Offre déposée le {offerDate.toLocaleDateString('fr-FR')} à {offerDate.toLocaleTimeString('fr-FR')}</p>
-                                <p>Statut de l'offre : {offerStatus}</p>
+                                <p>Offre déposée le<br/> <strong>{offerDate.toLocaleDateString('fr-FR')} à {offerDate.toLocaleTimeString('fr-FR')}</strong></p>
+                                <br/>
+                                <p>Statut de l'offre<br/> <strong>{offerStatus}</strong></p>
                             </div>
                         )
                     }
@@ -92,7 +95,9 @@ function SidebarBuyer(props) {
     }
 
     return (
-        component
+        <div className="sidebar-buyer">
+            {component}
+        </div>
     )
 
 }

@@ -861,6 +861,11 @@ p.offre-buyer-name {
   list-style-type: none;
 }
 
+.nav-header-content button.ant-btn {
+  text-transform: uppercase;
+  line-height: normal;
+}
+
 .nav-header-link {
   font-weight: 400;
   color: #fff;
@@ -996,11 +1001,51 @@ h1.userTitle  {
     flex-direction: row;
   }
 
-  .sidebar-timeslot, .sidebar-visit, .sidebar-offer {
-  background-color: #F7F8F9;
-  color: #355c7d;
-  margin: 1em 0;
+.sidebar-buyer {
+  background-color: #fff;
+  color: #355c7d !important;
+  text-align: center;
+}
+
+.sidebar-logout, .sidebar-visit, .sidebar-offer, .sidebar-recap {
   padding: 1em;
+}
+
+.sidebar-buyer p {
+  font-size: 18px;
+}
+
+.sidebar-buyer button {
+  margin: 1em auto 0 auto;
+}
+
+.sidebar-buyer strong {
+  color: #f8b195;
+}
+
+.sidebar-buyer-title {
+  background-color: #fff;
+  padding: 1em;
+  color: #355c7d !important;
+}
+.sidebar-title {
+  background-color: #355c7d;
+  padding: 0.5em 1em;
+}
+.sidebar-calendar .ant-row {
+  padding: 1em !important;
+}
+.sidebar-buyer-content {
+  background-color: #fff;
+  padding: 1em;
+  color: #355c7d !important;
+}
+
+.sidebar-buyer h4 {
+  margin: 0;
+  font-size: 20px;
+  text-align: center;
+  color: #fff;
 }
 
 .timeslot-picker {
@@ -1010,21 +1055,27 @@ h1.userTitle  {
 }
 
 .picker-day {
-  font-weight : 700;
+  font-weight: 700;
   padding: 5px;
-  border-bottom : 1px solid #355C7D;  
+  border-bottom: 1px solid #355C7D;
   text-align: center;
+  margin-bottom: 1em;
 }
 
 .picker-slot {
-  font-weight : 700;
+  font-weight: 700;
   color: white;
+  border: 1px solid #355C7D;
   background-color: #355C7D;
   padding: 5px;
-  border-radius:3px;
-  margin : 3px 3px;
+  border-radius: 3px;
+  margin: 3px 3px;
   text-align: center;
   cursor: pointer;
+}
+.picker-slot:hover, .picker-slot:active, .picker-slot:focus {
+  background-color: #fff;
+  color: #355C7D;
 }
 
 .slot-row {
@@ -1033,6 +1084,11 @@ h1.userTitle  {
 
 
 /* NEW OFFER - ALL STEPS */
+
+.newoffer-form-body {
+  width: 70%;
+  margin: 0 auto !important;
+}
 
 .newoffer-stepbar {
   width: 100vw;
@@ -1062,10 +1118,6 @@ h1.userTitle  {
 .empty-dots {
   background-color: #FFF;
   border: 2px solid #355c7d;
-}
-
-.newoffer-form-body {
-  padding:0
 }
 
 .formLabel-offer {

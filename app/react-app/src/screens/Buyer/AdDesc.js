@@ -118,7 +118,7 @@ function AdDesc(props) {
 
           <h1>{adDetails.title}</h1>
 
-          <Row gutter={16} className="section-text">
+          <Row gutter={32} className="section-text">
             <Col
               xs={{ span: 24 }}
               md={{ span: 18 }}
@@ -327,9 +327,7 @@ function AdDesc(props) {
               xl={{ span: 6 }}
             >
 
-              <div className="sidebar-buyer">
                 {sidebar}
-              </div>
           
             </Col>
           </Row>

@@ -64,16 +64,6 @@ function UserNavHeader(props) {
                             }}>
                             <StopOutlined /> Déconnexion</Button>
                         </li>
-                        <li>
-                            <Link to="/pro" 
-                            style={{ 
-                                backgroundColor: "#fff", 
-                                color: "#355c7d", 
-                                padding: "5px 10px",
-                                border: "2px solid #355c7d"
-                            }}>
-                            <HomeOutlined /> Espace PRO</Link>
-                        </li>
                     </ul>
                         
                 </nav>
