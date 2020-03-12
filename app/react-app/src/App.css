@@ -387,6 +387,10 @@ button.button-decline:hover, button.button-decline:active, button.button-decline
   margin-right: auto !important;
 }
 
+.pop-confirm-buttons {
+  display: inline !important;
+}
+
 .add-slot-alert-fail-db {
   text-align: left;
   padding: 8px 15px !important;
