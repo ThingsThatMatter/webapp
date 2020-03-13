@@ -119,7 +119,7 @@ function Offres(props) {
         let sortedOffers = offersList.map((e,i) => {
             return (
             <div key={i} className='offer-section'>
-                <h2 className='title'>{e.title} - {e.area}m<sup>2</sup> - {e.address} - {priceFormatter.format(e.price)}</h2>
+                <h2 className='title'>{e.title}}</h2>
                 
                     <Row gutter={16} className="offer-carrousel">
                         { e.offers.map( (f,i) => {
