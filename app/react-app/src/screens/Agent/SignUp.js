@@ -52,12 +52,7 @@ function SignUp(props) {
                         <div className="pro-sign-box-title">
                             Création d'un compte agent
                         </div>
-                        <Form
-                            layout="vertical"
-                            // form={form}
-                            // initialValues={{ layout: formLayout }}
-                            // onValuesChange={onFormLayoutChange}
-                        >
+                        <Form layout="vertical" >
                             <Form.Item
                                 label="Email"
                                 required={true}
@@ -78,6 +73,7 @@ function SignUp(props) {
                                     onChange={e => setPassword(e.target.value)}
                                     className="sign-input-field"
                                     placeholder="Saisissez votre mot de passe"
+                                    onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
                                 />
                             </Form.Item>
                             <p className="sign-error-text">{msgErrorSignin}</p>

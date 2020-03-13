@@ -22,7 +22,7 @@ function CreateFormOne(props) {
 
     const [formError, setFormError] = useState("")
 
-    const adID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const adID =  (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).slice(0, 15);
 
     useEffect(() => {
         if (props.formData.address) {
@@ -49,8 +49,6 @@ function CreateFormOne(props) {
     if(redir === true) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button handleClick
     }
-
-    console.log(props.edit)
 
     return (
 

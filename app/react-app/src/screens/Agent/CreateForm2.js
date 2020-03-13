@@ -85,7 +85,6 @@ function CreateFormTwo(props) {
                     method: "delete"
                 })
                 const response = await request.json()
-                console.log(response)
                 if(response.result === "ok") {
                     setPhotosDB(photosDB.filter((f) =>  f !== e ))
                 }
@@ -113,8 +112,6 @@ function CreateFormTwo(props) {
         return <Redirect to="/pro/createform/step1"/> // Triggered by button-back handleClick
     }
 
-    console.log(photosDB)
-    console.log(photosFromDB)
     return (
 
         <Layout>

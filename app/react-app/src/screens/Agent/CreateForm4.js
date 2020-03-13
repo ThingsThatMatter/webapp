@@ -61,8 +61,6 @@ function CreateFormFour(props) {
         return <Redirect to="/pro/createform/step3"/> // When butti-on "retour" is clicked
     }
 
-    console.log(props.step)
-    console.log("form 4", props.formData)
 
     return (
 

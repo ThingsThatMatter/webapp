@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Layout, Button, Switch, Badge, Collapse, Col, Row } from "antd";
+import { Layout, Button, Switch, Badge, Collapse, Col, Row, Popconfirm, message } from "antd";
 import { Slide } from "react-slideshow-image";
 import { Redirect } from "react-router-dom";
 
@@ -16,10 +16,7 @@ const properties = {
   transitionDuration: 500,
   infinite: true,
   indicators: true,
-  arrows: true,
-  onChange: (oldIndex, newIndex) => {
-    //   console.log(`slide transition from ${oldIndex} to ${newIndex}`);
-  }
+  arrows: true
 };
 
 function AdDesc(props) {
@@ -104,7 +101,10 @@ function AdDesc(props) {
     const body = await deleteAd.json();
 
     if (body.message === "OK") {
+      message.success('Annonce supprimée !');
       setRedir(true);
+    } else {
+      message.error('Erreur lors de la suppression')
     }
   };
 
@@ -144,7 +144,7 @@ function AdDesc(props) {
     return (
       <div key={i}>
         <a href={e} target="_blank">
-          {e.split("-")[1]}
+          {e.slice(77, 999)}
         </a>
       </div>
     );
@@ -168,12 +168,21 @@ function AdDesc(props) {
                   style={{ marginRight: 20, cursor: "pointer" }}
                   onClick={handleEdit}
                 />
+                <Popconfirm
+                    title="Êtes vous sûr(e) de vouloir supprimer l'annonce ?"
+                    onConfirm={() => handleDelete()}
+                    okText="Oui"
+                    okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
+                    cancelText="Non"
+                    cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
+                    placement="bottomLeft"
+                  >
                 <img
                   src="../../../bin.png"
                   width="20px"
                   style={{ cursor: "pointer" }}
-                  onClick={handleDelete}
                 />
+                </Popconfirm>
               </div>
             </div>
           </div>
