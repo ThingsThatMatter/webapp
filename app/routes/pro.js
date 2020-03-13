@@ -166,7 +166,6 @@ router.post('/sign-up', async function(req, res, next) {
           { _id: agencyID }, 
           { $push: { agents : saveAgent._id } }
         )
-        console.log(saveAgent)
         status = 200;
         response = {
           message: 'OK',
@@ -265,17 +264,11 @@ router.post('/ad', async function(req, res, next) {
       });
   
       let newAd = await tempAd.save();
-  
-  
-      console.log("Ad added to DB", newAd)
-  
+    
       let adToAgent = await agentModel.updateOne(
         { _id: findAgent._id }, 
         { $push: { ads : newAd._id } }
-      )
-
-      console.log("Ad id added to agent", adToAgent)
-  
+      )  
   
       status = 200;
       response = {
@@ -302,8 +295,6 @@ router.put('/ad/:id_ad', async function(req, res, next) {
 
   try {
 
-    console.log(req.body.photosDB, req.body.filesDB)
-
     let findAgent = await agentModel.findOne({ token: req.headers.token });
 
       let adID = req.body.adID
@@ -322,8 +313,6 @@ router.put('/ad/:id_ad', async function(req, res, next) {
       }
 
       photosUrl = [...photosUrl, ...req.body.photosDB]
-
-      console.log("photos uploaded to cloudinary", photosUrl)
   
       let files = req.body.files
       let filesUrl = []
@@ -338,7 +327,6 @@ router.put('/ad/:id_ad', async function(req, res, next) {
       }
 
       filesUrl = [...filesUrl, ...req.body.filesDB]
-      console.log("files uploaded to cloudinary", filesUrl)
 
     let updateAd = await adModel.updateOne(
       { _id: req.params.id_ad }, 
@@ -378,7 +366,6 @@ router.put('/ad/:id_ad', async function(req, res, next) {
     }
 
   } catch(e) {
-    console.log(e)
     status = 500;
     response = {
       message: 'Internal error',
@@ -896,8 +883,6 @@ router.get('/ad/:id_ad', async function(req, res, next) {
 
 // POST Upload images from form 
 router.post('/upload', async function(req, res, next) {
-
-  console.log("files uploaded in back-end temp folder :", req.body.token)
   
   var resultCopy = await req.files.file.mv(`./temp/${req.body.token}-${req.files.file.name}`);
   
@@ -913,8 +898,6 @@ router.post('/upload', async function(req, res, next) {
 
 router.delete('/upload/:name', async function(req, res, next) {
 
-  console.log(req.params)
-
   fs.unlinkSync(`./temp/${req.params.name}`)
 
   res.json("deleted")
@@ -925,8 +908,6 @@ router.delete('/upload/:name', async function(req, res, next) {
 
 router.get('/tempfiles', async function(req, res, next) { 
 
-  console.log(req.query.name)
-
   res.sendFile(path.join(__dirname, `../temp/${req.query.name}`));
 
 });
@@ -934,8 +915,6 @@ router.get('/tempfiles', async function(req, res, next) {
 // DELETE images from cloudinary
 
 router.delete('/image/:name', async function(req, res, next) {
-
-  console.log(req.params.name)
 
   const requestCloudinary = await cloudinary.uploader.destroy(req.params.name)  
 

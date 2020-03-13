@@ -17,10 +17,7 @@ const properties = {
   transitionDuration: 500,
   infinite: true,
   indicators: true,
-  arrows: true,
-  onChange: (oldIndex, newIndex) => {
-    //   console.log(`slide transition from ${oldIndex} to ${newIndex}`);
-  }
+  arrows: true
 };
 
 function AdDesc(props) {
@@ -57,7 +54,6 @@ function AdDesc(props) {
       })
 
       const body = await saveAdUser.json()
-      console.log(body)
       if (body.message === 'OK') {
         setLoggedIn(true)
       } else {

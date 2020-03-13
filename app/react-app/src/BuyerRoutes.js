@@ -17,6 +17,7 @@ import OfferForm3 from './screens/Buyer/OfferForm3'
 function BuyerRoutes(props) {
 
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+    const [redirectToSign, setRedirectToSign] = useState(false)
 
     const checkToken = async () => {
         const getToken = await fetch('/user/user-access', {
@@ -27,11 +28,9 @@ function BuyerRoutes(props) {
         if (body.message === 'OK') {
             props.setUserToken(body.data.token)
         } else {
-            // console.log('toto')
-            // removeCookie('userToken')
-            // console.log(cookies)
+            removeCookie('userToken')
+            setRedirectToSign(true)
         }
-
     }
 
     if (cookies.userToken) { // si il y a un cookie, on vérifie qu'il existe bien en base
@@ -45,24 +44,27 @@ function BuyerRoutes(props) {
             : <Redirect to='/sign' />
         )} />
     )
+
+    if (redirectToSign) {
+        return <Redirect to='/sign' />
+    } else {
     
-    return (
+        return (
+            <Router>
+                <Switch>
+                    <PrivateRoute component={Home} path="/" exact/>
+                    <PrivateRoute component={Visits} path="/visits" />
+                    <PrivateRoute component={Offers} path="/offers" />
+                    <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
+                    <PrivateRoute component={OfferForm2} path="/newoffer/step2" exact/>
+                    <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
 
-        <Router>
-            <Switch>
-                <PrivateRoute component={Home} path="/" exact/>
-                <PrivateRoute component={Visits} path="/visits" />
-                <PrivateRoute component={Offers} path="/offers" />
-                <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
-                <PrivateRoute component={OfferForm2} path="/newoffer/step2" exact/>
-                <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
-
-                <Route component={buyerSign} path="/sign" />
-                <Route component={AdDesc} path="/ad/:ad_id" />
-            </Switch>
-        </Router>
-          
-    );
+                    <Route component={buyerSign} path="/sign" />
+                    <Route component={AdDesc} path="/ad/:ad_id" />
+                </Switch>
+            </Router>  
+        );
+    }
 }
 
 function mapStateToProps(state) {

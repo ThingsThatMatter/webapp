@@ -58,104 +58,99 @@ month[11] = "dec";
 
             })
 
-        const daySlots = []
+            const daySlots = []
 
-        for(let i=0 ; i < timeslots.length ; i++) {
+            for(let i=0 ; i < timeslots.length ; i++) {
 
-        const year = timeslots[i].start.slice(0,4)
-        let month = Number(timeslots[i].start.slice(5,7))-1
-        const day = timeslots[i].start.slice(8,10)
-        const hour1 = timeslots[i].start.slice(11,13)
-        const min1 = timeslots[i].start.slice(14,16)
+                const year = timeslots[i].start.slice(0,4)
+                let month = Number(timeslots[i].start.slice(5,7))-1
+                const day = timeslots[i].start.slice(8,10)
+                const hour1 = timeslots[i].start.slice(11,13)
+                const min1 = timeslots[i].start.slice(14,16)
 
-        const date = new Date(year, month, day)
+                const date = new Date(year, month, day)
 
-        const index = daySlots.findIndex((e) => {
-            return e.day.getTime() == date.getTime()
-        })
-        
-        if( timeslots[i].booked === false || (timeslots[i].booked === true && timeslots[i].private === false) ) {
-            if( index !== -1 ) {
-            daySlots[index].slots.push({
-            start : hour1+min1,
-            timeslot : timeslots[i]._id
-            })
-            } else {
-            daySlots.push({
-                day: date,
-                slots : [{
-                start : hour1+ min1, 
-                timeslot : timeslots[i]._id
-                }]
-            })
-            }
-        }
-        }
-
-        console.log("daySlots", daySlots)
-
-        daySlots.sort((a,b) => {
-        return (a.day - b.day)
-        })
-
-        const pickerClick = async (timeslot) => {
-            const response = await fetch(`/user/ad/${props.adId}/visit`, {
-                method : "put",
-                headers: {
-                'Content-Type': 'application/json',
-                'token' : props.token
-                },
-                body: JSON.stringify({
-                timeslot : timeslot
+                const index = daySlots.findIndex((e) => {
+                    return e.day.getTime() == date.getTime()
                 })
-            })
-            let body = await response.json()
-            if (body.message === 'OK') {
-                props.goToVisitParent()
-            }
-            else {
-                message.error('Il y a eu une erreur, veuillez rééssayer');
-            }
-        }
-
-        const mapSlots = daySlots.map((e, i) => {
-
-            return <Col span={6} key={i}>
-
-            <div className="picker-date">
-                <div style={{fontWeight : 700, marginBottom : "-5px"}}>
-                {weekday[e.day.getDay()]}
-                </div>
-                <div>
-                {`${e.day.getDate()} ${month[e.day.getMonth()+1]}`}
-                </div>
-            </div>
-
-                {
-                e.slots.map((f, i) => (
-                    <Popconfirm
-                    title="Confirmer le rendez-vous ?"
-                    onConfirm={() => pickerClick(f.timeslot)}
-                    okText="Oui"
-                    okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
-                    cancelText="Non"
-                    cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
-                    placement="bottomLeft"
-                  >
-                    <div key={i} className="picker-slot" >
-                    {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
-                    </div>
-                    </Popconfirm>
-                ))
-                }
             
-            </Col>
+                if( timeslots[i].booked === false || (timeslots[i].booked === true && timeslots[i].private === false) ) {
+                    if( index !== -1 ) {
+                        daySlots[index].slots.push({
+                        start : hour1+min1,
+                        timeslot : timeslots[i]._id
+                        })
+                    } else {
+                    daySlots.push({
+                        day: date,
+                        slots : [{
+                            start : hour1+ min1, 
+                            timeslot : timeslots[i]._id
+                            }]
+                        })
+                    }
+                }
+            }
+
+
+            daySlots.sort((a,b) => {
+                return (a.day - b.day)
+            })
+
+            const pickerClick = async (timeslot) => {
+                const response = await fetch(`/user/ad/${props.adId}/visit`, {
+                    method : "put",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'token' : props.token
+                    },
+                    body: JSON.stringify({
+                        timeslot : timeslot
+                    })
+                })
+                let body = await response.json()
+                if (body.message === 'OK') {
+                    props.goToVisitParent()
+                }
+                else {
+                    message.error('Il y a eu une erreur, veuillez rééssayer');
+                }
+            }
+
+            const mapSlots = daySlots.map((e, i) => {
+
+                return <Col span={6} key={i}>
+
+                    <div className="picker-date">
+                        <div style={{fontWeight : 700, marginBottom : "-5px"}}>
+                            {weekday[e.day.getDay()]}
+                        </div>
+                        <div>
+                            {`${e.day.getDate()} ${month[e.day.getMonth()+1]}`}
+                        </div>
+                    </div>
+
+                    {e.slots.map((f, i) => (
+                        <Popconfirm
+                            title="Confirmer le rendez-vous ?"
+                            onConfirm={() => pickerClick(f.timeslot)}
+                            okText="Oui"
+                            okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
+                            cancelText="Non"
+                            cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
+                            placement="bottomLeft"
+                        >
+                            <div key={i} className="picker-slot" >
+                                {`${f.start.slice(0,2)}h${f.start.slice(2,4)}`}
+                            </div>
+                        </Popconfirm>
+                    ))}
+                </Col>
             })
             setSlotsDisplay(mapSlots);
         };
         getTimeslots();
-
-}, [])
+    }, [])
 
 
   return (

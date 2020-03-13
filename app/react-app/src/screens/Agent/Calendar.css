@@ -28,19 +28,19 @@ margin-bottom: 0.5em; }
     margin-left: 15px
   }
     .calendar-headerNavLeft-chevronIcon {
-      color: #052040;
+      color: #355c7d;
       font-size: 20px
     }
     .calendar-headerNavLeft-dateTitle {
       margin:0;
       text-align: center;
-      color: #052040
+      color: #355c7d
     }
 
   .calendar-headerNavRight {
     margin-right: 15px;
     font-size: 14px;
-    color: #052040;
+    color: #355c7d;
     text-decoration: underline
   }
 
@@ -62,13 +62,13 @@ margin-bottom: 0.5em; }
     padding:0
   }
   .calendar-week-column-header-number {
-    color:#000;
+    color:#355c7d;
     font-weight:normal;
     font-size:40px;
     margin-left: 0.3em;
   }
 .calendar-default-column-header {
-  color:#000;
+  color:#355c7d;
   font-weight:normal;
   font-size: 16px;
   margin:0;

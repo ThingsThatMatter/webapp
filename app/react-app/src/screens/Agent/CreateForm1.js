@@ -50,8 +50,6 @@ function CreateFormOne(props) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button handleClick
     }
 
-    console.log(props.edit)
-
     return (
 
         <Layout>

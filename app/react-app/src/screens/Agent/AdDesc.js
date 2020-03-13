@@ -16,10 +16,7 @@ const properties = {
   transitionDuration: 500,
   infinite: true,
   indicators: true,
-  arrows: true,
-  onChange: (oldIndex, newIndex) => {
-    //   console.log(`slide transition from ${oldIndex} to ${newIndex}`);
-  }
+  arrows: true
 };
 
 function AdDesc(props) {

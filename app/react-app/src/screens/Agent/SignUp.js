@@ -52,12 +52,7 @@ function SignUp(props) {
                         <div className="pro-sign-box-title">
                             Création d'un compte agent
                         </div>
-                        <Form
-                            layout="vertical"
-                            // form={form}
-                            // initialValues={{ layout: formLayout }}
-                            // onValuesChange={onFormLayoutChange}
-                        >
+                        <Form layout="vertical" >
                             <Form.Item
                                 label="Email"
                                 required={true}

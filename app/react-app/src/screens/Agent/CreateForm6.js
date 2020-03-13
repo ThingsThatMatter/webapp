@@ -45,10 +45,7 @@ function CreateFormSix(props) {
         transitionDuration: 500,
         infinite: true,
         indicators: true,
-        arrows: true,
-        // onChange: (oldIndex, newIndex) => {
-        //   console.log(`slide transition from ${oldIndex} to ${newIndex}`);
-        // }
+        arrows: true
       }
 
        const imagesUpload = props.formData.photos.map((e, i) => (
@@ -201,9 +198,6 @@ function CreateFormSix(props) {
         minimumFractionDigits: 0,
         useGrouping: true
     })
-
-    console.log("form 6", props.formData)
-    console.log(allPhotos)    
 
     return (
 
