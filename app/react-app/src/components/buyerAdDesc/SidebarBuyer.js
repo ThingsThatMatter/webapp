@@ -73,7 +73,7 @@ function SidebarBuyer(props) {
                             return (
                             <div key={i} className="sidebar-offer-documents">
                                 <a href={e} target="_blank">
-                                {e.slice(82, 999)}
+                                {e.slice(77, 999)}
                                 </a>
                             </div>
                             );

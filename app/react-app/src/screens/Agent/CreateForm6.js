@@ -221,7 +221,7 @@ function CreateFormSix(props) {
                     <div style={{margin : "3em 0"}}>
                         
 
-                    <h1 className='pageTitle'>{props.formData.title}</h1>
+                    <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
 
                     </div>
 
