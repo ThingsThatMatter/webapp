@@ -80,7 +80,7 @@ function AdDesc(props) {
     );
   });
 
-  
+
   /* -----------------------------------------------HANDLE SIDEBAR------------------------------------------ */
   let sidebar ;
   if (loggedIn === false) {
@@ -103,6 +103,7 @@ function AdDesc(props) {
             &lt; Retour aux annonces
           </Link>
 
+          <h4>> {adDetails.city}</h4>
           <h1>{adDetails.title}</h1>
 
           <Row gutter={32} className="section-text">

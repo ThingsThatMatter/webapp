@@ -144,7 +144,7 @@ function AdDesc(props) {
     return (
       <div key={i}>
         <a href={e} target="_blank">
-          {e.split("-")[1]}
+          {e.slice(77, 999)}
         </a>
       </div>
     );

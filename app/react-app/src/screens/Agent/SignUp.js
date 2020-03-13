@@ -73,6 +73,7 @@ function SignUp(props) {
                                     onChange={e => setPassword(e.target.value)}
                                     className="sign-input-field"
                                     placeholder="Saisissez votre mot de passe"
+                                    onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
                                 />
                             </Form.Item>
                             <p className="sign-error-text">{msgErrorSignin}</p>

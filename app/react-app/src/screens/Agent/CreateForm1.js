@@ -22,7 +22,7 @@ function CreateFormOne(props) {
 
     const [formError, setFormError] = useState("")
 
-    const adID =  Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const adID =  (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).slice(0, 15);
 
     useEffect(() => {
         if (props.formData.address) {

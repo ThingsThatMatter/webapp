@@ -141,7 +141,7 @@ router.post('/sign-up', async function(req, res, next) {
         email: req.body.email
       })
 
-      if(!findAgent){
+      if(findAgent){
         status = 401;
         response = {
           message: 'User already exists',
@@ -152,8 +152,8 @@ router.post('/sign-up', async function(req, res, next) {
         /* Création agent */
         const newAgent = new agentModel({
           // admin: req.body.admin,
-          // lastname: req.body.lastname,
-          // firstname: req.body.firstname,
+          lastname: req.body.lastname,
+          firstname: req.body.firstname,
           email: req.body.email,
           password: hash,
           token: generateToken()
