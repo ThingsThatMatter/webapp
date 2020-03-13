@@ -60,8 +60,7 @@ function CreateFormThree(props) {
         return <Redirect to="/pro/createform/step2"/> // Triggered by button-back handleClick
     }
     
-    console.log(props.step)
-    console.log("form 3", props.formData)
+    
     return (
 
         <Layout>

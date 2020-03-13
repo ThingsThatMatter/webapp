@@ -29,9 +29,7 @@ function Home(props) {
             headers: {'token': props.userToken}
         })
         const body = await ads.json();
-        console.log(body)
         setAdsListFromDb(body.data.ads)
-        console.log('adsListFromDb : ' + adsListFromDb)
         }
         adsFetch()
     }, [])
@@ -51,12 +49,10 @@ function Home(props) {
     adsCopy = adsCopy.sort((a,b) => {
         return (dateCreate(b.creationDate) - dateCreate(a.creationDate))
     })
-    console.log('adsCopy : ' + adsCopy)
     //rend
 
     let adsOffers = [];
 
-    // if(adsCopy.offers) {
         adsOffers = adsCopy.map( (e,i) => {
 
             /* Offer status translation */
@@ -103,12 +99,8 @@ function Home(props) {
                 )
             }
         })
-    // }
-
-    console.log('adsOffers : ' + adsOffers)
 
     let adsVisits = [];
-    // if(adsCopy.timeSlots) {
 
         adsVisits = adsCopy.map( (e,i) => {
             
@@ -152,9 +144,6 @@ function Home(props) {
                 )
             }
         })
-    // }
-
-    console.log('adsVisits : ' + adsVisits)
 
     let adsAll = adsCopy.map( (e,i) => {
 

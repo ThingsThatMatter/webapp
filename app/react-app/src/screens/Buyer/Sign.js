@@ -20,13 +20,14 @@ function SignUp(props) {
     const [signinPassword, setSigninPassword] = useState(null)
 
     const [msgErrorSignin, setMsgErrorSignin] = useState()
+    const [msgErrorSignup, setMsgErrorSignup] = useState()
     const [toRedirect, setToRedirect] = useState(false)
     const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
 
 
     const handleSubmitSignup = async () => {
 
-        setMsgErrorSignin(null) //reset messagesError
+        setMsgErrorSignup(null) //reset messagesError
         const postNewUser = await fetch('/user/sign-up', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -40,7 +41,7 @@ function SignUp(props) {
             props.setUserToken(body.data.token)
             setToRedirect(true)
         } else {
-            setMsgErrorSignin(body.details)
+            setMsgErrorSignup(body.details)
         }
     }
 
@@ -94,9 +95,7 @@ function SignUp(props) {
                         <div className="pro-sign-box-title">
                             Inscription
                         </div>
-                        <Form
-                            layout="vertical"
-                        >
+                        <Form layout="vertical" >
                             <Form.Item
                                 label="Nom"
                                 required={true}
@@ -141,7 +140,7 @@ function SignUp(props) {
                                     placeholder="Saisissez votre mot de passe"
                                 />
                             </Form.Item>
-                            <p className="sign-error-text">{msgErrorSignin}</p>
+                            <p className="sign-error-text">{msgErrorSignup}</p>
                             <Form.Item >
                                 <Button
                                     type="primary"
@@ -165,9 +164,6 @@ function SignUp(props) {
                     </div>
                     <Form
                         layout="vertical"
-                        // form={form}
-                        // initialValues={{ layout: formLayout }}
-                        // onValuesChange={onFormLayoutChange}
                     >
                         <Form.Item
                             label="Email"
