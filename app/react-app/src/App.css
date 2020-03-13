@@ -1252,3 +1252,38 @@ h1.userTitle  {
 .newoffer-modal-section-content-data {
   color:#355c7d
 }
+
+
+/* CALENDAR */
+.fc-view-container {
+  background-color: #fff !important;
+}
+th.fc-day-header {
+  background-color: #355c7d !important;
+  color: #fff !important;
+}
+.calendar-week-column-header-text {
+  color: #fff !important;
+  font-weight: normal !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.calendar-week-column-header-number {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 25px !important;
+  margin: 0 !important;
+}
+.calendar-default-column-header {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 25px !important;
+  margin: 0.5em !important;
+  padding: 0 !important;
+}
+a[data-goto]:hover {
+  text-decoration: none !important;
+}
+.fc-timeGridDay-view .fc-time-grid .fc-slats td {
+  background-color: #fff;
+}
