@@ -381,6 +381,7 @@ router.put('/ad/:id_ad', async function(req, res, next) {
 router.delete('/ad/:id_ad', async function(req, res, next) {
 
   try {
+
     let findAgent = await agentModel.findOne({ token:req.headers.token });
 
     if(!findAgent) { 
@@ -390,8 +391,35 @@ router.delete('/ad/:id_ad', async function(req, res, next) {
         details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
       };
     } else {
+
+      let findAd = await adModel.findById(req.params.id_ad) // get ad
+
+      // format photos link to extract only the public ID of photos
+      let formatPhotos = findAd.photos.map((e) => { 
+        return e.split('upload/')[1].split('/')[1].split('.')[0]
+      })
+
+      // delete photos from cloudinary
+      for(i=0; i<formatPhotos.length; i ++) {  
+        const deletePhotos = await cloudinary.uploader.destroy(formatPhotos[i])
+        console.log(deletePhotos)
+      }
+
+      // format files link to extract only the public ID of files
+      let formatFiles = findAd.files.map((e) => { 
+        return e.split('upload/')[1].split('/')[1].split('.')[0]
+      })
+
+      // delete files from cloudinary
+      for(i=0; i<formatFiles.length; i ++) {  
+        const deleteFiles = await cloudinary.uploader.destroy(formatFiles[i])
+        console.log(deleteFiles)
+      }
+
+      //delete ad from DB
       let deleteAd = await adModel.deleteOne({ _id: req.params.id_ad });
 
+      // delete ad id from agent
       let adsFromAgent = await agentModel.findById(req.params.id_ad);
       adsFromAgent = findAgent.ads; 
 
@@ -410,6 +438,7 @@ router.delete('/ad/:id_ad', async function(req, res, next) {
     };
 
   } catch(e) {
+    console.log(e)
     status = 500;
     response = {
       message: 'Internal error',
