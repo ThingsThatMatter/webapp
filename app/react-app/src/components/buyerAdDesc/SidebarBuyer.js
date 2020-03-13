@@ -38,6 +38,7 @@ function SidebarBuyer(props) {
         setRefreshDb(true)
     }
 
+
     useEffect( () => {
         const dbFetch = async () => {
             const checkVisit = await fetch(`/user/ad/${props.adId}/private`, {
@@ -48,6 +49,7 @@ function SidebarBuyer(props) {
 
             console.log(body)
             const ad = body.data.ad
+
 
             if (ad.timeSlots.length === 0) {
                 setComponent(<TimeSlotPicker adId={props.adId} token={props.userToken} goToVisitParent={goToVisitInfo}/>)
