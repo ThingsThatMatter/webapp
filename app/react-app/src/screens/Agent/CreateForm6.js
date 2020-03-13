@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, message } from 'antd';
+import { Layout, Steps, Button, message, Row, Col } from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
 import { Slide } from 'react-slideshow-image';
@@ -219,8 +219,9 @@ function CreateFormSix(props) {
                     </Steps>
 
                     <div style={{margin : "3em 0"}}>
+                        
 
-                    <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
+                    <h1 className='pageTitle'>{props.formData.title}</h1>
 
                     </div>
 
@@ -228,9 +229,9 @@ function CreateFormSix(props) {
 
                         <div className="row">
 
-                            <span style={{justifySelf: "start"}} ><img src="../../../expand.svg" alt="surface" width="20px"/>{props.formData.area}<span>&nbsp;m2</span></span>
-                            <span style={{justifySelf: "center"}} ><img src="../../../floor-plan.png" alt="pièces" width="20px"/>{props.formData.rooms}<span>&nbsp;pièces</span></span>
-                            <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" alt="chambres" width="20px"/> {props.formData.bedrooms} <span>&nbsp;chambres</span></span>
+                            <span style={{justifySelf: "start"}} ><img src="../../../expand.svg" alt="surface" width="20px"/>&nbsp;{props.formData.area}<span>&nbsp;m2</span></span>
+                            <span style={{justifySelf: "center"}} ><img src="../../../floor-plan.png" alt="pièces" width="20px"/>&nbsp;{props.formData.rooms}<span>&nbsp;pièces</span></span>
+                            <span style={{justifySelf: "end"}} ><img src="../../../bed.svg" alt="chambres" width="20px"/>&nbsp;{props.formData.bedrooms} <span>&nbsp;chambres</span></span>
                         </div>
                         
                         {avantages.length > 0 && <div className="dark-row">
@@ -239,66 +240,96 @@ function CreateFormSix(props) {
                         {avantages}
                         </div>
                         </div>}
+
+                        <Row gutter={16} className="section-text">
+                            <Col
+                                xs={{ span: 24 }}
+                                md={{ span: 12 }}
+                                lg={{ span: 12 }}
+                                xl={{ span: 12 }}
+                            >
+                                <div className="slide-container">
+                                <Slide {...properties}>{allPhotos}</Slide>
+                                </div>
+                            </Col>
+                            <Col
+                                xs={{ span: 24 }}
+                                md={{ span: 12 }}
+                                lg={{ span: 12 }}
+                                xl={{ span: 12 }}
+                            >
+                                <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{props.formData.description}</p>
+                            </Col>
+                        </Row>
                         
-
-                        <div className="row">
-                        <p style={{textAlign: "justify", whiteSpace: "pre-wrap"}}>{props.formData.description}</p>
-                        </div>
-
-                            <div className="slide-container">
-
-                                <Slide {...properties}>
-
-                                {allPhotos}
-
-                                </Slide>
-                            </div>
                         
                     </div>
 
                     {/* PARTIE PRIX ET HONNORAIRES */}
 
+                    <Row gutter={30}>
+                        <Col
+                        xs={{ span: 24 }}
+                        md={{ span: 24 }}
+                        lg={{ span: 8 }}
+                        xl={{ span: 8 }}
+                        >
+                            <h2 className='pageSubTitle'>Prix & honoraires</h2>  
 
-                    <h2 className='pageSubTitle'>Prix & honnoraires</h2>  
+                            <div className="section">
 
-                    <div className="section">
+                                <div className="section-text">
+                                    <p><span style={{fontWeight: 700}}>{props.formData.price+props.formData.price*props.formData.fees/100}</span>€ TTC</p>
+                                    <p><span style={{fontWeight: 700}}>{props.formData.price}</span>€ hors honoraires</p>
+                                    <p><span style={{fontWeight: 700}}>{props.formData.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
+                                </div>
+                            </div>
+                        </Col>
 
-                        <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>{props.formData.price+props.formData.price*props.formData.fees/100}</span>€ TTC</p>
-                            <p><span style={{fontWeight: 700}}>{props.formData.price}</span>€ hors honnoraires</p>
-                            <p><span style={{fontWeight: 700}}>{props.formData.fees}</span>% honnoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
-                        </div>
-                    </div>
+                        {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
+                        <Col
+                            xs={{ span: 24 }}
+                            md={{ span: 24 }}
+                            lg={{ span: 8 }}
+                            xl={{ span: 8 }}
+                            >
 
-                    {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
+                            <h2 className='pageSubTitle'>Diagnostique électrique</h2>  
 
-                    <h2 className='pageSubTitle'>Diagnostique électrique</h2>  
-
-                    <div className="section">
-                    <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>{props.formData.dpe}</span> kWhEP/m².an</p>
-                            <p><span style={{fontWeight: 700}}>{props.formData.ges}</span> kgeqCO2/m².an</p>
-                        </div>
-                    </div>
+                            <div className="section">
+                            <div className="section-text">
+                                    <p><span style={{fontWeight: 700}}>{props.formData.dpe}</span> kWhEP/m².an</p>
+                                    <p><span style={{fontWeight: 700}}>{props.formData.ges}</span> kgeqCO2/m².an</p>
+                                </div>
+                            </div>
+                        </Col>
 
                     {/* PARTIE DOCUMENTS */}
 
-                    <h2 className='pageSubTitle'>Documents</h2> 
+                        <Col
+                            xs={{ span: 24 }}
+                            md={{ span: 24 }}
+                            lg={{ span: 8 }}
+                            xl={{ span: 8 }}
+                        >
+                            <h2 className='pageSubTitle'>Documents</h2> 
 
-                    <div className="section">
-                        <div className="section-text">
+                            <div className="section">
+                                <div className="section-text">
 
-                        {
-                            props.formData.files.map((e, i) => (
-                                <div>
-                                <a key={i} href={`http://localhost:3000/pro/tempfiles/?name=${props.formData.adID}-${e}`} target="_blank">{e}</a> 
+                                {
+                                    props.formData.files.map((e, i) => (
+                                        <div>
+                                        <a key={i} href={`http://localhost:3000/pro/tempfiles/?name=${props.formData.adID}-${e}`} target="_blank">{e}</a> 
+                                        </div>
+                                    ))
+                                }
+                                
+                                                                
                                 </div>
-                            ))
-                        }
-                           
-                                                        
-                        </div>
-                    </div>
+                            </div>
+                        </Col>
+                    </Row>
 
                     <div className="form-buttons">
 
