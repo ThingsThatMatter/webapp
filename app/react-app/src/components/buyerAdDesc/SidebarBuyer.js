@@ -64,12 +64,31 @@ function SidebarBuyer(props) {
                         </div>
                     )
                 } else {
+
+                    let documents = []
+                    if (ad.files.length > 0) {
+                        documents = ad.files.map((e, i) => {
+                            return (
+                            <div key={i} className="sidebar-offer-documents">
+                                <a href={e} target="_blank">
+                                {e.slice(82, 999)}
+                                </a>
+                            </div>
+                            );
+                        });
+                    }
+
                     if (ad.offers.length === 0) {
+
                         setComponent(
                             <div className="sidebar-offer">
                                 <p>
                                     Visite effectuée le<br/> <strong>{visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}</strong>
                                 </p>
+                                <div>
+                                    <p style={{marginTop: '1em'}}>Documents</p>
+                                    {documents}
+                                </div>
                                 <Button type="primary" onClick={ () => {setToRedirect(true); props.setOfferAdId(props.adId)}}>Déposer une offre</Button>
                             </div>
                         )
@@ -81,6 +100,10 @@ function SidebarBuyer(props) {
                                 <p>Offre déposée le<br/> <strong>{offerDate.toLocaleDateString('fr-FR')} à {offerDate.toLocaleTimeString('fr-FR')}</strong></p>
                                 <br/>
                                 <p>Statut de l'offre<br/> <strong>{offerStatus}</strong></p>
+                                <div>
+                                    <p style={{marginTop: '1em'}}>Documents</p>
+                                    {documents}
+                                </div>
                             </div>
                         )
                     }

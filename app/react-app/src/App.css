@@ -1015,6 +1015,12 @@ h1.userTitle  {
   padding: 1em;
 }
 
+.sidebar-offer-documents {
+  font-size: 10px;
+  color: #888;
+  line-height: 170%;
+}
+
 .sidebar-buyer p {
   font-size: 18px;
 }
