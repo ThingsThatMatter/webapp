@@ -179,7 +179,8 @@ function OfferForm3(props) {
                 notaryEmail: props.offerFormData.notaryEmail,
                 validityPeriod: props.offerFormData.validityPeriod,
                 location: props.offerFormData.offerLocation,
-                comments: props.offerFormData.comments
+                comments: props.offerFormData.comments,
+                creationDate: new Date()
                 }
             )
         })

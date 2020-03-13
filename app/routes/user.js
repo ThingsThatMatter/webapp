@@ -456,7 +456,7 @@ router.post('/ad/:ad_id/offer', async function(req, res, next) {
     } else {
 
       let offer = {
-        creationDate: new Date,
+        creationDate: req.body.creationDate,
         status: 'pending',
         user: userToFind._id,
         singleBuyer: req.body.singleBuyer,

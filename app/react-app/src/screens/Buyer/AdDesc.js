@@ -80,16 +80,7 @@ function AdDesc(props) {
     );
   });
 
-  let documents = adDocuments.map((e, i) => {
-    return (
-      <div key={i}>
-        <a href={e} target="_blank">
-          {e.slice(77, 999)}
-        </a>
-      </div>
-    );
-  });
-  
+
   /* -----------------------------------------------HANDLE SIDEBAR------------------------------------------ */
   let sidebar ;
   if (loggedIn === false) {
@@ -112,6 +103,7 @@ function AdDesc(props) {
             &lt; Retour aux annonces
           </Link>
 
+          <h4>> {adDetails.city}</h4>
           <h1>{adDetails.title}</h1>
 
           <Row gutter={32} className="section-text">
@@ -231,21 +223,7 @@ function AdDesc(props) {
                 </Col>
               </Row>
 
-              {/* PARTIE DOCUMENTS */}
-              <Row>
-                <Col
-                  xs={{ span: 24 }}
-                  md={{ span: 24 }}
-                  lg={{ span: 24 }}
-                  xl={{ span: 24 }}
-                >
-                  <h2 className="pageSubTitle">Documents</h2>
-
-                  <div className="section">
-                    <div className="section-text">{documents}</div>
-                  </div>
-                </Col>
-              </Row>
+              {/* QUESTIONS FREQUENTS */}
               <Row>
                 <Col
                   xs={{ span: 24 }}

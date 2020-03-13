@@ -119,7 +119,11 @@ function Offres(props) {
         let sortedOffers = offersList.map((e,i) => {
             return (
             <div key={i} className='offer-section'>
+<<<<<<< HEAD
                 <h2 className='title'>{e.title}}</h2>
+=======
+                <h2 className='title'>{e.title}</h2>
+>>>>>>> be2f7a9c8fcf488f0ad36d95e9cb50b81f1f5d52
                 
                     <Row gutter={16} className="offer-carrousel">
                         { e.offers.map( (f,i) => {
@@ -158,7 +162,7 @@ function Offres(props) {
                                     {picto}<span className="annonce-price"> {priceFormatter.format(f.amount)}</span>
                                     </div>
                                     <div className="offre-buyer">
-                                        <p className="offre-buyer-name">{f.firstname1} {f.lastname1}</p>
+                                        <p className="offre-buyer-name">{f.firstName1} {f.lastName1}</p>
                                     </div>
                                     <div className="offre-money">
                                         <p className="offre-contribution"><span>Apport : </span>{priceFormatter.format(f.contributionAmount)}</p>
@@ -206,8 +210,8 @@ function Offres(props) {
                         <div className="offer-modal">
                             <Row gutter={16}>
                                 <Col xs={12}>
-                                    <p><span>Acheteur #1 : </span>{offerModalProperties.firstname1} {offerModalProperties.lastname1}</p>
-                                    <p><span>Acheteur #2 : </span>{offerModalProperties.firstname2} {offerModalProperties.lastname2}</p>
+                                    <p><span>Acheteur #1 : </span>{offerModalProperties.firstName1} {offerModalProperties.lastName1}</p>
+                                    <p><span>Acheteur #2 : </span>{offerModalProperties.firstName2} {offerModalProperties.lastName2}</p>
                                     <p><span>Montant de l'offre : </span>{priceFormatter.format(offerModalProperties.amount)}</p>
                                     <p><span>Emprunt : </span>{priceFormatter.format(offerModalProperties.loanAmount)}</p>
                                     <p><span>Apport : </span>{priceFormatter.format(offerModalProperties.contributionAmount)}</p>

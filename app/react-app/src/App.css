@@ -992,7 +992,7 @@ h1.userTitle  {
   color: #fff;
   font-weight: 700;
   position: absolute;
-  background-color: #df8a44;
+  background-color: #efbb00;
   padding: 10px 15px;
   border-radius: 10px 0 10px 0;
 }
@@ -1013,6 +1013,12 @@ h1.userTitle  {
 
 .sidebar-logout, .sidebar-visit, .sidebar-offer, .sidebar-recap, .sidebar-calendar-content {
   padding: 1em;
+}
+
+.sidebar-offer-documents {
+  font-size: 10px;
+  color: #888;
+  line-height: 170%;
 }
 
 .sidebar-buyer p {
@@ -1245,4 +1251,39 @@ h1.userTitle  {
 
 .newoffer-modal-section-content-data {
   color:#355c7d
+}
+
+
+/* CALENDAR */
+.fc-view-container {
+  background-color: #fff !important;
+}
+th.fc-day-header {
+  background-color: #355c7d !important;
+  color: #fff !important;
+}
+.calendar-week-column-header-text {
+  color: #fff !important;
+  font-weight: normal !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+.calendar-week-column-header-number {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 25px !important;
+  margin: 0 !important;
+}
+.calendar-default-column-header {
+  color: #fff !important;
+  font-weight: bold !important;
+  font-size: 25px !important;
+  margin: 0.5em !important;
+  padding: 0 !important;
+}
+a[data-goto]:hover {
+  text-decoration: none !important;
+}
+.fc-timeGridDay-view .fc-time-grid .fc-slats td {
+  background-color: #fff;
 }
