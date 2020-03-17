@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Button, Switch, Badge, Collapse, Col, Row, Popconfirm, message } from "antd";
 import { Slide } from "react-slideshow-image";
-import { Redirect } from "react-router-dom";
+import { Redirect} from "react-router-dom";
+import {HashLink as Link} from "react-router-hash-link"
 
 import { connect } from "react-redux";
 
 import Sidebar from "../../components/Sidebar";
-import { PlusCircleOutlined, CheckCircleOutlined } from "@ant-design/icons";
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -188,9 +188,11 @@ function AdDesc(props) {
           </div>
           <div className="agent-resume">
             <Badge count={adOffers.length}>
+            <Link to={`/pro/offres#${props.match.params.id}`}>
               <Button type="primary" ghost className="button-add">
                 Offres{" "}
               </Button>
+            </Link>
             </Badge>
 
             <Badge count={adVisits.length}>

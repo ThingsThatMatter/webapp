@@ -118,12 +118,8 @@ function Offres(props) {
 
         let sortedOffers = offersList.map((e,i) => {
             return (
-            <div key={i} className='offer-section'>
-<<<<<<< HEAD
-                <h2 className='title'>{e.title}}</h2>
-=======
+            <div key={i} id={e._id} className='offer-section'>
                 <h2 className='title'>{e.title}</h2>
->>>>>>> be2f7a9c8fcf488f0ad36d95e9cb50b81f1f5d52
                 
                     <Row gutter={16} className="offer-carrousel">
                         { e.offers.map( (f,i) => {

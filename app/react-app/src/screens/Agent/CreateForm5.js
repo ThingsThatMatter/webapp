@@ -316,7 +316,6 @@ function CreateFormFive(props) {
   const [currentPage, setCurrentPage] = useState(0)
   const [redir, setRedir] = useState(false)
   const [backRedir, setBackRedir] = useState(false)
-  const [formError, setFormError] = useState("")
 
   useEffect(() => {
       setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display

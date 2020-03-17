@@ -4,6 +4,8 @@ var mongoose = require('../models/bdd');
 
 var userModel = require('../models/userModel.js')
 var adModel = require('../models/adModel.js')
+const mailjet = require ('node-mailjet')
+.connect('6e4a0426294486d548136359fc341ef6', 'bd0d46e4638b9c6ce22a79f46717b440')
 
 const ObjectId = mongoose.Types.ObjectId;
 
@@ -138,16 +140,46 @@ router.post('/sign-up', async function(req, res, next) {
       } else {
         var hash = await bcrypt.hash(req.body.password, saltRounds)
         /* Création user */
+        const token = generateToken()
         const newUser = new userModel({
           creationDate: new Date,
           lastname: req.body.lastname,
           firstname: req.body.firstname,
           email: req.body.email,
           password: hash,
-          token: generateToken()
+          token: token
         })
 
         saveUser = await newUser.save()
+
+        /* Envoi de l'email de confirmation*/
+
+        const url = `http://localhost:3001/confirmation/${token}`
+
+        const request = await mailjet
+        .post("send", {'version': 'v3.1'})
+        .request({
+          "Messages":[
+            {
+              "From": {
+                "Email": "augustin.demaintenant@gmail.com",
+                "Name": "Augustin"
+              },
+              "To": [
+                {
+                  "Email": req.body.email,
+                  "Name": req.body.firstname
+                }
+              ],
+              "Subject": "Bienvenue sur la plateforme TTM !",
+              "TextPart": "My first Mailjet email",
+              "HTMLPart": `<h3>Cher ${req.body.firstname}, Bienvenue sur TTM ! </h3><p>Veuillez confirmer votre email en cliquant sur le lien ci-dessous :</p><a href=${url}>${url}</a>`,
+              "CustomID": "AppGettingStartedTest"
+            }
+          ]
+        })
+        console.log(request)
+
 
         status = 200;
         response = {

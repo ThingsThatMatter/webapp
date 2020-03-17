@@ -10,6 +10,7 @@ import AdDesc from './screens/Buyer/AdDesc'
 import Visits from './screens/Buyer/Visits'
 import Offers from './screens/Buyer/Offers'
 import buyerSign from './screens/Buyer/Sign'
+import EmailConf from './screens/Buyer/EmailConf'
 import OfferForm1 from './screens/Buyer/OfferForm1'
 import OfferForm2 from './screens/Buyer/OfferForm2'
 import OfferForm3 from './screens/Buyer/OfferForm3'
@@ -58,8 +59,9 @@ function BuyerRoutes(props) {
                     <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
                     <PrivateRoute component={OfferForm2} path="/newoffer/step2" exact/>
                     <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
-
+                    
                     <Route component={buyerSign} path="/sign" />
+                    <Route component={EmailConf} path="/confirmation/:user_token" />
                     <Route component={AdDesc} path="/ad/:ad_id" />
                 </Switch>
             </Router>  
