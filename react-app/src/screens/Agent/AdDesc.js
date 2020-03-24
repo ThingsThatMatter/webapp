@@ -20,6 +20,7 @@ const properties = {
 };
 
 function AdDesc(props) {
+  
   const [toggle, setToggle] = useState(true);
   const [adDetails, setAdDetails] = useState({});
 
@@ -391,10 +392,10 @@ function AdDesc(props) {
 function mapDispatchToProps(dispatch) {
   return {
       saveforEdit : function(adDetails) { 
-        dispatch( {type: 'saveForEdit', data: adDetails } ) 
+        dispatch( {type: 'agent_newOfferSaveForEdit', data: adDetails } ) 
       },
       edit : function() { 
-        dispatch( {type: 'edit'} )
+        dispatch( {type: 'agent_newOfferEdit'} )
       }  
   }
 }

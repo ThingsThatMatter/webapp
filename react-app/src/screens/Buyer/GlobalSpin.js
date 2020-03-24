@@ -8,7 +8,7 @@ const {Content} = Layout;
 
 function Spinner() {
 
-const logo = <LoadingOutlined style={{ fontSize: 70, color: "#052040" }} spin/>
+    const logo = <LoadingOutlined style={{ fontSize: 70, color: "#355c7d" }} spin/>
 
     return (
         <Layout>
@@ -18,7 +18,7 @@ const logo = <LoadingOutlined style={{ fontSize: 70, color: "#052040" }} spin/>
                     <Spin
                         size="large"
                         indicator={logo}
-                    />                   
+                    />
                 </Content>  
             </Layout>
         </Layout>

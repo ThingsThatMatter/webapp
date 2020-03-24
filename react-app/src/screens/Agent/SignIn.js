@@ -24,7 +24,7 @@ function SignIn(props) {
       
         const body = await checkAgent.json()
         if (body.message === 'OK') {
-            setCookie('aT', body.data.token, {path:'/'})
+            setCookie('aT', body.data.token, {path:'/pro'})
             props.login(body.data.token)
             setToRedirect(true)
         } else {
@@ -35,7 +35,7 @@ function SignIn(props) {
     if (toRedirect) { // if login OK (from form) redirect to home
         return <Redirect to='/pro' /> 
     } else {
-        if (typeof cookies.aT !== 'undefined' && !props.agentLoginInfo.login_success) {
+        if (typeof cookies.aT !== 'undefined' && props.agentLoginInfo.login_request) {
             return <Spinner />
         } else if (typeof cookies.aT !== 'undefined' && props.agentLoginInfo.login_success) {  //if landing on signin and has a valid token
             return <Redirect to='/pro' />
@@ -115,7 +115,7 @@ function mapDispatchToProps(dispatch) {
     return {
         login: function(token) {
             dispatch({
-                type: 'login',
+                type: 'agent_login',
                 token
             })
         }

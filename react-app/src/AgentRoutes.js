@@ -25,7 +25,6 @@ function AgentRoutes(props) {
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
     const checkToken = async () => {
-        console.log('toto')
         const getToken = await fetch('/pro/user-access', {
             method: 'GET',
             headers: {'token': cookies.aT}
@@ -36,7 +35,8 @@ function AgentRoutes(props) {
         }
     }
 
-    if (cookies.aT && !props.agentLoginInfo.login_success ) { // si il y a un cookie et que l'on n'est pas connecté, on vérifie qu'il existe bien en base
+    if (cookies.aT && !props.agentLoginInfo.login_success && !props.agentLoginInfo.login_request) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de agentLoginInfo)
+        props.login_request()
         checkToken()
     }
 
@@ -82,8 +82,13 @@ function mapDispatchToProps(dispatch){
     return {
         login: function(token){
             dispatch({
-                type: 'login',
+                type: 'agent_login',
                 token
+            })
+        },
+        login_request: function() {
+            dispatch({
+                type: 'agent_login_request'
             })
         }
     }

@@ -18,69 +18,66 @@ import OfferForm3 from './screens/Buyer/OfferForm3'
 function BuyerRoutes(props) {
 
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
-    const [redirectToSign, setRedirectToSign] = useState(false)
 
     const checkToken = async () => {
         const getToken = await fetch('/user/user-access', {
             method: 'GET',
-            headers: {'token': cookies.userToken}
+            headers: {'token': cookies.bT}
             })
         const body = await getToken.json()
         if (body.message === 'OK') {
-            props.setUserToken(body.data.token)
-        } else {
-            removeCookie('userToken')
-            setRedirectToSign(true)
+            props.login(body.data.token)
         }
     }
 
-    if (cookies.userToken) { // si il y a un cookie, on vérifie qu'il existe bien en base
+    if (cookies.bT && !props.buyerLoginInfo.login_success && !props.buyerLoginInfo.login_request) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de buyerLoginInfo)
+        props.login_request()
         checkToken()
     }
 
     const PrivateRoute = ({ component: Component, ...rest }) => (
         <Route {...rest} render={(state) => (
-            props.userToken !== '' 
+            props.buyerLoginInfo.login_success
             ? <Component {...state} />
             : <Redirect to='/sign' />
         )} />
     )
-
-    if (redirectToSign) {
-        return <Redirect to='/sign' />
-    } else {
     
-        return (
-            <Router>
-                <Switch>
-                    <PrivateRoute component={Home} path="/" exact/>
-                    <PrivateRoute component={Visits} path="/visits" />
-                    <PrivateRoute component={Offers} path="/offers" />
-                    <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
-                    <PrivateRoute component={OfferForm2} path="/newoffer/step2" exact/>
-                    <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
-                    
-                    <Route component={buyerSign} path="/sign" />
-                    <Route component={EmailConf} path="/confirmation/:user_token" />
-                    <Route component={AdDesc} path="/ad/:ad_id" />
-                </Switch>
-            </Router>  
-        );
-    }
+    return (
+        <Router>
+            <Switch>
+                <PrivateRoute component={Home} path="/" exact/>
+                <PrivateRoute component={Visits} path="/visits" />
+                <PrivateRoute component={Offers} path="/offers" />
+                <PrivateRoute component={OfferForm1} path="/newoffer/step1" exact/>
+                <PrivateRoute component={OfferForm2} path="/newoffer/step2" exact/>
+                <PrivateRoute component={OfferForm3} path="/newoffer/step3" exact/>
+                
+                <Route component={buyerSign} path="/sign" />
+                <Route component={EmailConf} path="/confirmation/:user_token" />
+                <Route component={AdDesc} path="/ad/:ad_id" />
+            </Switch>
+        </Router>  
+    );
 }
 
 function mapStateToProps(state) {
     return { 
-        userToken : state.userToken
+        buyerLoginInfo : state.buyerLoginInfo
     }
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-        setUserToken: function(token){
+        login: function(token) {
             dispatch({
-                type: 'setUserToken',
+                type: 'buyer_login',
                 token
+            })
+        },
+        login_request: function() {
+            dispatch({
+                type: 'buyer_login_request'
             })
         }
     }

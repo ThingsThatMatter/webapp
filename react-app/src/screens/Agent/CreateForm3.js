@@ -162,14 +162,14 @@ function CreateFormThree(props) {
     function mapDispatchToProps(dispatch) {
     return {
         nextStep : function() { 
-            dispatch( {type: 'nextStep'} ) 
+            dispatch( {type: 'agent_newOfferNextStep'} ) 
         },
         previousStep : function() {
-            dispatch( {type: 'prevStep'} )
+            dispatch( {type: 'agent_newOfferPrevStep'} )
         },
         saveFormData : function(fileList, filesDB) { 
         dispatch( {
-            type: 'saveFormData3',
+            type: 'agent_newOfferSaveFormData3',
             files: fileList,
             filesDB: filesDB 
         } ) 

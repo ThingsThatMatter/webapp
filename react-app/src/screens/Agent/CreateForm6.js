@@ -357,16 +357,16 @@ function CreateFormSix(props) {
   function mapDispatchToProps(dispatch) {
     return {
       clear : function() { 
-        dispatch( {type: 'clear'} ) 
+        dispatch( {type: 'agent_newOfferClear'} ) 
       },
       clearSteps : function() { 
-        dispatch( {type: 'clearSteps'} ) 
+        dispatch( {type: 'agent_newOfferClearSteps'} ) 
       },
       previousStep : function() {
-        dispatch( {type: 'prevStep'} )
+        dispatch( {type: 'agent_newOfferPrevStep'} )
     },
     clearEdit : function() {
-        dispatch({type: 'clearEdit'})
+        dispatch({type: 'agent_newOfferClearEdit'})
     }
 
     }

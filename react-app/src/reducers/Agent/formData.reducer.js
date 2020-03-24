@@ -1,6 +1,6 @@
 export default function(formData = {}, action) {
   
-    if(action.type === 'saveFormData') {
+    if(action.type === 'agent_newOfferSaveFormData') {
       var newData = {
         ...formData,
         address: action.address,
@@ -12,7 +12,7 @@ export default function(formData = {}, action) {
 
       return newData;
 
-    } else if(action.type === 'saveFormData2') {
+    } else if(action.type === 'agent_newOfferSaveFormData2') {
         
         var newData = {
             ...formData,
@@ -30,7 +30,7 @@ export default function(formData = {}, action) {
         }
         return newData;
 
-    } else if(action.type === 'saveFormData3') {
+    } else if(action.type === 'agent_newOfferSaveFormData3') {
         var newData = {
             ...formData,
             files: action.files,
@@ -38,7 +38,7 @@ export default function(formData = {}, action) {
         }
         return newData;
 
-    } else if(action.type === 'saveFormData4') {
+    } else if(action.type === 'agent_newOfferSaveFormData4') {
         var newData = {
             ...formData,
             feesPayer : action.feesPayer,
@@ -47,7 +47,7 @@ export default function(formData = {}, action) {
         }
         return newData;
     
-    } else if (action.type === 'saveFormData5') {
+    } else if (action.type === 'agent_newOfferSaveFormData5') {
         const timeSlots = action.timeSlots.map( e => {
           const {start, end, priv} = e
           return {
@@ -65,12 +65,12 @@ export default function(formData = {}, action) {
         }
         return newData;
   
-    } else if (action.type == 'clear') {
+    } else if (action.type == 'agent_newOfferClear') {
         
         const newData = {}
         return newData;
 
-    } else if (action.type == 'saveForEdit') {
+    } else if (action.type == 'agent_newOfferSaveForEdit') {
 
       let newData = {...formData,...action.data};
 

@@ -15,8 +15,8 @@ function Sidebar(props) {
   const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
   const logout = () => {
+    removeCookie('aT', { path: '/pro' })
     props.logout()
-    removeCookie('token')
     setRedirHome(true)
   }
 
@@ -85,7 +85,7 @@ function Sidebar(props) {
 function mapDispatchToProps(dispatch) {
   return {
       logout: function() {
-          dispatch({ type: 'logout' })
+          dispatch({ type: 'agent_logout' })
       }
   }
 }

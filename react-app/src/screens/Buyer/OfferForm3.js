@@ -53,7 +53,7 @@ function OfferForm3(props) {
         const adFetch = async () => {
             const ad = await fetch(`/user/ad/${props.adId}/private`, {
                 method: 'GET',
-                headers: {'token': props.userToken}
+                headers: {'token': props.buyerLoginInfo.token}
         })
           const body = await ad.json();
           setAdFromDb(body.data.ad)
@@ -156,7 +156,7 @@ function OfferForm3(props) {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'token': props.userToken
+                'token': props.buyerLoginInfo.token
             },
             body: JSON.stringify({
 
@@ -448,14 +448,14 @@ function mapStateToProps(state) {
         newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData,
         adId: state.adId,
-        userToken: state.userToken
+        buyerLoginInfo: state.buyerLoginInfo
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         modifyStep : function(step) { 
-            dispatch( {type: 'modifyStep', futureStep: step} ) 
+            dispatch( {type: 'buyer_modifyStep', futureStep: step} ) 
         },
         offerSaveFormData : function(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress) { 
             dispatch({

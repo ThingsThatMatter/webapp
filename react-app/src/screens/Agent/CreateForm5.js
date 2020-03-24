@@ -561,14 +561,14 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     nextStep : function() { 
-        dispatch( {type: 'nextStep'} ) 
+        dispatch( {type: 'agent_newOfferNextStep'} ) 
     },
     previousStep : function() {
-        dispatch( {type: 'prevStep'} )
+        dispatch( {type: 'agent_newOfferPrevStep'} )
     },
     saveFormData : function(timeslots, color) { 
       dispatch( {
-          type: 'saveFormData5',
+          type: 'agent_newOfferSaveFormData5',
           timeSlots : timeslots !== null ? timeslots : [],
           color: color
       } ) } 

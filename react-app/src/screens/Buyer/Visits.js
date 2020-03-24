@@ -43,7 +43,7 @@ function Visits(props) {
     const dbFetch = async () => {
       const ads = await fetch('/user/ads', {
         method: 'GET',
-        headers: {'token': props.userToken}
+        headers: {'token': props.buyerLoginInfo.token}
       })
       const body = await ads.json()
       
@@ -194,7 +194,7 @@ function Visits(props) {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'token': props.token
+        'token': props.buyerLoginInfo.token
       }
     })
     const body = await deleteTimeslots.json()
@@ -385,7 +385,7 @@ function Visits(props) {
 
 function mapStateToProps(state) {
   return { 
-    userToken : state.userToken
+    buyerLoginInfo : state.buyerLoginInfo
   }
 }
 
