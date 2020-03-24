@@ -8,7 +8,7 @@ import BuyerRoutes from './BuyerRoutes'
 
 import step from './reducers/Agent/step.reducer'
 import formData from './reducers/Agent/formData.reducer'
-import token from './reducers/Agent/authentification.reducer'
+import agentLoginInfo from './reducers/Agent/authentification.reducer'
 import edit from './reducers/Agent/edit.reducer'
 
 import newOfferStep from './reducers/Buyer/newOfferStep.reducer'
@@ -16,7 +16,9 @@ import offerFormData from './reducers/Buyer/offerFormData.reducer'
 import userToken from './reducers/Buyer/authentification.reducer'
 import adId from './reducers/Buyer/adId.reducer'
 
-const store = createStore(combineReducers({step, formData, token, edit, newOfferStep, offerFormData, userToken, adId}))
+const store = createStore(combineReducers({step, formData, agentLoginInfo, edit, newOfferStep, offerFormData, userToken, adId})
+//, window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() //redux devtool
+)
 
 function App() {
 

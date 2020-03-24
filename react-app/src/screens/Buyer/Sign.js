@@ -226,7 +226,7 @@ function mapDispatchToProps(dispatch){
         dispatch({type: 'setUserToken', token})
       }
     }
-  }
+}
   
 export default connect(
     mapStateToProps,

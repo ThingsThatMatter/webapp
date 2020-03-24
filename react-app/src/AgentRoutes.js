@@ -25,23 +25,24 @@ function AgentRoutes(props) {
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
     const checkToken = async () => {
+        console.log('toto')
         const getToken = await fetch('/pro/user-access', {
             method: 'GET',
-            headers: {'token': cookies.token}
+            headers: {'token': cookies.aT}
             })
         const body = await getToken.json()
         if (body.message === 'OK') {
-            props.setToken(body.data.token)
+            props.login(body.data.token)
         }
     }
 
-    if (cookies.token) { // si il y a un cookie, on vérifie qu'il existe bien en base
+    if (cookies.aT && !props.agentLoginInfo.login_success ) { // si il y a un cookie et que l'on n'est pas connecté, on vérifie qu'il existe bien en base
         checkToken()
     }
 
     const PrivateRoute = ({ component: Component, ...rest }) => (
         <Route {...rest} render={(state) => (
-            props.token !== '' 
+            props.agentLoginInfo.login_success 
             ? <Component {...state} />
             : <Redirect to='/pro/signin' />
         )} />
@@ -73,15 +74,15 @@ function AgentRoutes(props) {
 
 function mapStateToProps(state) {
     return { 
-        token : state.token
+        agentLoginInfo : state.agentLoginInfo
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        setToken: function(token){
+        login: function(token){
             dispatch({
-                type: 'setToken',
+                type: 'login',
                 token
             })
         }

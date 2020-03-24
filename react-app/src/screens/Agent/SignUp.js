@@ -26,8 +26,8 @@ function SignUp(props) {
 
         const body = await postNewAgent.json()
         if (body.message === 'OK') {
-            setCookie('token', body.data.token, {path:'/'})
-            props.setToken(body.data.token)
+            setCookie('aT', body.data.token, {path:'/'})
+            props.login(body.data.token)
             setToRedirect(true)
         } else {
             setMsgErrorSignin(body.details)
@@ -97,16 +97,18 @@ function SignUp(props) {
 
 function mapStateToProps(state, ownProps) {
     return { 
-        token : state.token,
-        cookies: ownProps.cookies
+        agentLoginInfo : state.agentLoginInfo
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-      setToken: function(token){
-        dispatch({type: 'setToken', token})
-      }
+        login: function(token){
+            dispatch({
+                type: 'login',
+                token
+            })
+        }
     }
   }
   

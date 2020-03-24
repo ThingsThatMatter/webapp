@@ -43,7 +43,7 @@ function RendezVous(props) {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': props.token}
+        headers: {'token': props.agentLoginInfo.token}
       })
       const body = await ads.json()
       
@@ -227,7 +227,7 @@ function RendezVous(props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'token': props.token
+          'token': props.agentLoginInfo.token
         },
         body: `timeslot=${slots}`
       })
@@ -254,7 +254,7 @@ function RendezVous(props) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'token': props.token
+          'token': props.agentLoginInfo.token
         },
         body: `timeslot=${slots}`
       })
@@ -298,7 +298,7 @@ function RendezVous(props) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'token': props.token
+        'token': props.agentLoginInfo.token
       }
     })
     const body = await deleteTimeslots.json()
@@ -558,7 +558,7 @@ function RendezVous(props) {
 
 function mapStateToProps(state) {
   return { 
-      token : state.token
+    agentLoginInfo : state.agentLoginInfo
   }
 }
 

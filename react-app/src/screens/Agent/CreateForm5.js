@@ -46,7 +46,7 @@ function CreateFormFive(props) {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': props.token}
+        headers: {'token': props.agentLoginInfo.token}
       })
       const body = await ads.json()
       
@@ -554,7 +554,7 @@ function mapStateToProps(state) {
   return { 
       step : state.step,
       formData: state.formData,
-      token: state.token
+      agentLoginInfo: state.agentLoginInfo
   }
 }
 

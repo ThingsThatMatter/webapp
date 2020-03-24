@@ -73,7 +73,7 @@ function CreateFormSix(props) {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': props.token
+                    'token': props.agentLoginInfo.token
                 },
                 body: JSON.stringify(
                     {
@@ -130,7 +130,7 @@ function CreateFormSix(props) {
                 method: 'put',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': props.token
+                    'token': props.agentLoginInfo.token
                 },
                 body: JSON.stringify(
                     {
@@ -377,7 +377,7 @@ function CreateFormSix(props) {
     return {
         step : state.step,
         formData: state.formData,
-        token: state.token,
+        agentLoginInfo: state.agentLoginInfo,
         edit: state.edit
     }
   }

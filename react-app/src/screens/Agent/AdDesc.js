@@ -45,7 +45,7 @@ function AdDesc(props) {
             method: "GET",
             headers: {
             "Content-Type": "application/x-www-form-urlencoded",
-            token: props.token
+            token: props.agentLoginInfo.token
             }
         })
 
@@ -95,7 +95,7 @@ function AdDesc(props) {
       method: "DELETE",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        token: props.token
+        token: props.agentLoginInfo.token
       }
     });
     const body = await deleteAd.json();
@@ -388,21 +388,21 @@ function AdDesc(props) {
   );
 }
 
-    function mapDispatchToProps(dispatch) {
-        return {
-            saveforEdit : function(adDetails) { 
-            dispatch( {type: 'saveForEdit', data: adDetails } ) 
-            },
-            edit : function() { 
-            dispatch( {type: 'edit'} )
-            }  
-        }
-    }
+function mapDispatchToProps(dispatch) {
+  return {
+      saveforEdit : function(adDetails) { 
+        dispatch( {type: 'saveForEdit', data: adDetails } ) 
+      },
+      edit : function() { 
+        dispatch( {type: 'edit'} )
+      }  
+  }
+}
 
-    function mapStateToProps(state) {
-        return {
-          token: state.token
-        };
-      }
+function mapStateToProps(state) {
+  return {
+    agentLoginInfo: state.agentLoginInfo
+  };
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(AdDesc);
