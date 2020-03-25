@@ -25,12 +25,15 @@ function AdDesc(props) {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
+  const [adQuestions, setAdQuestions] = useState([]);
   const [adOffers, setAdOffers] = useState([]);
   const [adVisits, setAdVisits] = useState([]);
   const [avantages, setAvantages] = useState([]);
 
   const [redir, setRedir] = useState(false);
   const [editRedir, setEditRedir] = useState(false);
+
+  const [pendingQuestions, setPendingQuestions] = useState([]);
 
   let toggleStyle = { fontWeight: 600, color: "#1476E1", fontSize: "18px" };
 
@@ -55,6 +58,8 @@ function AdDesc(props) {
     setAdDocuments(body.data.files);
     setAdOffers(body.data.offers);
     setAdVisits(body.data.timeSlots);
+    setAdQuestions(body.data.questions.filter(question => question.status === 'answered'));
+    setPendingQuestions(body.data.questions.filter(question => question.status === 'pending'));
 
     const tempTable = [];
 
@@ -150,6 +155,18 @@ function AdDesc(props) {
     );
   });
 
+  let questions = adQuestions.map((e, i) => {
+    return (
+      <Panel
+        className="faq"
+        header={e.question}
+        key={i}
+      >
+        <p>{e.response}</p>
+      </Panel>
+    );
+  });
+
   return (
     <Layout>
       <Sidebar />
@@ -190,21 +207,25 @@ function AdDesc(props) {
             <Badge count={adOffers.length}>
             <Link to={`/pro/offres#${props.match.params.id}`}>
               <Button type="primary" ghost className="button-add">
-                Offres{" "}
+                Offres
               </Button>
             </Link>
             </Badge>
 
             <Badge count={adVisits.length}>
-              <Button type="primary" ghost className="button-add">
-                Visites
-              </Button>
+              <Link to={`/pro/rendezvous`}>
+                <Button type="primary" ghost className="button-add">
+                  Visites
+                </Button>
+              </Link>
             </Badge>
 
-            <Badge count={3}>
-              <Button type="primary" ghost className="button-add">
-                Questions
-              </Button>
+            <Badge count={pendingQuestions.length}>
+              <Link to={`/pro/questions#${props.match.params.id}`}>
+                <Button type="primary" ghost className="button-add">
+                  Questions
+                </Button>
+              </Link>
             </Badge>
           </div>
 
@@ -337,50 +358,9 @@ function AdDesc(props) {
             bordered={false}
             defaultActiveKey={["1"]}
           >
-            <Panel className="faq" header="Qu'est ce qu'un m2 ? " key="1">
-              <p>
-                Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto
-                tail bacon ground round picanha swine. Rump ham hock shoulder
-                shank picanha kielbasa. Cupim venison pork chop tongue pig
-                buffalo drumstick chuck pork chislic ribeye. Chislic strip steak
-                hamburger meatloaf, capicola filet mignon kevin cow bresaola
-                salami. Porchetta alcatra biltong frankfurter, leberkas bacon
-                short loin jowl drumstick. Venison pig turkey pancetta tail.
-                Porchetta venison chislic ground round ball tip.
-              </p>
-            </Panel>
-            <Panel
-              className="faq"
-              header="Ceci est une question longue très longue ? "
-              key="2"
-            >
-              <p>
-                Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto
-                tail bacon ground round picanha swine. Rump ham hock shoulder
-                shank picanha kielbasa. Cupim venison pork chop tongue pig
-                buffalo drumstick chuck pork chislic ribeye. Chislic strip steak
-                hamburger meatloaf, capicola filet mignon kevin cow bresaola
-                salami. Porchetta alcatra biltong frankfurter, leberkas bacon
-                short loin jowl drumstick. Venison pig turkey pancetta tail.
-                Porchetta venison chislic ground round ball tip.
-              </p>
-            </Panel>
-            <Panel
-              className="faq"
-              header="Ceci est une question longue très longue ? "
-              key="3"
-            >
-              <p>
-                Bacon ipsum dolor amet porchetta cupim tenderloin, prosciutto
-                tail bacon ground round picanha swine. Rump ham hock shoulder
-                shank picanha kielbasa. Cupim venison pork chop tongue pig
-                buffalo drumstick chuck pork chislic ribeye. Chislic strip steak
-                hamburger meatloaf, capicola filet mignon kevin cow bresaola
-                salami. Porchetta alcatra biltong frankfurter, leberkas bacon
-                short loin jowl drumstick. Venison pig turkey pancetta tail.
-                Porchetta venison chislic ground round ball tip.
-              </p>
-            </Panel>
+            
+            {questions}
+            
           </Collapse>
         </Content>
       </Layout>

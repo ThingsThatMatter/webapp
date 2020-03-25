@@ -593,9 +593,9 @@ router.post('/ad/:ad_id/question', async function(req, res, next) {
     } else {
 
       let question = {
+        creationDate: new Date,
         status: 'pending',
         question: req.body.question,
-        response: req.body.response,
         user: userToFind._id
       }
 
@@ -608,7 +608,7 @@ router.post('/ad/:ad_id/question', async function(req, res, next) {
       response = {
         message: 'OK',
         data: {
-          offer: newOffer
+          offer: newQuestion
         }
       }
     }

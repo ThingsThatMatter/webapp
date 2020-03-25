@@ -10,6 +10,7 @@ var timeSlotSchema = mongoose.Schema({
 });
 
 var questionSchema = mongoose.Schema({
+    creationDate: Date,
     status: String,
     question: String,
     response: String,

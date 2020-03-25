@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Button, Switch, Collapse, Col, Row } from 'antd';
+import { Layout, Button, Input, Collapse, Col, Row, message, Modal } from 'antd';
 import { Slide } from 'react-slideshow-image';
 import { Redirect, Link } from 'react-router-dom';
 import UserNavHeader from '../../components/UserNavHeader';
@@ -8,6 +8,7 @@ import LoggedOut from '../../components/buyerAdDesc/LoggedOut'
 import SidebarBuyer from "../../components/buyerAdDesc/SidebarBuyer";
 
 import { connect } from "react-redux";
+import { ConsoleSqlOutlined } from '@ant-design/icons';
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -26,7 +27,12 @@ function AdDesc(props) {
 
   const [adPhotos, setAdPhotos] = useState([]);
   const [adDocuments, setAdDocuments] = useState([]);
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [adQuestions, setAdQuestions] = useState([]);
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  const [question, setQuestion] = useState();
+  const [questionModalVisible, setQuestionModalVisible] = useState(false)
+
 
 /* -----------------------------------------------LOAD AD FROM DB------------------------------------------ */
 
@@ -39,9 +45,11 @@ function AdDesc(props) {
         setAdDetails(body.data);
         setAdPhotos(body.data.photos);
         setAdDocuments(body.data.files);
+        setAdQuestions(body.data.questions.filter(question => question.status === 'answered'));
 
       };
       dbFetchPublic();
+
 
   }, []);
 
@@ -79,6 +87,47 @@ function AdDesc(props) {
       </div>
     );
   });
+
+
+  let questions = adQuestions.map((e, i) => {
+    return (
+      <Panel
+        className="faq"
+        header={e.question}
+        key={i}
+      >
+        <p>{e.response}</p>
+      </Panel>
+    );
+  });
+
+  const sendQuestion = async() => {
+
+    const key = "updatable"
+
+    message.loading({ content: 'Envoi de la question...', key });
+
+    let dbFetch = await fetch(`/user/ad/${props.match.params.ad_id}/question`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'token': props.userToken
+        },
+        body: JSON.stringify({question:question})
+    })
+
+    let response = await dbFetch.json()
+
+    setQuestionModalVisible(false)
+    
+    if(response.message === "OK") {
+        message.success({ content: "Question envoyée !", key, duration: 2 });
+        setQuestion('')
+    } else {
+        message.error(response.details);
+    }
+
+  }
 
 
   /* -----------------------------------------------HANDLE SIDEBAR------------------------------------------ */
@@ -223,7 +272,7 @@ function AdDesc(props) {
                 </Col>
               </Row>
 
-              {/* QUESTIONS FREQUENTS */}
+              {/* QUESTIONS FREQUENTES */}
               <Row>
                 <Col
                   xs={{ span: 24 }}
@@ -238,60 +287,35 @@ function AdDesc(props) {
                     bordered={false}
                     defaultActiveKey={["1"]}
                   >
-                    <Panel
-                      className="faq"
-                      header="Qu'est ce qu'un m2 ? "
-                      key="1"
-                    >
-                      <p>
-                        Bacon ipsum dolor amet porchetta cupim tenderloin,
-                        prosciutto tail bacon ground round picanha swine. Rump
-                        ham hock shoulder shank picanha kielbasa. Cupim venison
-                        pork chop tongue pig buffalo drumstick chuck pork
-                        chislic ribeye. Chislic strip steak hamburger meatloaf,
-                        capicola filet mignon kevin cow bresaola salami.
-                        Porchetta alcatra biltong frankfurter, leberkas bacon
-                        short loin jowl drumstick. Venison pig turkey pancetta
-                        tail. Porchetta venison chislic ground round ball tip.
-                      </p>
-                    </Panel>
-                    <Panel
-                      className="faq"
-                      header="Ceci est une question longue très longue ? "
-                      key="2"
-                    >
-                      <p>
-                        Bacon ipsum dolor amet porchetta cupim tenderloin,
-                        prosciutto tail bacon ground round picanha swine. Rump
-                        ham hock shoulder shank picanha kielbasa. Cupim venison
-                        pork chop tongue pig buffalo drumstick chuck pork
-                        chislic ribeye. Chislic strip steak hamburger meatloaf,
-                        capicola filet mignon kevin cow bresaola salami.
-                        Porchetta alcatra biltong frankfurter, leberkas bacon
-                        short loin jowl drumstick. Venison pig turkey pancetta
-                        tail. Porchetta venison chislic ground round ball tip.
-                      </p>
-                    </Panel>
-                    <Panel
-                      className="faq"
-                      header="Ceci est une question longue très longue ? "
-                      key="3"
-                    >
-                      <p>
-                        Bacon ipsum dolor amet porchetta cupim tenderloin,
-                        prosciutto tail bacon ground round picanha swine. Rump
-                        ham hock shoulder shank picanha kielbasa. Cupim venison
-                        pork chop tongue pig buffalo drumstick chuck pork
-                        chislic ribeye. Chislic strip steak hamburger meatloaf,
-                        capicola filet mignon kevin cow bresaola salami.
-                        Porchetta alcatra biltong frankfurter, leberkas bacon
-                        short loin jowl drumstick. Venison pig turkey pancetta
-                        tail. Porchetta venison chislic ground round ball tip.
-                      </p>
-                    </Panel>
+                    
+                    {questions}
+                    
                   </Collapse>
                 </Col>
               </Row>
+
+
+              <Button type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
+
+              <Modal
+                        className="new-question-modal"
+                        title= {<p className="newoffer-modal-title">Ma question</p>}
+                        visible={questionModalVisible}
+                        centered
+                        footer={<Button type="primary" onClick={ () => sendQuestion()}>Envoyer</Button>}
+                        destroyOnClose= {true}
+                        width= "80%"
+                        closable={true}
+                        mask={true}
+                        maskClosable={true}
+                        onCancel={() => setQuestionModalVisible(false)}
+                    >
+                    <label>
+                    <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
+                    </label>
+                    
+              </Modal>
+
             </Col>
 
             <Col
@@ -301,7 +325,7 @@ function AdDesc(props) {
               xl={{ span: 6 }}
             >
 
-                {sidebar}
+              {sidebar}
           
             </Col>
           </Row>

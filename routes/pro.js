@@ -952,4 +952,81 @@ router.delete('/image/:name', async function(req, res, next) {
 });
 
 
+/* PUT answer question */
+router.put('/ad/:id_ad/question/:id_question/answer', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+
+    if(!findAgent) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let answeredQuestion = await adModel.updateOne(
+        { _id: req.params.id_ad, "questions._id": req.params.id_question  }, 
+        { "questions.$.status": 'answered', "questions.$.response": req.body.response }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: answeredQuestion
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+/* PUT decline question */
+router.put('/ad/:id_ad/question/:id_question/decline', async function(req, res, next) {
+
+  try {
+    let findAgent = await agentModel.findOne({ token:req.headers.token });
+
+    if(!findAgent) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let answeredQuestion = await adModel.updateOne(
+        { _id: req.params.id_ad, "questions._id": req.params.id_question  }, 
+        { "questions.$.status": 'declined' }
+      );
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: answeredQuestion
+      }
+    };
+
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
+
 module.exports = router;
