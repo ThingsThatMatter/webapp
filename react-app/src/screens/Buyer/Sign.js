@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Redirect, Link} from 'react-router-dom'
 import { Form, Input, Button, Collapse, Col, Row } from "antd";
 
-import Spinner from './Spin'
+import Spinner from './GlobalSpin'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
@@ -37,8 +37,8 @@ function SignUp(props) {
         const body = await postNewUser.json()
 
         if (body.message === 'OK') {
-            setCookie('userToken', body.data.token, {path:'/'})
-            props.setUserToken(body.data.token)
+            setCookie('bT', body.data.token, {path:'/'})
+            props.login(body.data.token)
             setToRedirect(true)
         } else {
             setMsgErrorSignup(body.details)
@@ -50,13 +50,13 @@ function SignUp(props) {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `email=${signinEmail}&password=${signinPassword}`
-          })
+        })
       
         const body = await checkUser.json()
 
         if (body.message === 'OK') {
-            setCookie('userToken', body.data.token, {path:'/'})
-            props.setUserToken(body.data.token)
+            setCookie('bT', body.data.token, {path:'/'})
+            props.login(body.data.token)
             setToRedirect(true)
         } else {
             setMsgErrorSignin(body.details)
@@ -71,11 +71,11 @@ function SignUp(props) {
         }
 
     } else {
-        if (typeof cookies.userToken !== 'undefined' && props.userToken === '') {
+        if (typeof cookies.bT !== 'undefined' && props.buyerLoginInfo.login_request) {
             return <Spinner />
             
-        } else if (typeof cookies.userToken !== 'undefined' && props.userToken !== '') { 
-            return <Redirect to='/' /> // redirect is takeing time (wait dor redux to be updated -> how to wait ?)
+        } else if (typeof cookies.bT !== 'undefined' && props.buyerLoginInfo.login_success) { 
+            return <Redirect to='/' /> 
 
         } else {
 
@@ -212,21 +212,23 @@ function SignUp(props) {
     }
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
     return { 
-        userToken : state.userToken,
-        cookies: ownProps.cookies,
+        buyerLoginInfo : state.buyerLoginInfo,
         adId: state.adId
     }
 }
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-    setUserToken: function(token){
-        dispatch({type: 'setUserToken', token})
-      }
+        login: function(token) {
+            dispatch({
+                type: 'buyer_login',
+                token
+            })
+        }
     }
-  }
+}
   
 export default connect(
     mapStateToProps,

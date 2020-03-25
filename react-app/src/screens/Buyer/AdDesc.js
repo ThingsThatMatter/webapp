@@ -5,7 +5,8 @@ import { Redirect, Link } from 'react-router-dom';
 import UserNavHeader from '../../components/UserNavHeader';
 
 import LoggedOut from '../../components/buyerAdDesc/LoggedOut'
-import SidebarBuyer from "../../components/buyerAdDesc/SidebarBuyer";
+import SidebarBuyer from '../../components/buyerAdDesc/SidebarBuyer'
+import Spinner from '../../components/buyerAdDesc/Spin'
 
 import { connect } from "react-redux";
 import { ConsoleSqlOutlined } from '@ant-design/icons';
@@ -35,7 +36,6 @@ function AdDesc(props) {
 
 
 /* -----------------------------------------------LOAD AD FROM DB------------------------------------------ */
-
   useEffect(() => {
 
       const dbFetchPublic = async () => {
@@ -58,19 +58,21 @@ function AdDesc(props) {
     const saveAd = async () => {
       const saveAdUser = await fetch(`/user/ad/${props.match.params.ad_id}`, {
         method: 'PUT',
-        headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.buyerLoginInfo.token}
       })
 
       const body = await saveAdUser.json()
       if (body.message === 'OK') {
-        setLoggedIn(true)
-      } else {
-        // Il faudra gérer un message d'erreur
+        // Handle message OK
+      } else if (body.message === 'Bad token') {
+        // Handle message KO
       }
     }
-    saveAd()
+    if (props.buyerLoginInfo.login_success) {
+      saveAd()
+    }
 
-}, [props.userToken]);
+  }, [props.buyerLoginInfo.token]);
 
   /* Price formatting */
   const priceFormatter = new Intl.NumberFormat("fr", {
@@ -132,10 +134,14 @@ function AdDesc(props) {
 
   /* -----------------------------------------------HANDLE SIDEBAR------------------------------------------ */
   let sidebar ;
-  if (loggedIn === false) {
-    sidebar = <LoggedOut adId={props.match.params.ad_id}/>
+  if (props.buyerLoginInfo.login_request) {
+    sidebar = <Spinner />
   } else {
-    sidebar = <SidebarBuyer adId={props.match.params.ad_id} userToken={props.userToken}/>
+      if (!props.buyerLoginInfo.login_success) {
+      sidebar = <LoggedOut adId={props.match.params.ad_id}/>
+    } else {
+      sidebar = <SidebarBuyer adId={props.match.params.ad_id} buyerToken={props.buyerLoginInfo.token}/>
+    }
   }
 
   return (
@@ -337,8 +343,8 @@ function AdDesc(props) {
 
 function mapStateToProps(state) {
   return { 
-      userToken : state.userToken,
-      idAd : state.idAd
+      buyerLoginInfo : state.buyerLoginInfo,
+      adId: state.adId
   }
 }
 

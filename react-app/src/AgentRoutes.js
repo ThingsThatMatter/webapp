@@ -27,21 +27,22 @@ function AgentRoutes(props) {
     const checkToken = async () => {
         const getToken = await fetch('/pro/user-access', {
             method: 'GET',
-            headers: {'token': cookies.token}
+            headers: {'token': cookies.aT}
             })
         const body = await getToken.json()
         if (body.message === 'OK') {
-            props.setToken(body.data.token)
+            props.login(body.data.token)
         }
     }
 
-    if (cookies.token) { // si il y a un cookie, on vérifie qu'il existe bien en base
+    if (cookies.aT && !props.agentLoginInfo.login_success && !props.agentLoginInfo.login_request) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de agentLoginInfo)
+        props.login_request()
         checkToken()
     }
 
     const PrivateRoute = ({ component: Component, ...rest }) => (
         <Route {...rest} render={(state) => (
-            props.token !== '' 
+            props.agentLoginInfo.login_success 
             ? <Component {...state} />
             : <Redirect to='/pro/signin' />
         )} />
@@ -73,16 +74,21 @@ function AgentRoutes(props) {
 
 function mapStateToProps(state) {
     return { 
-        token : state.token
+        agentLoginInfo : state.agentLoginInfo
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        setToken: function(token){
+        login: function(token){
             dispatch({
-                type: 'setToken',
+                type: 'agent_login',
                 token
+            })
+        },
+        login_request: function() {
+            dispatch({
+                type: 'agent_login_request'
             })
         }
     }

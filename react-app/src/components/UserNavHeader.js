@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import { Button } from 'antd';
 import {Link, Redirect} from 'react-router-dom'
-import {StopOutlined,HomeOutlined} from '@ant-design/icons'
+import {StopOutlined} from '@ant-design/icons'
 import { Affix } from 'antd';
 import {connect} from 'react-redux'
 
@@ -36,8 +36,8 @@ function UserNavHeader(props) {
 
 
     const reset = () => {
-        props.setUserToken('');
-        removeCookie('userToken');
+        removeCookie('bT', { path: '/' });
+        props.logout();
         setRedirHome(true)
     }
 
@@ -76,13 +76,13 @@ function UserNavHeader(props) {
 }
 
 
-function mapDispatchToProps(dispatch){
+function mapDispatchToProps(dispatch) {
     return {
-    setUserToken: function(token){
-        dispatch({type: 'setUserToken', token})
-      }
+        logout: function() {
+            dispatch({ type: 'buyer_logout' })
+        }
     }
-  }
+}
   
 export default connect(
     null,

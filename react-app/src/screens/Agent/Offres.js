@@ -29,7 +29,7 @@ function Offres(props) {
         const dbFetch = async () => {
             const ads = await fetch(`/pro/ads`, {
                 method: 'GET',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
             })
             const body = await ads.json();
           
@@ -53,7 +53,7 @@ function Offres(props) {
     const handleAcceptOffer = async () => {
         const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
         })
         const body = await acceptOffer.json();
 
@@ -66,7 +66,7 @@ function Offres(props) {
     const handleDeclineOffer = async () => {
         const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
         })
         const body = await declineOffer.json();
 
@@ -79,7 +79,7 @@ function Offres(props) {
     const handleCancelOffer = async () => {
         const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/cancel`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
         })
         const body = await cancelOffer.json();
 
@@ -237,7 +237,7 @@ function Offres(props) {
 
 function mapStateToProps(state) {
     return { 
-        token : state.token
+        agentLoginInfo : state.agentLoginInfo
     }
 }
 

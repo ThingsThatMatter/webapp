@@ -8,7 +8,7 @@ import TimeSlotPicker from './TimeslotPicker'
 
 function SidebarBuyer(props) {
 
-    const [toRedirect, setToRedirect] = useState(false);
+    const [redirectNewOffer, setRedirectNewOffer] = useState(false);
     const [component, setComponent] = useState('');
     const [refreshDb, setRefreshDb] = useState(false);
 
@@ -31,28 +31,23 @@ function SidebarBuyer(props) {
     }
     const statusTranslate = (state) => statusInFrench[state]
 
-
  /* ----------------------------------------------------LOADING COMPONENTS----------------------------------------------------------- */
    
     const goToVisitInfo = () => {
-        setRefreshDb(true)
+        setRefreshDb(!refreshDb)
     }
-
 
     useEffect( () => {
         const dbFetch = async () => {
             const checkVisit = await fetch(`/user/ad/${props.adId}/private`, {
                 method: 'GET',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.userToken}
+                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.buyerToken}
             })
             const body = await checkVisit.json()
-
-            console.log(body)
             const ad = body.data.ad
 
-
             if (ad.timeSlots.length === 0) {
-                setComponent(<TimeSlotPicker adId={props.adId} token={props.userToken} goToVisitParent={goToVisitInfo}/>)
+                setComponent(<TimeSlotPicker adId={props.adId} buyerToken={props.buyerToken} goToVisitParent={goToVisitInfo}/>)
             }
             else {
                 var visitEndDate = dateCreate(ad.timeSlots[0].end)
@@ -91,7 +86,7 @@ function SidebarBuyer(props) {
                                     <p style={{marginTop: '1em'}}>Documents</p>
                                     {documents}
                                 </div>
-                                <Button type="primary" onClick={ () => {setToRedirect(true); props.setOfferAdId(props.adId)}}>Déposer une offre</Button>
+                                <Button type="primary" onClick={ () => {setRedirectNewOffer(true); props.setOfferAdId(props.adId)}}>Déposer une offre</Button>
                             </div>
                         )
                     } else {
@@ -115,7 +110,7 @@ function SidebarBuyer(props) {
         dbFetch()
     }, [refreshDb])
 
-    if (toRedirect) { // if login OK (from form) redirect to home
+    if (redirectNewOffer) { // if login OK (from form) redirect to home
         return <Redirect to='/newoffer/step1' /> 
     }
 
@@ -126,12 +121,6 @@ function SidebarBuyer(props) {
     )
 
 }
-
-// function mapStateToProps(state) {
-//     return { 
-//         userToken : state.userToken
-//     }
-// }
 
 function mapDispatchToProps(dispatch) {
     return {

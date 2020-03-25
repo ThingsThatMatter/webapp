@@ -123,10 +123,10 @@ function CreateFormOne(props) {
   function mapDispatchToProps(dispatch) {
     return {
       nextStep : function() { 
-        dispatch( {type: 'nextStep'} ) 
+        dispatch( {type: 'agent_newOfferNextStep'} ) 
       },
       saveFormData : function(street, postal, city, pref, adID) { 
-        dispatch( {type: 'saveFormData', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
+        dispatch( {type: 'agent_newOfferSaveFormData', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
     }
 
     }

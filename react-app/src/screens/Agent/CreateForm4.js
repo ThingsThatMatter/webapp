@@ -166,14 +166,14 @@ function CreateFormFour(props) {
   function mapDispatchToProps(dispatch) {
     return {
       nextStep : function() { 
-          dispatch( {type: 'nextStep'} ) 
+          dispatch( {type: 'agent_newOfferNextStep'} ) 
       },
       previousStep : function() {
-          dispatch( {type: 'prevStep'} )
+          dispatch( {type: 'agent_newOfferPrevStep'} )
       },
       saveFormData : function(feesPayer, price, fees) { 
         dispatch( {
-            type: 'saveFormData4',
+            type: 'agent_newOfferSaveFormData4',
             feesPayer : feesPayer,
             price: price,
             fees: fees

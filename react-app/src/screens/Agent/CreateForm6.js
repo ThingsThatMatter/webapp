@@ -73,7 +73,7 @@ function CreateFormSix(props) {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': props.token
+                    'token': props.agentLoginInfo.token
                 },
                 body: JSON.stringify(
                     {
@@ -130,7 +130,7 @@ function CreateFormSix(props) {
                 method: 'put',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': props.token
+                    'token': props.agentLoginInfo.token
                 },
                 body: JSON.stringify(
                     {
@@ -357,16 +357,16 @@ function CreateFormSix(props) {
   function mapDispatchToProps(dispatch) {
     return {
       clear : function() { 
-        dispatch( {type: 'clear'} ) 
+        dispatch( {type: 'agent_newOfferClear'} ) 
       },
       clearSteps : function() { 
-        dispatch( {type: 'clearSteps'} ) 
+        dispatch( {type: 'agent_newOfferClearSteps'} ) 
       },
       previousStep : function() {
-        dispatch( {type: 'prevStep'} )
+        dispatch( {type: 'agent_newOfferPrevStep'} )
     },
     clearEdit : function() {
-        dispatch({type: 'clearEdit'})
+        dispatch({type: 'agent_newOfferClearEdit'})
     }
 
     }
@@ -377,7 +377,7 @@ function CreateFormSix(props) {
     return {
         step : state.step,
         formData: state.formData,
-        token: state.token,
+        agentLoginInfo: state.agentLoginInfo,
         edit: state.edit
     }
   }

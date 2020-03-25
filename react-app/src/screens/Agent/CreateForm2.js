@@ -299,14 +299,14 @@ function CreateFormTwo(props) {
   function mapDispatchToProps(dispatch) {
     return {
       nextStep : function() { 
-          dispatch( {type: 'nextStep'} ) 
+          dispatch( {type: 'agent_newOfferNextStep'} ) 
       },
       previousStep : function() {
-          dispatch( {type: 'prevStep'} )
+          dispatch( {type: 'agent_newOfferPrevStep'} )
       },
       saveFormData : function(type, area, rooms, bedrooms, avantages, desc, fileList, video, emission, conso, photosDB) { 
         dispatch( {
-            type: 'saveFormData2',
+            type: 'agent_newOfferSaveFormData2',
             typeBien: type,
             area: area,
             rooms: rooms,

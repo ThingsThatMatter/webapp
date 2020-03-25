@@ -46,7 +46,7 @@ function CreateFormFive(props) {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': props.token}
+        headers: {'token': props.agentLoginInfo.token}
       })
       const body = await ads.json()
       
@@ -554,21 +554,21 @@ function mapStateToProps(state) {
   return { 
       step : state.step,
       formData: state.formData,
-      token: state.token
+      agentLoginInfo: state.agentLoginInfo
   }
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     nextStep : function() { 
-        dispatch( {type: 'nextStep'} ) 
+        dispatch( {type: 'agent_newOfferNextStep'} ) 
     },
     previousStep : function() {
-        dispatch( {type: 'prevStep'} )
+        dispatch( {type: 'agent_newOfferPrevStep'} )
     },
     saveFormData : function(timeslots, color) { 
       dispatch( {
-          type: 'saveFormData5',
+          type: 'agent_newOfferSaveFormData5',
           timeSlots : timeslots !== null ? timeslots : [],
           color: color
       } ) } 

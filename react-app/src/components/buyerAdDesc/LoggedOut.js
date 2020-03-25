@@ -8,15 +8,15 @@ import {connect} from 'react-redux'
 
 function AdDescSidebarLogout(props) {
 
-    const [toRedirect, setToRedirect] = useState(false);
+    const [redirectToSign, setRedirectToSign] = useState(false);
 
     const handleConnectSidebar = () => {
         props.setRedirectAdId(props.adId)
-        setToRedirect(true)
+        setRedirectToSign(true)
     }
 
-    if (toRedirect) { // if login OK (from form) redirect to home
-        return <Redirect to='/' /> 
+    if (redirectToSign) { 
+        return <Redirect to='/sign' /> 
     }
 
     return (  

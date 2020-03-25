@@ -26,7 +26,7 @@ function Home(props) {
         const adsFetch = async () => {
         const ads = await fetch('/user/ads', {
             method: 'GET',
-            headers: {'token': props.userToken}
+            headers: {'token': props.buyerLoginInfo.token}
         })
         const body = await ads.json();
         setAdsListFromDb(body.data.ads)
@@ -169,9 +169,6 @@ function Home(props) {
         )
     })
 
-    console.log(adsCopy)
-    console.log(adsVisits)
-
     return (
   
         <Layout className="user-layout">
@@ -220,13 +217,13 @@ function Home(props) {
   }
 
 
-  function mapStateToProps(state) {
+function mapStateToProps(state) {
     return { 
-        userToken : state.userToken
+        buyerLoginInfo : state.buyerLoginInfo
     }
-  }
+}
   
-  export default connect(
+export default connect(
     mapStateToProps,
     null
-  )(Home)
+)(Home)

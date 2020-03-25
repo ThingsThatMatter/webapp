@@ -102,7 +102,7 @@ month[11] = "dec";
                     method : "put",
                     headers: {
                         'Content-Type': 'application/json',
-                        'token' : props.token
+                        'token' : props.buyerToken
                     },
                     body: JSON.stringify({
                         timeslot : timeslot

@@ -49,7 +49,7 @@ function OfferForm1(props) {
         const adFetch = async () => {
             const ad = await fetch(`/user/ad/${props.adId}/private`, {
                 method: 'GET',
-                headers: {'token': props.userToken}
+                headers: {'token': props.buyerLoginInfo.token}
             })
           const body = await ad.json();
           setAdFromDb(body.data.ad)
@@ -226,14 +226,14 @@ function mapStateToProps(state) {
         newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData,
         adId: state.adId,
-        userToken: state.userToken
+        buyerLoginInfo: state.buyerLoginInfo
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         modifyStep : function(step) { 
-            dispatch( {type: 'modifyStep', futureStep: step} ) 
+            dispatch( {type: 'buyer_modifyStep', futureStep: step} ) 
         },
         offerSaveFormData : function(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city) {
             dispatch({

@@ -144,19 +144,29 @@ p {
   -o-transition: all 0.3s;
   transition: all 0.3s;
   position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
   position: -webkit-sticky;
   position: sticky;
   top: 0px;
   height: 100vh;
 }
+.ant-layout-sider-children {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.sidebar-bottom {
+  text-align: center;
+  margin-bottom: 1em;
+}
+.agent-logout {
+  margin: 1em;
+  cursor: pointer;
+}
+.agent-logout:hover {
+  text-decoration: underline;
+}
 .logo-ttm img {
   max-width: 80px;
-  left: 10px;
-  bottom: 10px;
-  position: absolute;
 }
 .main-content {
   width: 100%;
