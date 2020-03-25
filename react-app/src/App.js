@@ -16,6 +16,13 @@ import offerFormData from './reducers/Buyer/offerFormData.reducer'
 import userToken from './reducers/Buyer/authentification.reducer'
 import adId from './reducers/Buyer/adId.reducer'
 
+
+import createHistory from "history/createBrowserHistory"
+export const history = createHistory()
+history.listen((location, action) => {
+    window.scrollTo(0, 0)
+})
+
 const store = createStore(combineReducers({step, formData, token, edit, newOfferStep, offerFormData, userToken, adId}))
 
 function App() {

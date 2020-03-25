@@ -577,4 +577,52 @@ res.status(status).json(response);
 
 });
 
+/* POST question */
+router.post('/ad/:ad_id/question', async function(req, res, next) {
+
+  try {
+
+    let userToFind = await userModel.findOne({ token:req.headers.token });
+
+    if(!userToFind) { 
+      status = 401;
+      response = {
+        message: 'Bad token',
+        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
+      };
+    } else {
+
+      let question = {
+        status: 'pending',
+        question: req.body.question,
+        response: req.body.response,
+        user: userToFind._id
+      }
+
+      let newQuestion = await adModel.updateOne(
+          { _id: req.params.ad_id }, 
+          { $push: { questions: question } }
+      )
+
+      status = 200;
+      response = {
+        message: 'OK',
+        data: {
+          offer: newOffer
+        }
+      }
+    }
+  
+  } catch(e) {
+    status = 500;
+    response = {
+      message: 'Internal error',
+      details: 'Le serveur a rencontré une erreur.'
+    };
+  }
+
+  res.status(status).json(response);
+
+});
+
 module.exports = router;
