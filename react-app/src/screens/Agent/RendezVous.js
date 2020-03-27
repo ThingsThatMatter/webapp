@@ -11,6 +11,7 @@ import moment from 'moment'
 import 'moment/locale/fr'
 
 import {connect} from 'react-redux'
+import {useCookies} from 'react-cookie'
 
 import Sidebar from '../../components/Sidebar'
 
@@ -32,8 +33,16 @@ function RendezVous(props) {
   const [title, setTitle] = useState('')
   const [view, setView] = useState('Semaine')
   const [displaySlots, setDisplaySlots] = useState(false)
+  const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
 
   var calendar = useRef(null)
+
+  /* Token refresh */
+  const renewAccessToken = (token) => {
+    if (token !== cookies.aT) {
+        setCookie('aT', token, {path:'/pro'})
+    }
+  }
 
   useEffect( () => {
     const changeTitle = async () => {
@@ -43,9 +52,14 @@ function RendezVous(props) {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': props.agentLoginInfo.token}
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Authorization': `Bearer ${cookies.aT}`
+      }
       })
       const body = await ads.json()
+      renewAccessToken(body.data.accessToken) // Renew token if invalid soon
       
       let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
       let timeslots = adsWithTimeslots.map( e => { //create a table of timeslots with their title and color
@@ -227,7 +241,8 @@ function RendezVous(props) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'token': props.agentLoginInfo.token
+          Accept: 'application/json',
+          'Authorization': `Bearer ${cookies.aT}`
         },
         body: `timeslot=${slots}`
       })
@@ -254,7 +269,8 @@ function RendezVous(props) {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
-          'token': props.agentLoginInfo.token
+          Accept: 'application/json',
+          'Authorization': `Bearer ${cookies.aT}`
         },
         body: `timeslot=${slots}`
       })
@@ -281,6 +297,7 @@ function RendezVous(props) {
 
   const handleCancel = () => {
     setAppointmentModalVisible(false)
+    setAppointmentModalOkLoading(false)
     setAppointmentModalEventDate(null)
     setAppointmentModalEventHour1(null)
     setAppointmentModalEventHour2(null)
@@ -298,7 +315,8 @@ function RendezVous(props) {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
-        'token': props.agentLoginInfo.token
+        Accept: 'application/json',
+        'Authorization': `Bearer ${cookies.aT}`
       }
     })
     const body = await deleteTimeslots.json()

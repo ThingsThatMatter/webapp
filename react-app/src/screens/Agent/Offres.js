@@ -1,13 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import { Layout, Row, Button, Col, Collapse, Carousel, Modal } from 'antd';
-import {Redirect} from 'react-router-dom';
 
 import {connect} from 'react-redux'
-
+import {useCookies} from 'react-cookie'
 
 import Sidebar from '../../components/Sidebar';
-import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
-const { Panel } = Collapse;
+import {CheckCircleOutlined} from '@ant-design/icons'
 
 const { Content } = Layout;
 
@@ -23,20 +21,31 @@ function Offres(props) {
     const [offerModalProperties, setOfferModalProperties] = useState({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
 
     const [adModalProperties, setAdModalProperties] = useState({_id:''})
+
+    const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
   
+    /* Token refresh */
+    const renewAccessToken = (token) => {
+        if (token !== cookies.aT) {
+            setCookie('aT', token, {path:'/pro'})
+        }
+    }
+
     /* Offre Cards */
     useEffect( () => {
         const dbFetch = async () => {
             const ads = await fetch(`/pro/ads`, {
                 method: 'GET',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'Authorization': `Bearer ${cookies.aT}`
+                }
             })
             const body = await ads.json();
-          
+            renewAccessToken(body.data.accessToken) // Renew token if invalid soon
             let adsWithOffers = body.data.ads.filter( e => e.offers.length > 0);
-    
             setOfferslist(adsWithOffers)
-
         }   
     dbFetch()
     }, [displayOffers]);
@@ -49,24 +58,31 @@ function Offres(props) {
         setOfferModalVisible(false)
     };
 
-    // Accepter une offre d'achat
+    // Accept offer
     const handleAcceptOffer = async () => {
         const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+            }
         })
         const body = await acceptOffer.json();
-
         setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
         setOfferModalVisible(false)
         setDisplayOffers(!displayOffers)
     }
 
-    // Refuser une offre d'achat
+    // Decline offer
     const handleDeclineOffer = async () => {
         const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+            }
         })
         const body = await declineOffer.json();
 
@@ -75,11 +91,15 @@ function Offres(props) {
         setDisplayOffers(!displayOffers)
     }
 
-    // Annuler une offre d'achat
+    // Cancel offer acceptation
     const handleCancelOffer = async () => {
         const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/cancel`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.agentLoginInfo.token}
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+            }
         })
         const body = await cancelOffer.json();
 

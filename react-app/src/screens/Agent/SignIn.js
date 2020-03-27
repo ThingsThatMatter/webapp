@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Redirect,Link} from 'react-router-dom'
-import {Form, Input, Button, Row, Col} from 'antd';
+import {Form, Input, Button, Row, Col, Checkbox} from 'antd';
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
@@ -10,6 +10,7 @@ function SignIn(props) {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
+    const [stayLoggedIn, setStayLoggedIn] = useState(false)
     const [msgErrorSignin, setMsgErrorSignin] = useState()
     const [toRedirect, setToRedirect] = useState(false)
     const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
@@ -19,13 +20,15 @@ function SignIn(props) {
         const checkAgent = await fetch('/pro/sign-in', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `email=${email}&password=${password}`
+            body: `email=${email}&password=${password}&stayLoggedIn=${stayLoggedIn}`
           })
       
         const body = await checkAgent.json()
         if (body.message === 'OK') {
-            setCookie('aT', body.data.token, {path:'/pro'})
-            props.login(body.data.token)
+            const {lastname, firstname, email, id} = body.data.agentInfo
+            setCookie('aT', body.data.accessToken, {path:'/pro'})
+            props.login()
+            props.saveAgentInfo({lastname, firstname, email, id})
             setToRedirect(true)
         } else {
             setMsgErrorSignin(body.details)
@@ -35,9 +38,9 @@ function SignIn(props) {
     if (toRedirect) { // if login OK (from form) redirect to home
         return <Redirect to='/pro' /> 
     } else {
-        if (typeof cookies.aT !== 'undefined' && props.agentLoginInfo.login_request) {
+        if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_request) {
             return <Spinner />
-        } else if (typeof cookies.aT !== 'undefined' && props.agentLoginInfo.login_success) {  //if landing on signin and has a valid token
+        } else if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_success) {  //if landing on signin and has a valid token
             return <Redirect to='/pro' />
         }
         else {
@@ -59,6 +62,7 @@ function SignIn(props) {
                                     Se Connecter
                                 </div>
                                 <Form layout="vertical" >
+
                                     <Form.Item
                                         label="Email"
                                         required={true}
@@ -70,6 +74,7 @@ function SignIn(props) {
                                             placeholder="Saisissez votre adresse email"
                                         />
                                     </Form.Item>
+
                                     <Form.Item
                                         label="Mot de passe"
                                         required= {true}
@@ -82,7 +87,21 @@ function SignIn(props) {
                                             onKeyPress={e => e.key === 'Enter' ?  handleSubmitSignin() : ""}
                                         />
                                     </Form.Item>
+
+                                    <Form.Item>
+                                    <Checkbox
+                                        className="stay-logged-in"
+                                        onChange={ e => {
+                                            setStayLoggedIn(e.target.checked)
+                                        }}
+                                    >
+                                        Rester connecté(e)
+                                    </Checkbox>
+
+                                    </Form.Item>
+
                                     <p className="sign-error-text">{msgErrorSignin}</p>
+                                    
                                     <Form.Item >
                                         <Button 
                                             type="primary"
@@ -91,6 +110,7 @@ function SignIn(props) {
                                             Connexion
                                         </Button>
                                     </Form.Item>
+
                                 </Form>
                                 <a
                                     className="forgotten-password"
@@ -107,16 +127,19 @@ function SignIn(props) {
 
 function mapStateToProps(state) {
     return { 
-        agentLoginInfo : state.agentLoginInfo
+        agentLoginStatus : state.agentLoginStatus
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        login: function(token) {
+        login: function() {
+            dispatch( {type: 'agent_login'} )
+        },
+        saveAgentInfo: function(agentInfo) {
             dispatch({
-                type: 'agent_login',
-                token
+                type: 'agent_saveInfo',
+                agentInfo
             })
         }
     }

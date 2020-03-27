@@ -1,9 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import { Layout, Row, Button, Col, Collapse, Radio } from 'antd';
-import {Redirect} from 'react-router-dom';
-import {connect} from 'react-redux' 
+import React, {useState, useEffect} from 'react'
+import { Layout, Row, Button, Col, Collapse, Radio } from 'antd'
+import {Redirect} from 'react-router-dom'
+import {connect} from 'react-redux'
 
-import Sidebar from '../../components/Sidebar';
+import {useCookies} from 'react-cookie'
+
+import Sidebar from '../../components/Sidebar'
 import {PlusCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse;
 
@@ -19,16 +21,30 @@ function Home(props) {
   const [offerStatus, setOfferStatus] = useState("All")
   const [adsToShow, setAdsToShow] = useState([])
 
+  const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
+
   const [urlAd, setUrlAd] = useState(null);
+
+  /* Token refresh */
+  const renewAccessToken = (token) => {
+    if (token !== cookies.aT) {
+        setCookie('aT', token, {path:'/pro'})
+    }
+  }
 
   /* Ad Cards */
   useEffect( () => {
     const adsFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': props.agentLoginInfo.token}
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Authorization': `Bearer ${cookies.aT}`
+        }
       })
-      const body = await ads.json();
+      const body = await ads.json()
+      renewAccessToken(body.data.accessToken) // Renew token if invalid soon
       setAdsListFromDb(body.data.ads)
     }
     adsFetch()

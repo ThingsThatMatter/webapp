@@ -1,19 +1,18 @@
-import React, {useState} from 'react';
-import 'antd/dist/antd.css';import './App.css';
-import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom';
+import React from 'react'
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
 
-import Home from './screens/Buyer/Home'
-import AdDesc from './screens/Buyer/AdDesc'
-import Visits from './screens/Buyer/Visits'
-import Offers from './screens/Buyer/Offers'
-import buyerSign from './screens/Buyer/Sign'
-import EmailConf from './screens/Buyer/EmailConf'
-import OfferForm1 from './screens/Buyer/OfferForm1'
-import OfferForm2 from './screens/Buyer/OfferForm2'
-import OfferForm3 from './screens/Buyer/OfferForm3'
+import Home from '../screens/Buyer/Home'
+import AdDesc from '../screens/Buyer/AdDesc'
+import Visits from '../screens/Buyer/Visits'
+import Offers from '../screens/Buyer/Offers'
+import buyerSign from '../screens/Buyer/Sign'
+import EmailConf from '../screens/Buyer/EmailConf'
+import OfferForm1 from '../screens/Buyer/OfferForm1'
+import OfferForm2 from '../screens/Buyer/OfferForm2'
+import OfferForm3 from '../screens/Buyer/OfferForm3'
 
 function BuyerRoutes(props) {
 

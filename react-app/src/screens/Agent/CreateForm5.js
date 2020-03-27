@@ -13,6 +13,7 @@ import 'moment/locale/fr'
 
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
+import {useCookies} from 'react-cookie'
 
 import Sidebar from '../../components/Sidebar'
 
@@ -25,7 +26,6 @@ const { RangePicker } = TimePicker
 
 const ts = require("time-slots-generator")
 
-
 function CreateFormFive(props) {
 
   /* ------------------------------------------CALENDAR---------------------------------------------- */  
@@ -34,9 +34,16 @@ function CreateFormFive(props) {
   const [title, setTitle] = useState('')
   const [view, setView] = useState('Semaine')
   const [adColor, setAdColor] = useState(['#052040', '#1abc9c', '#2ecc71', '#f1c40f', '#e67e22', '#e74c3c', '#3498db', '#95a5a6', '#9b59b6', '#bdc3c7', '#16a085', '#2980b9', '#7f8c8d', '#c0392b', '#474787'])
-
+  const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
 
   var calendar = useRef(null)
+
+  /* Token refresh */
+  const renewAccessToken = (token) => {
+    if (token !== cookies.aT) {
+        setCookie('aT', token, {path:'/pro'})
+    }
+  }
 
   useEffect( () => {
     const changeTitle = async () => {
@@ -46,9 +53,14 @@ function CreateFormFive(props) {
     const dbFetch = async () => {
       const ads = await fetch('/pro/ads', {
         method: 'GET',
-        headers: {'token': props.agentLoginInfo.token}
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Authorization': `Bearer ${cookies.aT}`
+        }
       })
       const body = await ads.json()
+      renewAccessToken(body.data.accessToken) // Renew token if invalid soon
       
       let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
       let timeslots = adsWithTimeslots.map( e => { //create a table of timeslots with their title and color

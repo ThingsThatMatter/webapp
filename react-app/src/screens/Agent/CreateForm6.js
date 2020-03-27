@@ -3,6 +3,7 @@ import Sidebar from '../../components/Sidebar';
 import { Layout, Steps, Button, message, Row, Col } from 'antd';
 import {Redirect} from 'react-router-dom';
 import {connect} from 'react-redux';
+import {useCookies} from 'react-cookie'
 import { Slide } from 'react-slideshow-image';
 
 
@@ -13,12 +14,13 @@ const {Content} = Layout;
 function CreateFormSix(props) {
  
     const [avantages, setAvantages] = useState([])
- 
 
     const [currentPage, setCurrentPage] = useState(0)
     const [redir, setRedir] = useState(false)
     const [backRedir, setBackRedir] = useState(false)
-    
+
+    const [cookies] = useCookies(['name']); // initilizing state cookies
+
     useEffect(() => {
 
         setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
@@ -73,7 +75,8 @@ function CreateFormSix(props) {
                 method: 'post',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': props.agentLoginInfo.token
+                    Accept: 'application/json',
+                    'Authorization': `Bearer ${cookies.aT}`
                 },
                 body: JSON.stringify(
                     {
@@ -130,7 +133,8 @@ function CreateFormSix(props) {
                 method: 'put',
                 headers: {
                     'Content-Type': 'application/json',
-                    'token': props.agentLoginInfo.token
+                    Accept: 'application/json',
+                    'Authorization': `Bearer ${cookies.aT}`
                 },
                 body: JSON.stringify(
                     {
@@ -165,7 +169,6 @@ function CreateFormSix(props) {
             let response = await rawResponse.json()
 
             if(response.message === "OK") {
-                
                 message.success({ content: "annonce editée !", key, duration: 2 });
                 setRedir(true)
                 props.clearSteps()

@@ -1,48 +1,53 @@
-import React, {useState} from 'react';
-import 'antd/dist/antd.css';import './App.css';
-import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom';
+import React from 'react'
+import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
 
-import Home from './screens/Agent/Home';
-import Offres from './screens/Agent/Offres';
-import RendezVous from './screens/Agent/RendezVous';
-import Questions from './screens/Agent/Questions';
-import AdDesc from './screens/Agent/AdDesc';
-import CreateFormOne from './screens/Agent/CreateForm1';
-import CreateFormTwo from './screens/Agent/CreateForm2';
-import CreateFormThree from './screens/Agent/CreateForm3';
-import CreateFormFour from './screens/Agent/CreateForm4';
-import CreateFormFive from './screens/Agent/CreateForm5';
-import CreateFormSix from './screens/Agent/CreateForm6';
-import agentSignIn from './screens/Agent/SignIn'
-import agentSignUp from './screens/Agent/SignUp'
+import Home from '../screens/Agent/Home'
+import Offres from '../screens/Agent/Offres'
+import RendezVous from '../screens/Agent/RendezVous'
+import Questions from '../screens/Agent/Questions'
+import AdDesc from '../screens/Agent/AdDesc'
+import CreateFormOne from '../screens/Agent/CreateForm1'
+import CreateFormTwo from '../screens/Agent/CreateForm2'
+import CreateFormThree from '../screens/Agent/CreateForm3'
+import CreateFormFour from '../screens/Agent/CreateForm4'
+import CreateFormFive from '../screens/Agent/CreateForm5'
+import CreateFormSix from '../screens/Agent/CreateForm6'
+import agentSignIn from '../screens/Agent/SignIn'
+import agentSignUp from '../screens/Agent/SignUp'
 
 
 function AgentRoutes(props) {
 
-    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initializing state cookies
 
     const checkToken = async () => {
         const getToken = await fetch('/pro/user-access', {
             method: 'GET',
-            headers: {'token': cookies.aT}
-            })
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+            }
+        })
         const body = await getToken.json()
         if (body.message === 'OK') {
-            props.login(body.data.token)
+            const {lastname, firstname, email, id} = body.data.agentInfo
+            props.login()
+            props.saveAgentInfo({lastname, firstname, email, id})
         }
     }
 
-    if (cookies.aT && !props.agentLoginInfo.login_success && !props.agentLoginInfo.login_request) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de agentLoginInfo)
+    if (cookies.aT && !props.agentLoginStatus.login_success && !props.agentLoginStatus.login_request) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de agentLoginInfo)
         props.login_request()
         checkToken()
     }
 
     const PrivateRoute = ({ component: Component, ...rest }) => (
         <Route {...rest} render={(state) => (
-            props.agentLoginInfo.login_success 
+            props.agentLoginStatus.login_success 
             ? <Component {...state} />
             : <Redirect to='/pro/signin' />
         )} />
@@ -74,21 +79,22 @@ function AgentRoutes(props) {
 
 function mapStateToProps(state) {
     return { 
-        agentLoginInfo : state.agentLoginInfo
+        agentLoginStatus : state.agentLoginStatus
     }
 }
 
 function mapDispatchToProps(dispatch){
     return {
-        login: function(token){
-            dispatch({
-                type: 'agent_login',
-                token
-            })
+        login: function(){
+            dispatch( {type: 'agent_login'} )
         },
         login_request: function() {
+            dispatch( {type: 'agent_login_request'} )
+        },
+        saveAgentInfo: function(agentInfo) {
             dispatch({
-                type: 'agent_login_request'
+                type: 'agent_saveInfo',
+                agentInfo
             })
         }
     }

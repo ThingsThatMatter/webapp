@@ -10,6 +10,8 @@ function SignUp(props) {
 
     const [email, setEmail] = useState(null)
     const [password, setPassword] = useState(null)
+    const [lastname, setLastName] = useState(null)
+    const [firstname, setFirstName] = useState(null)
     const [msgErrorSignin, setMsgErrorSignin] = useState()
     const [toRedirect, setToRedirect] = useState(false)
     const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
@@ -21,13 +23,15 @@ function SignUp(props) {
         const postNewAgent = await fetch('/pro/sign-up', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `email=${email}&password=${password}`
+            body: `email=${email}&password=${password}&lastname=${lastname}&firstname=${firstname}`
         })
 
         const body = await postNewAgent.json()
         if (body.message === 'OK') {
-            setCookie('aT', body.data.token, {path:'/pro'})
-            props.login(body.data.token)
+            const {lastname, firstname, email, id} = body.data.agentInfo
+            setCookie('aT', body.data.accessToken, {path:'/pro'})
+            props.login()
+            props.saveAgentInfo({lastname, firstname, email, id})
             setToRedirect(true)
         } else {
             setMsgErrorSignin(body.details)
@@ -53,6 +57,31 @@ function SignUp(props) {
                             Création d'un compte agent
                         </div>
                         <Form layout="vertical" >
+
+                            <Form.Item
+                                label="Nom"
+                                required={true}
+                            >
+                                <Input
+                                    value={lastname}
+                                    onChange={e => setLastName(e.target.value)}
+                                    className="sign-input-field"
+                                    placeholder="Saisissez votre nom"
+                                />
+                            </Form.Item>
+
+                            <Form.Item
+                                label="Prénom"
+                                required={true}
+                            >
+                                <Input
+                                    value={firstname}
+                                    onChange={e => setFirstName(e.target.value)}
+                                    className="sign-input-field"
+                                    placeholder="Saisissez votre prénom"
+                                />
+                            </Form.Item>
+
                             <Form.Item
                                 label="Email"
                                 required={true}
@@ -64,6 +93,7 @@ function SignUp(props) {
                                     placeholder="Saisissez votre adresse email"
                                 />
                             </Form.Item>
+                            
                             <Form.Item
                                 label="Mot de passe (temporaire)"
                                 required= {true}
@@ -103,10 +133,13 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch){
     return {
-        login: function(token){
+        login: function() {
+            dispatch( {type: 'agent_login'} )
+        },
+        saveAgentInfo: function(agentInfo) {
             dispatch({
-                type: 'agent_login',
-                token
+                type: 'agent_saveInfo',
+                agentInfo
             })
         }
     }

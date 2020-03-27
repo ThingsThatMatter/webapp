@@ -5,6 +5,7 @@ import { Redirect} from "react-router-dom";
 import {HashLink as Link} from "react-router-hash-link"
 
 import { connect } from "react-redux";
+import {useCookies} from 'react-cookie'
 
 import Sidebar from "../../components/Sidebar";
 
@@ -33,6 +34,7 @@ function AdDesc(props) {
 
   const [redir, setRedir] = useState(false);
   const [editRedir, setEditRedir] = useState(false);
+  const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
 
   const [pendingQuestions, setPendingQuestions] = useState([]);
 
@@ -42,18 +44,27 @@ function AdDesc(props) {
     toggleStyle = { fontWeight: 500, color: "#6F6E6E", fontSize: "18px" };
   }
 
+  /* Token refresh */
+  const renewAccessToken = (token) => {
+    if (token !== cookies.aT) {
+        setCookie('aT', token, {path:'/pro'})
+    }
+  }
+
   useEffect(() => {
 
     const dbFetch = async () => {
         const data = await fetch(`/pro/ad/${props.match.params.id}`, {
             method: "GET",
             headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            token: props.agentLoginInfo.token
-            }
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              'Authorization': `Bearer ${cookies.aT}`
+          }
         })
 
     const body = await data.json();
+    renewAccessToken(body.data.accessToken) // Renew token if invalid soon
     setAdDetails(body.data);
     setAdPhotos(body.data.photos);
     setAdDocuments(body.data.files);
@@ -64,7 +75,7 @@ function AdDesc(props) {
 
     const tempTable = [];
 
-    if (body.data.advantages.findIndex(e => e === "ascenseur") !== -1) {
+    if (body.data.adForDetails.advantages.findIndex(e => e === "ascenseur") !== -1) {
         tempTable.push(
             <span>
             <img src="../../../elevator.png" width="20px" alt="ascenseur" />
@@ -73,7 +84,7 @@ function AdDesc(props) {
         );
       }
 
-      if (body.data.advantages.findIndex(e => e === "balcon") !== -1) {
+      if (body.data.adForDetails.advantages.findIndex(e => e === "balcon") !== -1) {
         tempTable.push(
           <span>
             <img src="../../../balcony.png" width="20px" alt="balcon" />
@@ -81,7 +92,7 @@ function AdDesc(props) {
           </span>
         );
       }
-      if (body.data.advantages.findIndex(e => e === "terrasse") !== -1) {
+      if (body.data.adForDetails.advantages.findIndex(e => e === "terrasse") !== -1) {
         tempTable.push(
           <span>
             <img src="../../../floor.png" width="20px" alt="terrasse" />
@@ -100,8 +111,9 @@ function AdDesc(props) {
     const deleteAd = await fetch(`/pro/ad/${props.match.params.id}`, {
       method: "DELETE",
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        token: props.agentLoginInfo.token
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': `Bearer ${cookies.aT}`
       }
     });
     const body = await deleteAd.json();

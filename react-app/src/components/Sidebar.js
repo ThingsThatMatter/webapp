@@ -14,8 +14,18 @@ function Sidebar(props) {
   const [redirHome, setRedirHome] = useState(false)
   const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
 
-  const logout = () => {
+  const logout = async () => {
     removeCookie('aT', { path: '/pro' })
+
+    const loginout = await fetch('/pro/logout', {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': `Bearer ${cookies.aT}`
+      }
+    })
+    
     props.logout()
     setRedirHome(true)
   }
@@ -74,7 +84,7 @@ function Sidebar(props) {
           >
             Déconnexion
           </div>
-          <div className="logo-ttm"><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
+          <div className="logo-ttm"><Link to="/pro"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
         </div>
       </Sider>
     
