@@ -1,15 +1,11 @@
-import React, {useState, useEffect} from 'react';
-import { Layout, Row, Button, Col, Collapse, Carousel, Modal, Input } from 'antd';
-import {Redirect} from 'react-router-dom';
+import React, {useState, useEffect} from 'react'
+import { Layout, Button, Modal, Input } from 'antd'
 
 import {connect} from 'react-redux'
 
+import Sidebar from '../../components/Agent/Sidebar'
 
-import Sidebar from '../../components/Sidebar';
-import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
-const { Panel } = Collapse;
-
-const { Content } = Layout;
+const { Content } = Layout
 
 
 function Questions(props) {

@@ -1,160 +1,195 @@
-var express = require('express');
-var router = express.Router();
-var mongoose = require('../models/bdd');
+const express = require('express')
+const router = express.Router()
 
-var userModel = require('../models/userModel.js')
-var adModel = require('../models/adModel.js')
+var mongoose = require('../models/bdd')
+const userModel = require('../models/userModel.js')
+const adModel = require('../models/adModel.js')
+
+const {success, created, deleted, badRequest, unauthorized, forbidden, notFound, internalError} = require('./http-responses')
+
 const mailjet = require ('node-mailjet')
-.connect('6e4a0426294486d548136359fc341ef6', 'bd0d46e4638b9c6ce22a79f46717b440')
+  .connect('6e4a0426294486d548136359fc341ef6', 'bd0d46e4638b9c6ce22a79f46717b440')
 
-const ObjectId = mongoose.Types.ObjectId;
+require('dotenv').config()
 
-var uid2 = require("uid2");
 const jwt = require('jsonwebtoken')
-const JWTPrivateKey = "n4opQ61HEDNPkLw9xBOdGTw92CTKgcrx" 
-const bcrypt = require('bcryptjs');
-const saltRounds = 12;
+const bcrypt = require('bcryptjs')
+const saltRounds = 12
 
-const generateToken = () => { // it is possible to add data (payload) by adding an argument to the function -- see doc
-  u = {} //payload data
-  return token = jwt.sign(u, JWTPrivateKey, {
-    expiresIn: 60 // 24h 60 * 60 * 24
+let resp
+let login_duration = 30 //30 minutes
+
+/* --------------------------------------------------TOKEN GENERATION & CHECK--------------------------------------------------------- */
+const generateUserAccessToken = (userInfo, minutes) => { 
+  return jwt.sign(userInfo, process.env.JWT_USER_ACCESS_KEY, {
+    expiresIn: 30 * minutes // 60sec * 30min
   })
 }
 
-let status;
-let response;
 
+const authenticateUser = (req, res, next) => {
+  const authHeader = req.headers.authorization
+  let accessToken = authHeader && authHeader.split(' ')[1]
+  if (accessToken === null || !req.cookies.uRT) {  //if no token
+    resp = unauthorized()
+    res.status(resp.status).json(resp.response)
+  
+  } else {
+    jwt.verify(accessToken, process.env.JWT_USER_ACCESS_KEY, async (err, userInfo) => {
+      if (err) {  //if access token is not valid
+        resp = unauthorized()
+        res.status(resp.status).json(resp.response)
 
+      } else {
+        const currentTime = Math.round((new Date()).getTime() / 1000)
+        const tokenExpiresIn = userInfo.exp - currentTime
+        if (tokenExpiresIn < 300) { // if token expires in less than 5minutes, try to update it
+          const findUser = await userModel.findOne({ token:req.cookies.uRT })
+          if (!findUser) { // if refresh token is not valid
+            resp = unauthorized()
+            res.status(resp.status).json(resp.response)
+          
+          } else {
+            const userInfo = {
+              lastname: findUser.lastname,
+              firstname: findUser.firstname,
+              email: findUser.email,
+              id: findUser._id
+            }
+            accessToken = generateUserAccessToken(userInfo, login_duration)
+          }
+        }
+
+        resp = success({
+          accessToken,
+          userInfo
+        })
+        req.accessToken = accessToken
+        req.userInfo = userInfo
+        next()
+      }
+    })
+  }
+
+}
+
+/* --------------------------------------------------ACCESS / SIGN IN / SIGN UP--------------------------------------------------------- */
 /* Check token to access app*/
-router.get('/user-access', async function(req, res, next) {
+router.get('/user-access', authenticateUser, async function(req, res) {
+  // if authenticateUser don't block, then authenticate user
+
+  res.status(resp.status).json(resp.response)
+})
+
+
+/* Logout to remove refresh token */
+router.get('/logout', async function(req,res) {
 
   try {
 
-    let findUser = await userModel.findOne({ token:req.headers.token });
+    await userModel.updateOne(
+      { token: req.cookies.uRT }, 
+      { $unset: { token: null } }
+    )
 
-    if(!findUser) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          ads: findUser.ads,
-          token: findUser.token
-        }
-      }
-    }
+    resp = deleted()
+    res.clearCookie('uRT', {path:'/'})
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 })
-
 
 /* USER sign-in */
 router.post('/sign-in', async function(req, res, next) {
 
+  let refreshCookie
+
   try {
 
     if( ['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
-      status = 401;
-      response = {
-        message: 'Form error',
-        details: 'Veuillez remplir tous les champs'
-      }
-    } else {
+      resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
-      const findUser = await userModel.findOne({ email:req.body.email });
+    } else {
+      const findUser = await userModel.findOne({ email:req.body.email })
       if(findUser === null) {
-        status = 401;
-        response = {
-          message: 'Authentification error',
-          details: "L'email ou le mot de passe fournis sont incorrects"
-        }
+        resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+
       } else {
-        const pwdMatch = await bcrypt.compare(req.body.password, findUser.password);
-        if (pwdMatch) {
-          status = 200;
-          response = {
-            message: 'OK',
-            data: {
-              ads: findUser.ads,
-              token: findUser.token
-            }
-          }
+        const pwdMatch = await bcrypt.compare(req.body.password, findUser.password)
+        if (!pwdMatch) {
+          resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+
         } else {
-          status = 401;
-          response = {
-            message: 'Authentification error',
-            details: "L'email ou le mot de passe fournis sont incorrects"
+          /* Update refresh token */
+          const refreshToken = jwt.sign({}, process.env.JWT_USER_REFRESH_KEY)
+          await userModel.updateOne(
+            {_id: findUser._id},
+            {$set: {token: refreshToken}}
+          )
+
+          const userInfo = {
+            lastname: findUser.lastname,
+            firstname: findUser.firstname,
+            email: findUser.email,
+            id: findUser._id
           }
+
+          if (req.body.stayLoggedIn === 'true') {
+            login_duration = 60 * 24 * 365 // stay login for a year
+          }
+
+          refreshCookie = refreshToken
+          resp = success({
+            accessToken: generateUserAccessToken(userInfo, login_duration),
+            userInfo
+          })
         }   
       }
     }
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
-
-  res.status(status).json(response);
-});
+  res.cookie('uRT', refreshCookie, {httpOnly: true, path:'/'})
+  res.status(resp.status).json(resp.response)
+})
 
 /* USER sign-up */
 router.post('/sign-up', async function(req, res, next) {
 
+  let refreshCookie
+
   try {
 
-    if(['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
-      status = 401;
-      response = {
-        message: 'Form error',
-        details: 'Veuillez remplir tous les champs'
-      }
+    if(['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 || ['', 'null'].indexOf(req.body.firstname) > 0 || ['', 'null'].indexOf(req.body.lastname) > 0) {
+      resp = badRequest('Veuillez remplir tous les champs du formulaire')
+
     } else {
-
-      const findUser = await userModel.findOne({
-        email: req.body.email
-      })
-
+      const findUser = await userModel.findOne({email: req.body.email})
       if(findUser != null){
-        status = 401;
-        response = {
-          message: 'User already exists',
-          details: 'Cet utilisateur existe déjà'
-        }
+        resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
+
       } else {
+        const refreshToken = jwt.sign({}, process.env.JWT_USER_REFRESH_KEY)
         var hash = await bcrypt.hash(req.body.password, saltRounds)
         /* Création user */
-        const token = generateToken()
         const newUser = new userModel({
           creationDate: new Date,
           lastname: req.body.lastname,
           firstname: req.body.firstname,
           email: req.body.email,
           password: hash,
-          token: token
+          token: refreshToken
         })
 
         saveUser = await newUser.save()
 
         /* Envoi de l'email de confirmation*/
 
-        const url = `http://localhost:3001/confirmation/${token}`
+        const url = `http://localhost:3001/confirmation/${refreshToken}`
 
         const request = await mailjet
         .post("send", {'version': 'v3.1'})
@@ -178,451 +213,340 @@ router.post('/sign-up', async function(req, res, next) {
             }
           ]
         })
-        console.log(request)
 
-
-        status = 200;
-        response = {
-          message: 'OK',
-          data: {
-            token: saveUser.token
-          }
+        const userInfo = {
+          lastname: saveUser.lastname,
+          firstname: saveUser.firstname,
+          email: saveUser.email,
+          id: saveUser._id
         }
+        refreshCookie = refreshToken
+        resp = created({
+          accessToken: generateUserAccessToken(userInfo, login_duration),
+            userInfo
+        })
       }
     }
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
-  
-});
-
-/* POST ad id in user's table */
-router.put('/ad/:ad_id', async function(req, res, next) {
-
-  // try {
-
-    if (req.headers.token) {
-
-      let findAd = await userModel.findOne({ token : req.headers.token, 'ads': req.params.ad_id });
-
-      if(findAd) { 
-        status = 200;
-        response = {
-          message: 'OK',
-          details: 'Annonce déjà consultée et sauvegardée'
-        };
-      } else {
-
-        let newAd = await userModel.updateOne(
-          { token : req.headers.token },
-          { $push : { 'ads' : req.params.ad_id } }
-        );
-
-        status = 200;
-        response = {
-          message: 'OK'
-        }
-      };
-    } else {
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      }
-    }
-
-  // } catch(e) {
-  //   status = 500;
-  //   response = {
-  //     message: 'Internal error',
-  //     details: 'Le serveur a rencontré une erreur.'
-  //   };
-  // }
-
-  res.status(status).json(response);
-
-});
-
-/* GET ads for a user with its timeslots and offers */
-router.get('/ads', async function(req, res, next) {
-
-  try {
-
-    const adsFromUser = await userModel
-      .findOne({ token:req.headers.token })
-      .populate('ads')
-      .exec()
-
-    if(!adsFromUser) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-
-      adsFromUser.ads.forEach( e => {      //filter timeslots and offers to only keep user's ones
-
-        let visits = e.timeSlots.filter( f => {
-          if (f.user.length > 0) {
-            let users = f.user.map( g => {return g.toString()})
-            if (users.indexOf(adsFromUser._id.toString()) > -1) {
-              f.user = adsFromUser._id 
-            } else {f = null}
-            return f
-          }
-        })
-        e.timeSlots = visits
-
-        let offers = e.offers.filter( g => {
-          return String(g.user) === String(adsFromUser._id)
-        })
-        e.offers = offers
-
-      })
-
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          ads: adsFromUser.ads,
-          token: adsFromUser.token
-        }
-      }
-    }
-
-  } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
-  }
-
-  res.status(status).json(response);
-
+  res.cookie('uRT', refreshCookie, {httpOnly: true, path:'/'})
+  res.status(resp.status).json(resp.response)
 })
 
-
-/* GET ad for a user only with its visit and offer  */ 
-router.get('/ad/:ad_id/private', async function(req, res, next) {
-
-  try {
-
-    const adsFromUser = await userModel
-      .findOne({ token:req.headers.token })
-      .populate('ads')
-      .exec()
-
-    if(!adsFromUser) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-
-      const user = {
-        lastname: adsFromUser.lastname,
-        firstname: adsFromUser.firstname
-      }
-
-      let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.ad_id)[0]
-
-      let visits = ad.timeSlots.filter( f => {
-        if (f.user.length > 0) {
-          let users = f.user.map( g => {return g.toString()})
-          if (users.indexOf(adsFromUser._id.toString()) > -1) {
-            f.user = adsFromUser._id 
-          } else {f = null}
-          return f
-        }
-      })
-      ad.timeSlots = visits
-
-      let offers = ad.offers.filter( g => {
-        return String(g.user) === String(adsFromUser._id)
-      })
-      ad.offers = offers
-      
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          ad: ad,
-          user: user
-        }
-      }
-    }
-
-  } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
-  }
-
-  res.status(status).json(response);
-});
-
+/* -----------------------------------------------AD DESC------------------------------------------ */
 /* GET public ad  */ 
 router.get('/ad/:ad_id/public', async function(req, res, next) {
 
   try {
 
-    let adFromDb = await adModel.findById(req.params.ad_id);
-
-    if(!adFromDb) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
+    if (!mongoose.Types.ObjectId.isValid(req.params.ad_id)) { // send a 404 if ad_id has not a id format
+      resp = notFound()
     } else {
 
-    adFromDb.timeSlots = [];
-    adFromDb.offers = [];
+      let adFromDb = await adModel.findById(req.params.ad_id)
+      if(!adFromDb) { 
+        resp = notFound()
 
-    status = 200;
-    response = {
-      message: 'OK',
-      data: adFromDb
+      } else {
+        adFromDb.timeSlots = []
+        adFromDb.offers = []
+        resp = success({
+          ad: adFromDb
+        })
+      }
     }
-  }
     
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
-});
+  res.status(resp.status).json(resp.response)
+})
 
+/* -----------------------------------------------SAVE AD FOR USER------------------------------------------ */
+/* ADD ad id in user's table */
+router.put('/ad/:ad_id', authenticateUser, async function(req, res) {
+
+  try {
+
+    let findAd = await userModel.findOne({ _id : req.userInfo.id, 'ads': req.params.ad_id })
+    if(!findAd) { 
+      await userModel.updateOne(
+        { _id : req.userInfo.id },
+        { $push : { 'ads' : req.params.ad_id } }
+      )
+      resp = success({message: 'Cette annonce a été sauvegardée dans vos biens consultés'})
+
+    } else {
+      resp = success({})
+    }
+
+  } catch(e) {
+    resp = internalError()
+  }
+
+  res.status(resp.status).json(resp.response)
+})
+
+/* GET ad for a user only with its visit and offer  */ 
+router.get('/ad/:ad_id/private', authenticateUser, async function(req, res) {
+
+  try {
+
+    const adsFromUser = await userModel
+      .findById(req.userInfo.id)
+      .populate('ads')
+      .exec()
+
+    let ad = adsFromUser.ads.filter(e => e._id.toString() === req.params.ad_id)[0]
+
+    let visits = ad.timeSlots.filter( f => {
+      if (f.user.length > 0) {
+        let users = f.user.map( g => {return g.toString()})
+        if (users.indexOf(adsFromUser._id.toString()) > -1) {
+          f.user = adsFromUser._id 
+          
+        } else {
+          f = null
+        }
+
+        return f
+      }
+    })
+    ad.timeSlots = visits
+
+    let offers = ad.offers.filter( g => {
+      return String(g.user) === String(adsFromUser._id)
+    })
+    ad.offers = offers
+    
+    resp = success({
+      ad
+    })
+
+  } catch(e) {
+    resp = internalError()
+  }
+
+  res.status(resp.status).json(resp.response)
+})
+
+
+/* -----------------------------------------------GET ALL USER ADS------------------------------------------ */
+/* GET ads for a user with its timeslots and offers */
+router.get('/ads', authenticateUser, async function(req, res) {
+
+  try {
+
+    const adsFromUser = await userModel
+      .findById(req.userInfo.id)
+      .populate('ads')
+      .exec()
+
+    adsFromUser.ads.forEach( e => {      //filter timeslots and offers to only keep user's ones
+
+      let visits = e.timeSlots.filter( f => {
+        if (f.user.length > 0) {
+          let users = f.user.map( g => {return g.toString()})
+          if (users.indexOf(adsFromUser._id.toString()) > -1) {
+            f.user = adsFromUser._id 
+
+          } else {
+            f = null
+          }
+
+          return f
+        }
+      })
+      e.timeSlots = visits
+
+      let offers = e.offers.filter( g => {
+        return String(g.user) === String(adsFromUser._id)
+      })
+      e.offers = offers
+
+    })
+
+    resp = success({
+      ads: adsFromUser.ads
+    })
+
+  } catch(e) {
+    resp = internalError()
+  }
+
+  res.status(resp.status).json(resp.response)
+})
+
+/* -----------------------------------------------GET, POST OFFERS------------------------------------------ */
+/* GET offers */
+// router.get('/offers', async function(req, res, next) {
+
+//   let userToFind = await userModel.findOne({ token:req.headers.token })
+
+//   adModel.aggregate([
+//     { $unwind: "$offers" },
+//     { $match: { 'offers.user' : userToFind._id } }
+//   ]).exec((err, result) => {
+//     res.json(result)
+//   })
+
+// })
+
+
+/* POST offer */
+router.post('/ad/:ad_id/offer', authenticateUser, async function(req, res) {
+
+  try {
+
+    let offer = {
+      creationDate: req.body.creationDate,
+      status: 'pending',
+      user: req.userInfo.id,
+      singleBuyer: req.body.singleBuyer,
+      lastName1: req.body.lastName1,
+      firstName1: req.body.firstName1,
+      lastName2: req.body.lastName2,
+      firstName2: req.body.firstName2,
+      address: req.body.address,
+      postCode: req.body.postCode,
+      city: req.body.city,
+      amount: req.body.amount,
+      loan: req.body.loan,
+      loanAmount: req.body.loanAmount,
+      contributionAmount: req.body.contributionAmount,
+      monthlyPay: req.body.monthlyPay,
+      notary: req.body.notary,
+      notaryName: req.body.notaryName,
+      notaryAddress: req.body.notaryAddress,
+      notaryEmail: req.body.notaryEmail,
+      validityPeriod: req.body.validityPeriod,
+      location: req.body.location,
+      comments: req.body.comments
+    }
+
+    let newOffer = await adModel.updateOne(
+        { _id: req.params.ad_id }, 
+        { $push: { offers: offer } }
+    )
+
+    resp = created({
+      offer: newOffer
+    })
+  
+  } catch(e) {
+    resp = internalError()
+  }
+
+  res.status(resp.status).json(resp.response)
+})
+
+
+/* -----------------------------------------------TIMESLOTS------------------------------------------ */
 /* GET available timeslots for an ad */
-router.get('/ad/:ad_id/timeslots', async function(req,res,next) {
+router.get('/ad/:ad_id/timeslots', authenticateUser, async function(req,res) {
 
   try {
   
-    let adFromDb = await adModel.findById(req.params.ad_id);
+    let adFromDb = await adModel.findById(req.params.ad_id)
 
     if(!adFromDb) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
+      resp = notFound()
 
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          timeslots: adFromDb.timeSlots
-        }
-      }
+    } else {
+      resp = success({
+        timeslots: adFromDb.timeSlots
+      })
     }
 
    } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 })
 
-/* GET offers */
-router.get('/offers', async function(req, res, next) {
 
-  let userToFind = await userModel.findOne({ token:req.headers.token });
-
-  adModel.aggregate([
-    { $unwind: "$offers" },
-    { $match: { 'offers.user' : userToFind._id } }
-  ]).exec((err, result) => {
-    res.json(result);
-  });
-
-});
-
-/* GET visites */
-router.get('/ad/visit', async function(req, res, next) {
-
-  let userToFind = await userModel.findOne({ token:req.body.token });
-
-  adModel.aggregate([
-    { $unwind: "$timeSlots" },
-    { $match: { 'timeSlots.user' : userToFind._id } }
-  ]).exec((err, result) => {
-    res.json(result);
-  });
-
-});
-
-/* POST offer */
-router.post('/ad/:ad_id/offer', async function(req, res, next) {
+/* PUT timeslot : book a timeslot for a visit */
+router.put('/ad/:ad_id/timeslots/:timeslot_id', authenticateUser, async function(req, res) {
 
   try {
 
-    let userToFind = await userModel.findOne({ token:req.headers.token });
+    await adModel.updateOne(
+      { _id: req.params.ad_id, "timeSlots._id": req.params.timeslot_id }, 
+      { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : req.userInfo.id } }
+    )
+    resp = success({})
 
-    if(!userToFind) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-
-      let offer = {
-        creationDate: req.body.creationDate,
-        status: 'pending',
-        user: userToFind._id,
-        singleBuyer: req.body.singleBuyer,
-        lastName1: req.body.lastName1,
-        firstName1: req.body.firstName1,
-        lastName2: req.body.lastName2,
-        firstName2: req.body.firstName2,
-        address: req.body.address,
-        postCode: req.body.postCode,
-        city: req.body.city,
-        amount: req.body.amount,
-        loan: req.body.loan,
-        loanAmount: req.body.loanAmount,
-        contributionAmount: req.body.contributionAmount,
-        monthlyPay: req.body.monthlyPay,
-        notary: req.body.notary,
-        notaryName: req.body.notaryName,
-        notaryAddress: req.body.notaryAddress,
-        notaryEmail: req.body.notaryEmail,
-        validityPeriod: req.body.validityPeriod,
-        location: req.body.location,
-        comments: req.body.comments
-      }
-
-      let newOffer = await adModel.updateOne(
-          { _id: req.params.ad_id }, 
-          { $push: { offers: offer } }
-      )
-
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          offer: newOffer
-        }
-      }
-    }
-  
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
+})
 
-});
+/* Delete timeslots : cancel visit */
+router.delete('/ad/:ad_id/timeslots/:timeslot_id', authenticateUser, async function(req,res) {
 
-/* PUT visite */
-router.put('/ad/:ad_id/visit', async function(req, res, next) {
+  try {
 
-  // try {
+    // Check timeslot if booking status needs to be updated
+    let bookingStatus = false
 
-    let userToFind = await userModel.findOne({ token:req.headers.token });
+    let adFromDb = await adModel.findById(req.params.ad_id)
+    let timeslot = adFromDb.timeSlots.filter (e => e._id == req.params.timeslot_id)
 
-    if(!userToFind) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
+    // refresh user for timeslot
+    const newUsers = timeslot[0].user.filter(e => e != req.userInfo.id) 
 
-      let newVisit = await adModel.updateOne(
-        { _id: req.params.ad_id, "timeSlots._id": req.body.timeslot }, 
-        { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : userToFind._id } }
-      )
-      
-      status = 200;
-      response = {
-        message: 'OK'
-      }
+    // keep timeslot booked if other users have booked it
+    if (newUsers.length > 0) {
+      bookingStatus = true
     }
 
-// } catch(e) {
-//   status = 500;
-//   response = {
-//     message: 'Internal error',
-//     details: 'Le serveur a rencontré une erreur.'
-//   };
-// }
+    //DB update
+    const timeslotUpdate = await adModel.updateOne(
+      { _id: req.params.ad_id, "timeSlots._id": req.params.timeslot_id }, 
+      { $set: { 'timeSlots.$.booked' : bookingStatus, 'timeSlots.$.user' : newUsers } }
+    )
 
-res.status(status).json(response);
+    resp = deleted()
 
-});
+  } catch(e) {
+    resp = internalError()
+  }
 
+  res.status(resp.status).json(resp.response)
+})
+
+/* -----------------------------------------------QUESTIONS------------------------------------------ */
 /* POST question */
-router.post('/ad/:ad_id/question', async function(req, res, next) {
+router.post('/ad/:ad_id/question', authenticateUser, async function(req, res) {
 
   try {
 
-    let userToFind = await userModel.findOne({ token:req.headers.token });
-
-    if(!userToFind) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-
-      let question = {
-        creationDate: new Date,
-        status: 'pending',
-        question: req.body.question,
-        user: userToFind._id
-      }
-
-      let newQuestion = await adModel.updateOne(
-          { _id: req.params.ad_id }, 
-          { $push: { questions: question } }
-      )
-
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          offer: newQuestion
-        }
-      }
+    let question = {
+      creationDate: new Date,
+      status: 'pending',
+      question: req.body.question,
+      user: req.userInfo.id
     }
+
+    await adModel.updateOne(
+        { _id: req.params.ad_id }, 
+        { $push: { questions: question } }
+    )
+
+    resp = created({})
   
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
+})
 
-});
-
-module.exports = router;
+module.exports = router

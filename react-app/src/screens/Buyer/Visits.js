@@ -5,49 +5,52 @@ import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
 
 import {RightOutlined, LeftOutlined, DownOutlined} from '@ant-design/icons'
-import {Layout, Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Button, Popconfirm, message, Radio, Alert} from 'antd'
-import locale from 'antd/es/date-picker/locale/fr_FR'
-import moment from 'moment'
+import {Layout, Menu, Dropdown, Modal, Button, Popconfirm, message, Spin} from 'antd'
+import {LoadingOutlined} from '@ant-design/icons'
+
 import 'moment/locale/fr'
 
 import {connect} from 'react-redux'
+import {useCookies} from 'react-cookie'
 
-import UserNavHeader from '../../components/UserNavHeader'
+import APIFetch from '../../components/Buyer/APIFetch'
+import UserNavHeader from '../../components/Buyer/UserNavHeader'
+import Unauthorized_401 from './Unauthorized_401'
 
-// import './Calendar.css'
 import 'antd/dist/antd.css'
 
-
-const ts = require("time-slots-generator")
-
-const { RangePicker } = TimePicker
-const { Option } = Select
 const {Content} = Layout
 
+const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginLeft: '4px', marginTop: '4px' }} spin/>
 
-function Visits(props) {
+function Visits() {
+
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  const [adsListFromDb, setAdsListFromDb] = useState()
   
   const [myEvents, setMyEvents] = useState([])
-  const [properties, setProperties] = useState([])
   const [title, setTitle] = useState('')
   const [view, setView] = useState('Semaine')
-  const [displaySlots, setDisplaySlots] = useState(false)
 
-  var calendar = useRef(null)
+  const [redirectTo401, setRedirectTo401] = useState(false)
+
+  const [cookies] = useCookies(['name']); // initilizing state cookies
+
+  const calendar = useRef(null)
+
+  message.config({
+    top: 80
+  })
+
+  
+  /* -----------------------------------------------LOAD VISITS FROM DB------------------------------------------ */
 
   useEffect( () => {
-    const changeTitle = async () => {
-      setTitle(calendar.current.calendar.view.title)
-    }
-
-    const dbFetch = async () => {
-      const ads = await fetch('/user/ads', {
-        method: 'GET',
-        headers: {'token': props.buyerLoginInfo.token}
-      })
-      const body = await ads.json()
+    
+    if(adsListFromDb) {
       
-      let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
+      let adsWithTimeslots = adsListFromDb.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
       let timeslots = adsWithTimeslots.map( e => { //create a table of timeslots with their title and color
         return (e.timeSlots.map( f => {
           return {
@@ -89,22 +92,12 @@ function Visits(props) {
         }
       })
     setMyEvents(events)
-      
-    /* Creation of properties list for modal */
-    let prop = body.data.ads.map( e => {
-      return {
-        name: e.title,
-        color: e.color,
-        adId: e._id
-      }
-    })
-    setProperties(prop)
-
+    setTitle(calendar.current.calendar.view.title)
     }
-  changeTitle()
-  dbFetch()
-  }, [displaySlots])
+  
+  }, [dataLoaded])
 
+  /* -----------------------------------------------CALENDAR SET_UP------------------------------------------ */
 
   /* View choice : day, week, month */
   const menu = (
@@ -115,6 +108,7 @@ function Visits(props) {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('timeGridWeek')
           setView('Semaine')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Semaine
@@ -125,118 +119,24 @@ function Visits(props) {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('timeGridDay')
           setView('Jour')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Jour
       </Menu.Item>
       <Menu.Item
-        key="0"
+        key="2"
         onClick={ () => {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('dayGridMonth')
           setView('Mois')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Mois
       </Menu.Item>
     </Menu>
   )
-
-  /*----------------------------------------------- MODAL ---------------------------------------------------*/
-  const [appointmentModalVisible, setAppointmentModalVisible] = useState(false)
-  const [appointmentModalMode, setAppointmentModalMode] = useState(null)
-  const [appointmentModalOkLoading, setAppointmentModalOkLoading] =useState(false)
-
-  const [appointmentModalEventDate, setAppointmentModalEventDate] = useState(null)
-  const [appointmentModalEventHour1, setAppointmentModalEventHour1] = useState(null)
-  const [appointmentModalEventHour2, setAppointmentModalEventHour2] = useState(null)
-  const [appointmentModalEventProperty, setAppointmentModalEventProperty] = useState(null)
-  const [appointmentModalEventPropertyId, setAppointmentModalEventPropertyId] = useState(0)
-  const [appointmentModalEventPrivate, setAppointmentModalEventPrivate] = useState(true)
-  const [appointmentModalEventId, setAppointmentModalEventId] = useState(0)
-
-  const [failMsgVisible, setFailMsgVisible] = useState(false)
-
-  const propertiesOptions = properties.map( (e,i) => (
-    <Option
-      key={i}
-      value={e.adId}
-    >
-      <span className="dot" style={{
-        backgroundColor: e.color,
-        height: '15px',
-        width: '15px',
-        borderRadius: '50%',
-        display: 'inline-block',
-        marginRight: '1em'
-      }}></span>
-      {e.name}
-    </Option>
-  ))
-
-
-  const handleCancel = () => {
-    setAppointmentModalVisible(false)
-    setAppointmentModalEventDate(null)
-    setAppointmentModalEventHour1(null)
-    setAppointmentModalEventHour2(null)
-    setAppointmentModalEventProperty(null)
-    setAppointmentModalEventPropertyId(null)
-    setAppointmentModalEventId(null)
-    setAppointmentModalMode(null)
-    setAppointmentModalEventPrivate(true)
-    setFailMsgVisible(false)
-  }
-
-  async function confirm() {
-
-    const deleteTimeslots = await fetch(`/user/ad/${appointmentModalEventPropertyId}/timeslot/${appointmentModalEventId}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'token': props.buyerLoginInfo.token
-      }
-    })
-    const body = await deleteTimeslots.json()
-    if (body.message === 'OK') {
-      message.success('Visite annulée')
-      setDisplaySlots(!displaySlots)
-      setAppointmentModalVisible(false)
-      setAppointmentModalEventDate(null)
-      setAppointmentModalEventHour1(null)
-      setAppointmentModalEventHour2(null)
-      setAppointmentModalEventProperty(null)
-      setAppointmentModalEventPropertyId(null)
-      setAppointmentModalEventId(null)
-      setAppointmentModalMode(null)
-      setAppointmentModalEventPrivate(true)
-      setFailMsgVisible(false)
-    } else {
-      setFailMsgVisible(true)
-      setAppointmentModalOkLoading(false)
-    }
-  }
-
-  /* MODAL FOOTER */
-  const modalFooter =
-
-    <div>
-      <div className="modal-footer-buttons">
-            <Popconfirm
-              title="Confirmer l'annulation' ?"
-              onConfirm={confirm}
-              okText="Oui"
-              okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
-              cancelText="Non"
-              cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
-              placement="bottomLeft"
-            >
-              <Button type="secondary" className="button-delete modal-footer-button-delete">
-                Annuler la visite
-              </Button>
-            </Popconfirm>
-      </div>
-    </div>
 
   /* Column Header translation */
   const daysInFrench = {
@@ -249,143 +149,259 @@ function Visits(props) {
     '6' : 'Sam',
   }
   const daysTranslate = (state) => daysInFrench[state]
+  
 
+  /*----------------------------------------------- MODAL ---------------------------------------------------*/
+  const [appointmentModalVisible, setAppointmentModalVisible] = useState(false)
 
-  return (
-    <Layout className="user-layout">
+  const [appointmentModalEventDate, setAppointmentModalEventDate] = useState(null)
+  const [appointmentModalEventHour1, setAppointmentModalEventHour1] = useState(null)
+  const [appointmentModalEventHour2, setAppointmentModalEventHour2] = useState(null)
+  const [appointmentModalEventProperty, setAppointmentModalEventProperty] = useState(null)
+  const [appointmentModalEventPropertyId, setAppointmentModalEventPropertyId] = useState(0)
+  const [appointmentModalEventId, setAppointmentModalEventId] = useState(0)
 
-        <UserNavHeader current="Biens consultés"/>
+  const [cancelVisitErrorMsg, setCancelVisitErrorMsg] = useState()
+  const [cancelVisitLoad, setCancelVisitLoad] = useState(false)
 
-            <Layout className='user-layout main-content'>
+  /* CLOSE OF MODAL */
+  const handleCancel = () => {
+    setAppointmentModalVisible(false)
+    setAppointmentModalEventDate(null)
+    setAppointmentModalEventHour1(null)
+    setAppointmentModalEventHour2(null)
+    setAppointmentModalEventProperty(null)
+    setAppointmentModalEventPropertyId(null)
+    setAppointmentModalEventId(null)
+  }
 
-            <Content>
-            <h1 className='pageTitle'>Mon calendrier</h1>
+  /* CANCEL VISIT */
+  async function confirm() {
 
-            <div className="calendar-header">
-                <div className="calendar-headerNavLeft">
-                <LeftOutlined
-                    className="calendar-headerNavLeft-chevronIcon"
-                    onClick={ () => {
-                    const calendarApi = calendar.current.getApi()
-                    calendarApi.prev()
-                    setTitle(calendar.current.calendar.view.title)
-                    }}
-                />
+    setCancelVisitLoad(true)
 
-                <div className="calendar-headerNavLeft-dateTitle">
-                    {title}
-                </div>
+    const deleteTimeslots = await fetch(`/user/ad/${appointmentModalEventPropertyId}/timeslots/${appointmentModalEventId}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        'Authorization': `Bearer ${cookies.uT}`
+      }
+    })
 
-                <RightOutlined
-                    className="calendar-headerNavLeft-chevronIcon"
-                    onClick={ () => {
-                    const calendarApi = calendar.current.getApi()
-                    calendarApi.next()
-                    setTitle(calendar.current.calendar.view.title)
-                    }}
-                />
-                </div>
+    if (deleteTimeslots.status === 500) {
+      setCancelVisitLoad(false)
+      setCancelVisitErrorMsg('Nous rencontrons des difficultés pour annuler votre visite, veuillez réessayer.')
+  
+    } else if (deleteTimeslots.status === 401) {
+      setRedirectTo401(true)
 
-                <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
-                    <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                        {view} <DownOutlined />
-                    </a>
-                </Dropdown>
-            </div>
+    } else if (deleteTimeslots.status === 204) {
+      setCancelVisitLoad(false)
+      message.success('Votre visite a bien été annulée', 4)
+      setMyEvents(myEvents.filter(e => e.extendedProps.adId !== appointmentModalEventPropertyId)) // delete visit on calendat
+      setAppointmentModalVisible(false)
+      setAppointmentModalEventDate(null)
+      setAppointmentModalEventHour1(null)
+      setAppointmentModalEventHour2(null)
+      setAppointmentModalEventProperty(null)
+      setAppointmentModalEventPropertyId(null)
+      setAppointmentModalEventId(null)
+    }
+  }
 
-            <FullCalendar
-                /* Global Settings */
-                ref={calendar}
-                plugins={[ dayGridPlugin, timeGrid, interaction ]}
-                defaultView="timeGridWeek"
-                locale= 'fr'
-                header={{
-                left: '',
-                center: '',
-                right: ''
-                }}
-                contentHeight= "auto"
+  /* MODAL FOOTER */
+  const modalFooter =
 
-                /* Events */
-                events={myEvents}
+    <div>
+      <div className="modal-footer-buttons">
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          
+          <Popconfirm
+            title="Confirmer l'annulation ?"
+            onConfirm={confirm}
+            okText="Oui"
+            okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
+            cancelText="Non"
+            cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
+            placement="bottomLeft"
+          >
+            <Button type="secondary" className="button-delete modal-footer-button-delete">
+              Annuler la visite
+            </Button>
+          </Popconfirm>
 
-                /* Time Settings */
-                timeZone='UTC'
-                firstDay= {1}
-                hiddenDays={[0]}
-                allDaySlot={false}
-                minTime={'08:00'}
-                maxTime={'20:00'}
-                defaultTimedEventDuration={'00:30'}
-
-                /* Column headers */
-                columnHeaderHtml={ (date) => {
-                    if (view==='Semaine') {
-                        return (
-                        `<div class="calendar-week-column-header" >
-                            <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
-                            <div class="calendar-week-column-header-number">${date.getDate()}</div>
-                        </div>`
-                        )
-                    }
-                    else if (view==='Mois') {
-                        return (
-                            `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                        )
-                    }
-                    else if (view==='Jour') {
-                        return (
-                            `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                        )
-                    }
-                }}
-                
-                /*Manage clicks on elements*/
-                selectable= {true}
-                navLinks= {true}
-                navLinkDayClick="timeGridDay"
-                eventClick= { (info) => {
-                  setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
-                  setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
-                  setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
-                  setAppointmentModalEventProperty(info.event.title)
-                  setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
-                  setAppointmentModalEventPrivate(info.event.extendedProps.private)
-                  setAppointmentModalEventId(info.event.id)
-                  setAppointmentModalMode('edit')
-                  setAppointmentModalVisible(true)
-                }}    
+          {cancelVisitLoad &&
+            <Spin
+                size="large"
+                indicator={logo}
             />
+          }
 
-            <Modal
-                title={appointmentModalEventProperty}
-                visible={appointmentModalVisible}
-                footer= {modalFooter}
-                destroyOnClose= {true}
-                width= "50%"
-                closable={true}
-                mask={true}
-                maskClosable={true}
-                onCancel={handleCancel}
-            >
-                <div className='input-modal'>
-                    <p className="input-modal-label">Date de la visite : {appointmentModalEventDate}</p>
+          {cancelVisitErrorMsg &&
+            <p style={{marginLeft: '6px', color:'#f67280'}}>{cancelVisitErrorMsg}</p>
+          }
+        </div>
+      </div>
+    </div>
+
+  /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
+
+  if (redirectTo401) {
+    return <Unauthorized_401 />
+  } else {
+
+    return (
+
+      <APIFetch
+        fetchUrl= '/user/ads'
+        fetchOptions={{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Authorization': `Bearer ${cookies.uT}`
+          }
+        }}
+        getApiResponse = { response => {
+            if (!dataLoaded) {
+                setAdsListFromDb(response.data.ads)
+            }
+            setDataLoaded(true)
+        }}
+      >
+
+        <Layout className="user-layout">
+            <UserNavHeader current="Biens consultés"/>
+                <Layout className='user-layout main-content'>
+                <Content>
+                <h1 className='pageTitle'>Mon calendrier</h1>
+
+                <div className="calendar-header">
+                    <div className="calendar-headerNavLeft">
+                    <LeftOutlined
+                        className="calendar-headerNavLeft-chevronIcon"
+                        onClick={ () => {
+                        const calendarApi = calendar.current.getApi()
+                        calendarApi.prev()
+                        setTitle(calendar.current.calendar.view.title)
+                        }}
+                    />
+
+                    <div className="calendar-headerNavLeft-dateTitle">
+                        {title}
+                    </div>
+
+                    <RightOutlined
+                        className="calendar-headerNavLeft-chevronIcon"
+                        onClick={ () => {
+                        const calendarApi = calendar.current.getApi()
+                        calendarApi.next()
+                        setTitle(calendar.current.calendar.view.title)
+                        }}
+                    />
+                    </div>
+
+                    <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
+                        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                            {view} <DownOutlined />
+                        </a>
+                    </Dropdown>
                 </div>
 
-                <div className='input-modal'>
-                    <p className="input-modal-label">Horaires de la visite : de {appointmentModalEventHour1} à {appointmentModalEventHour2}</p>
-                </div>
+                <FullCalendar
+                    /* Global Settings */
+                    ref={calendar}
+                    plugins={[ dayGridPlugin, timeGrid, interaction ]}
+                    defaultView="timeGridWeek"
+                    locale= 'fr'
+                    header={{
+                    left: '',
+                    center: '',
+                    right: ''
+                    }}
+                    contentHeight= "auto"
 
-            </Modal>
-          </Content>  
+                    /* Events */
+                    events={myEvents}
+
+                    /* Time Settings */
+                    timeZone='UTC'
+                    firstDay= {1}
+                    hiddenDays={[0]}
+                    allDaySlot={false}
+                    minTime={'08:00'}
+                    maxTime={'20:00'}
+                    defaultTimedEventDuration={'00:30'}
+
+                    /* Column headers */
+                    columnHeaderHtml={ (date) => {
+                        if (view==='Semaine') {
+                            return (
+                            `<div class="calendar-week-column-header" >
+                                <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
+                                <div class="calendar-week-column-header-number">${date.getDate()}</div>
+                            </div>`
+                            )
+                        }
+                        else if (view==='Mois') {
+                            return (
+                                `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                            )
+                        }
+                        else if (view==='Jour') {
+                            return (
+                                `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                            )
+                        }
+                    }}
+                    
+                    /*Manage clicks on elements*/
+                    selectable= {true}
+                    navLinks= {true}
+                    navLinkDayClick="timeGridDay"
+                    eventClick= { (info) => {
+                      setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
+                      setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
+                      setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
+                      setAppointmentModalEventProperty(info.event.title)
+                      setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
+                      setAppointmentModalEventId(info.event.id)
+                      setAppointmentModalVisible(true)
+                    }}    
+                />
+
+                <Modal
+                    title={appointmentModalEventProperty}
+                    visible={appointmentModalVisible}
+                    footer= {modalFooter}
+                    destroyOnClose= {true}
+                    width= "50%"
+                    closable={true}
+                    mask={true}
+                    maskClosable={true}
+                    onCancel={handleCancel}
+                >
+                    <div className='input-modal'>
+                        <p className="input-modal-label">Date de la visite : {appointmentModalEventDate}</p>
+                    </div>
+
+                    <div className='input-modal'>
+                        <p className="input-modal-label">Horaires de la visite : de {appointmentModalEventHour1} à {appointmentModalEventHour2}</p>
+                    </div>
+
+                </Modal>
+              </Content>  
+            </Layout>
         </Layout>
-    </Layout>
-  )
+      </APIFetch>
+    )
+  }
 }
 
 function mapStateToProps(state) {
   return { 
-    buyerLoginInfo : state.buyerLoginInfo
+    userLoginStatus : state.userLoginStatus
   }
 }
 

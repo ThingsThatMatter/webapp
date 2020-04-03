@@ -17,6 +17,7 @@ import CreateFormFive from '../screens/Agent/CreateForm5'
 import CreateFormSix from '../screens/Agent/CreateForm6'
 import agentSignIn from '../screens/Agent/SignIn'
 import agentSignUp from '../screens/Agent/SignUp'
+import Error_404 from '../screens/Agent/404'
 
 
 function AgentRoutes(props) {
@@ -57,20 +58,21 @@ function AgentRoutes(props) {
 
         <Router>
             <Switch>
-                <PrivateRoute component={Home} path="/pro" exact />
-                <PrivateRoute component={Offres} path="/pro/offres" exact/>
-                <PrivateRoute component={RendezVous} path="/pro/rendezvous" exact/>
-                <PrivateRoute component={Questions} path="/pro/questions" exact/>
-                <PrivateRoute component={AdDesc} path="/pro/ad/:id" exact/>
-                <PrivateRoute component={CreateFormOne} path="/pro/createform/step1" exact/>
-                <PrivateRoute component={CreateFormTwo} path="/pro/createform/step2" exact/>
-                <PrivateRoute component={CreateFormThree} path="/pro/createform/step3" exact/>
-                <PrivateRoute component={CreateFormFour} path="/pro/createform/step4" exact/>
-                <PrivateRoute component={CreateFormFive} path="/pro/createform/step5" exact/>
-                <PrivateRoute component={CreateFormSix} path="/pro/createform/step6" exact/>
+                <PrivateRoute component={Home} path='/pro' exact />
+                <PrivateRoute component={Offres} path='/pro/offres' exact/>
+                <PrivateRoute component={RendezVous} path='/pro/rendezvous' exact/>
+                <PrivateRoute component={Questions} path='/pro/questions' exact/>
+                <PrivateRoute component={AdDesc} path='/pro/ad/:id' exact/>
+                <PrivateRoute component={CreateFormOne} path='/pro/createform/step1' exact/>
+                <PrivateRoute component={CreateFormTwo} path='/pro/createform/step2' exact/>
+                <PrivateRoute component={CreateFormThree} path='/pro/createform/step3' exact/>
+                <PrivateRoute component={CreateFormFour} path='/pro/createform/step4' exact/>
+                <PrivateRoute component={CreateFormFive} path='/pro/createform/step5' exact/>
+                <PrivateRoute component={CreateFormSix} path='/pro/createform/step6' exact/>
 
-                <Route component={agentSignIn} path="/pro/signin" />
-                <Route component={agentSignUp} path="/pro/signup" />
+                <Route component={agentSignIn} path='/pro/signin' exact/>
+                <Route component={agentSignUp} path='/pro/signup' exact/>
+                <Route component = {Error_404} path='/pro' />
             </Switch>
         </Router>
           

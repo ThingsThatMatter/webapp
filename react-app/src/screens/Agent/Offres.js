@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { Layout, Row, Button, Col, Collapse, Carousel, Modal } from 'antd';
+import { Layout, Row, Button, Col, Modal } from 'antd'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/Agent/Sidebar'
 import {CheckCircleOutlined} from '@ant-design/icons'
 
 const { Content } = Layout;

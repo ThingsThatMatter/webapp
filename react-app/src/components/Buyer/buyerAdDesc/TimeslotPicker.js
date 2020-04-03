@@ -1,44 +1,55 @@
-import React, { useState, useEffect } from "react";
-import { Col, Row, Popconfirm, message, Button } from "antd";
-import { Redirect, Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react'
+import { Col, Row, Popconfirm, message, Button } from 'antd'
+import {useCookies} from 'react-cookie'
+
+import Unauthorized_401 from '../../../screens/Buyer/Unauthorized_401'
 
 export default function TimeslotPicker(props) {
 
-const [slotsDisplay, setSlotsDisplay] = useState([]);
+    const [slotsDisplay, setSlotsDisplay] = useState([]);
+    const [cookies] = useCookies(['name']) // initilizing state cookies
 
-var weekday = new Array(7);
-weekday[0] = "dim";
-weekday[1] = "lun";
-weekday[2] = "mar";
-weekday[3] = "mer";
-weekday[4] = "jeu";
-weekday[5] = "ven";
-weekday[6] = "sam";
+    const [redirectTo401, setRedirectTo401] = useState(false)
 
-var month = new Array();
-month[0] = "janv";
-month[1] = "fev";
-month[2] = "mar";
-month[3] = "avr";
-month[4] = "mai";
-month[5] = "juin";
-month[6] = "juil";
-month[7] = "août";
-month[8] = "sept";
-month[9] = "oct";
-month[10] = "nov";
-month[11] = "dec";
+    var weekday = new Array(7);
+    weekday[0] = "dim";
+    weekday[1] = "lun";
+    weekday[2] = "mar";
+    weekday[3] = "mer";
+    weekday[4] = "jeu";
+    weekday[5] = "ven";
+    weekday[6] = "sam";
+
+    var month = new Array();
+    month[0] = "janv";
+    month[1] = "fev";
+    month[2] = "mar";
+    month[3] = "avr";
+    month[4] = "mai";
+    month[5] = "juin";
+    month[6] = "juil";
+    month[7] = "août";
+    month[8] = "sept";
+    month[9] = "oct";
+    month[10] = "nov";
+    month[11] = "dec";
 
 
     useEffect(() => {
 
         const getTimeslots = async () => {
 
-            let response = await fetch(`/user/ad/${props.adId}/timeslots`)
-            
-            let cleanresponse = await response.json()
-
-            let timeslots = cleanresponse.data.timeslots
+            let response = await fetch(`/user/ad/${props.adId}/timeslots`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'Authorization': `Bearer ${cookies.uT}`
+                }
+            })
+        
+            let body = await response.json()
+            let timeslots = body.data.timeslots
 
             timeslots = timeslots.filter((e)=> {
 
@@ -78,14 +89,14 @@ month[11] = "dec";
                     if( index !== -1 ) {
                         daySlots[index].slots.push({
                         start : hour1+min1,
-                        timeslot : timeslots[i]._id
+                        timeslotId : timeslots[i]._id
                         })
                     } else {
                     daySlots.push({
                         day: date,
                         slots : [{
                             start : hour1+ min1, 
-                            timeslot : timeslots[i]._id
+                            timeslotId : timeslots[i]._id
                             }]
                         })
                     }
@@ -97,24 +108,27 @@ month[11] = "dec";
                 return (a.day - b.day)
             })
 
-            const pickerClick = async (timeslot) => {
-                const response = await fetch(`/user/ad/${props.adId}/visit`, {
+            const pickerClick = async (timeslotId) => {
+                const postVisit = await fetch(`/user/ad/${props.adId}/timeslots/${timeslotId}`, {
                     method : "put",
                     headers: {
                         'Content-Type': 'application/json',
-                        'token' : props.buyerToken
-                    },
-                    body: JSON.stringify({
-                        timeslot : timeslot
-                    })
+                        Accept: 'application/json',
+                        'Authorization': `Bearer ${cookies.uT}`
+                    }
                 })
-                let body = await response.json()
-                if (body.message === 'OK') {
+
+                if (postVisit.status === 500) {
+                    message.warning('Nous rencontrons des difficultés pour planifier votre visite, veuillez réessayer.', 4)
+                
+                } else if (postVisit.status === 401) {
+                    setRedirectTo401(true)
+              
+                } else if (postVisit.status === 200) {
+                    message.success('Votre visite a bien été enregistrée', 2)
                     props.goToVisitParent()
                 }
-                else {
-                    message.error('Il y a eu une erreur, veuillez rééssayer');
-                }
+                    
             }
 
             const mapSlots = daySlots.map((e, i) => {
@@ -126,14 +140,14 @@ month[11] = "dec";
                             {weekday[e.day.getDay()]}
                         </div>
                         <div>
-                            {`${e.day.getDate()} ${month[e.day.getMonth()+1]}`}
+                            {`${e.day.getDate()} ${month[e.day.getMonth()]}`}
                         </div>
                     </div>
 
                     {e.slots.map((f, i) => (
                         <Popconfirm
-                            title="Confirmer le rendez-vous ?"
-                            onConfirm={() => pickerClick(f.timeslot)}
+                            title="Confirmer le créneau de visite ?"
+                            onConfirm={() => pickerClick(f.timeslotId)}
                             okText="Oui"
                             okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
                             cancelText="Non"
@@ -152,28 +166,31 @@ month[11] = "dec";
         getTimeslots();
     }, [])
 
+  /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 
-  return (
+  if (redirectTo401) {
+    return <Unauthorized_401 />
+  } else {
 
-    <div className="sidebar-calendar">
-    { slotsDisplay.length > 0 ?
-    <div>
-    <div className="sidebar-title">
-        <h4>Sélectionnez un créneau de visite</h4>
-    </div>
-            <Row className="slot-row">
-                {slotsDisplay} 
-            </Row>
-    </div>
-    :  
-    <div className="sidebar-calendar-content">
-        <p>Aucun créneau de visite</p>
-        <Button type="primary">Contacter mon agent</Button>
-    </div>
+        return (
+
+            <div className="sidebar-calendar">
+                { slotsDisplay.length > 0 ?
+                    <div>
+                    <div className="sidebar-title">
+                        <h4>Sélectionnez un créneau de visite</h4>
+                    </div>
+                            <Row className="slot-row">
+                                {slotsDisplay} 
+                            </Row>
+                    </div>
+                :  
+                    <div className="sidebar-calendar-content">
+                        <p>Aucun créneau de visite</p>
+                        <Button type="primary">Contacter mon agent</Button>
+                    </div>
+                }
+            </div>
+        )
     }
-  </div>
-   
-
-);
-
 }

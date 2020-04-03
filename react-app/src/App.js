@@ -15,10 +15,12 @@ import edit from './reducers/Agent/edit.reducer'
 
 import newOfferStep from './reducers/Buyer/newOfferStep.reducer'
 import offerFormData from './reducers/Buyer/offerFormData.reducer'
-import buyerLoginInfo from './reducers/Buyer/authentification.reducer'
-import adId from './reducers/Buyer/adId.reducer'
+import userLoginStatus from './reducers/Buyer/authentification.reducer'
+import userInfo from './reducers/Buyer/userInfo.reducer'
+import newOfferAd from './reducers/Buyer/newOfferAd.reducer'
+import redirectToAdId from './reducers/Buyer/adRedirection'
 
-const store = createStore(combineReducers({step, formData, agentLoginStatus, agentInfo, edit, newOfferStep, offerFormData, buyerLoginInfo, adId})
+const store = createStore(combineReducers({step, formData, agentLoginStatus, agentInfo, edit, newOfferStep, offerFormData, userLoginStatus, userInfo, newOfferAd, redirectToAdId})
 , window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() //redux devtool
 )
 

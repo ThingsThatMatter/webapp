@@ -1,16 +1,21 @@
-import React, {useState, useEffect} from 'react';
-import UserNavHeader from '../../components/UserNavHeader';
-import {Redirect, Link} from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import UserNavHeader from '../../components/Buyer/UserNavHeader'
+import { Link} from 'react-router-dom'
 import {connect} from 'react-redux' 
+import {useCookies} from 'react-cookie'
 
+import APIFetch from '../../components/Buyer/APIFetch'
 
 import { Layout, Col, Row} from 'antd';
 const {Content} = Layout;
 
 
-function Home(props) {
+function Home() {
+
+    const [dataLoaded, setDataLoaded] = useState(false)
 
     const [adsListFromDb, setAdsListFromDb] = useState([])
+    const [cookies] = useCookies(['name']); // initilizing state cookies
 
 /* Price formatting */
     const priceFormatter = new Intl.NumberFormat('fr', {
@@ -21,19 +26,6 @@ function Home(props) {
     })
 
 /* Ad Cards */
-    // Get from DB
-    useEffect( () => {
-        const adsFetch = async () => {
-        const ads = await fetch('/user/ads', {
-            method: 'GET',
-            headers: {'token': props.buyerLoginInfo.token}
-        })
-        const body = await ads.json();
-        setAdsListFromDb(body.data.ads)
-        }
-        adsFetch()
-    }, [])
-
 
     const dateCreate = (date) => {
         var year = date.slice(0,4)
@@ -106,43 +98,43 @@ function Home(props) {
 
         adsVisits = adsVisits.map( (e,i) => {
             
-            let visitMessage;
-                var visitEndDate = dateCreate(e.timeSlots[0].end)
-                var visitStartDate = dateCreate(e.timeSlots[0].start)
-                if (visitEndDate > new Date() ) {
-                    visitMessage = 
-                        <p className="annonce-messages-buyer">
-                            Visite prévue le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
-                        </p>
-                } else {
-                    visitMessage = 
-                        <p className="annonce-messages-buyer">
-                            Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
-                        </p>
-                }
+            let visitMessage
+            var visitEndDate = dateCreate(e.timeSlots[0].end)
+            var visitStartDate = dateCreate(e.timeSlots[0].start)
+            if (visitEndDate > new Date() ) {
+                visitMessage = 
+                    <p className="annonce-messages-buyer">
+                        Visite prévue le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
+                    </p>
+            } else {
+                visitMessage = 
+                    <p className="annonce-messages-buyer">
+                        Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
+                    </p>
+            }
 
-                return (
-                    <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
-                        <Link className="annonce-element" to={`/ad/${e._id}`}>
-                            <img className="annonce-image" src={e.photos[0]} />
-                            <div className="annonce-text-buyer">
-                                <div className="annonce-price-container">
-                                    <span className="annonce-price">{priceFormatter.format(e.price)}</span>
-                                </div>
-                                <p className="annonce-address-title">{e.address}</p>
-                                <p className="annonce-address-sub">{e.postcode} {e.city}</p>
+            return (
+                <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
+                    <Link className="annonce-element" to={`/ad/${e._id}`}>
+                        <img className="annonce-image" src={e.photos[0]} />
+                        <div className="annonce-text-buyer">
+                            <div className="annonce-price-container">
+                                <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                             </div>
-                            <div className="annonce-infos-buyer">
-                                <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
-                                <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
-                                <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
-                            </div>
-                            <div className="annonce-status-buyer">
-                                {visitMessage}
-                            </div>
-                        </Link>
-                    </Col>
-                )
+                            <p className="annonce-address-title">{e.address}</p>
+                            <p className="annonce-address-sub">{e.postcode} {e.city}</p>
+                        </div>
+                        <div className="annonce-infos-buyer">
+                            <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
+                            <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
+                            <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+                        </div>
+                        <div className="annonce-status-buyer">
+                            {visitMessage}
+                        </div>
+                    </Link>
+                </Col>
+            )
 
         })
 
@@ -170,56 +162,67 @@ function Home(props) {
     })
 
     return (
-  
-        <Layout className="user-layout">
+        
+        <APIFetch
+            fetchUrl= '/user/ads'
+            fetchOptions={{
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    Accept: 'application/json',
+                    'Authorization': `Bearer ${cookies.uT}`
+                }
+            }}
+            getApiResponse = { response => {
+                if (!dataLoaded) {
+                    setAdsListFromDb(response.data.ads)
+                }
+                setDataLoaded(true)
+            }}
+        >
+            <Layout className="user-layout">
+                <UserNavHeader current="Biens consultés"/>
+                <Layout className='user-layout main-content'>
+                <Content>
+                        
+                        {adsOffers.length > 0 &&
+                            <div>
+                                <h1 className='userTitle'>Mes offres</h1>
+                                <Row gutter={16} className="offers-row">
+                                    {adsOffers}
+                                </Row>
+                            </div>
+                        }
 
-            <UserNavHeader current="Biens consultés"/>
+                        {adsVisits.length > 0 &&
+                            <div>       
+                                <h1 className='userTitle'>Mes visites</h1>
+                                <Row gutter={16} className="visit-row">
+                                    {adsVisits}
+                                </Row>
+                            </div>
+                        }
 
-            <Layout className='user-layout main-content'>
-
-            <Content>
+                        {adsCopy.length > 0 &&
+                            <div>
+                                <h1 className='userTitle'>Mes biens consultés</h1>
+                                <Row gutter={16} className="ads-row">
+                                    {adsAll}
+                                </Row>
+                            </div>
+                        }
                     
-                    {adsOffers.length > 0 &&
-                        <div>
-                            <h1 className='userTitle'>Mes offres</h1>
-                            <Row gutter={16} className="offers-row">
-                                {adsOffers}
-                            </Row>
-                        </div>
-                    }
-
-                    {adsVisits.length > 0 &&
-                        <div>       
-                            <h1 className='userTitle'>Mes visites</h1>
-                            <Row gutter={16} className="visit-row">
-                                {adsVisits}
-                            </Row>
-                        </div>
-                    }
-
-                    {adsCopy.length > 0 &&
-                        <div>
-                            <h1 className='userTitle'>Mes biens consultés</h1>
-                            <Row gutter={16} className="ads-row">
-                                {adsAll}
-                            </Row>
-                        </div>
-                    }
-                   
-                </Content>  
-
-         </Layout>
-            
-    
-    </Layout>
-
-    );
+                    </Content>  
+                </Layout>
+            </Layout>
+        </APIFetch>
+    )
   }
 
 
 function mapStateToProps(state) {
     return { 
-        buyerLoginInfo : state.buyerLoginInfo
+        userLoginStatus : state.userLoginStatus
     }
 }
   

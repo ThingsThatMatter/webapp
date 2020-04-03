@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { Layout, Button, Switch, Badge, Collapse, Col, Row, Popconfirm, message } from "antd";
-import { Slide } from "react-slideshow-image";
-import { Redirect} from "react-router-dom";
+import React, { useState, useEffect } from "react"
+import { Layout, Button, Switch, Badge, Collapse, Col, Row, Popconfirm, message } from "antd"
+import { Slide } from "react-slideshow-image"
+import { Redirect} from "react-router-dom"
 import {HashLink as Link} from "react-router-hash-link"
 
-import { connect } from "react-redux";
+import { connect } from "react-redux"
 import {useCookies} from 'react-cookie'
 
-import Sidebar from "../../components/Sidebar";
+import Sidebar from '../../components/Agent/Sidebar'
 
 const { Content } = Layout;
 const { Panel } = Collapse;
@@ -65,17 +65,17 @@ function AdDesc(props) {
 
     const body = await data.json();
     renewAccessToken(body.data.accessToken) // Renew token if invalid soon
-    setAdDetails(body.data);
-    setAdPhotos(body.data.photos);
-    setAdDocuments(body.data.files);
-    setAdOffers(body.data.offers);
-    setAdVisits(body.data.timeSlots);
-    setAdQuestions(body.data.questions.filter(question => question.status === 'answered'));
-    setPendingQuestions(body.data.questions.filter(question => question.status === 'pending'));
+    setAdDetails(body.data.ad)
+    setAdPhotos(body.data.ad.photos)
+    setAdDocuments(body.data.ad.files)
+    setAdOffers(body.data.ad.offers)
+    setAdVisits(body.data.ad.timeSlots)
+    setAdQuestions(body.data.ad.questions.filter(question => question.status === 'answered'));
+    setPendingQuestions(body.data.ad.questions.filter(question => question.status === 'pending'));
 
     const tempTable = [];
 
-    if (body.data.adForDetails.advantages.findIndex(e => e === "ascenseur") !== -1) {
+    if (body.data.ad.advantages.findIndex(e => e === "ascenseur") !== -1) {
         tempTable.push(
             <span>
             <img src="../../../elevator.png" width="20px" alt="ascenseur" />
@@ -84,7 +84,7 @@ function AdDesc(props) {
         );
       }
 
-      if (body.data.adForDetails.advantages.findIndex(e => e === "balcon") !== -1) {
+      if (body.data.ad.advantages.findIndex(e => e === "balcon") !== -1) {
         tempTable.push(
           <span>
             <img src="../../../balcony.png" width="20px" alt="balcon" />
@@ -92,7 +92,7 @@ function AdDesc(props) {
           </span>
         );
       }
-      if (body.data.adForDetails.advantages.findIndex(e => e === "terrasse") !== -1) {
+      if (body.data.ad.advantages.findIndex(e => e === "terrasse") !== -1) {
         tempTable.push(
           <span>
             <img src="../../../floor.png" width="20px" alt="terrasse" />

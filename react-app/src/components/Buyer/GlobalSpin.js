@@ -1,7 +1,7 @@
 import React from 'react'
-import UserNavHeader from '../../components/UserNavHeader';
+import UserNavHeader from './UserNavHeader'
 
-import { Layout, Spin} from 'antd';
+import { Layout, Spin} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 const {Content} = Layout;
 

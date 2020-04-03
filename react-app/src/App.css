@@ -38,7 +38,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 h1 {
-  font-size: 2.7em;
+  font-size: 2em;
   margin-bottom: 1.5em;
 }
 
@@ -350,6 +350,13 @@ button.button-decline:hover, button.button-decline:active, button.button-decline
   color: #f67280;
   margin-bottom: 20px;
 }
+
+.local-loader-block {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+}
+
 
 .forgotten-password {
   text-align: center;

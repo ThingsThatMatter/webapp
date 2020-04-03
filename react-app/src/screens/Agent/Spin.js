@@ -1,9 +1,9 @@
 import React from 'react'
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/Agent/Sidebar'
 
-import { Layout, Spin} from 'antd';
+import { Layout, Spin} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
-const {Content} = Layout;
+const {Content} = Layout
 
 
 function Spinner() {

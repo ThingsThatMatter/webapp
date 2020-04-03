@@ -15,7 +15,7 @@ import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Sidebar'
+import Sidebar from '../../components/Agent/Sidebar'
 
 import './Calendar.css'
 import 'antd/dist/antd.css'
@@ -128,6 +128,7 @@ function CreateFormFive(props) {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('timeGridWeek')
           setView('Semaine')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Semaine
@@ -138,16 +139,18 @@ function CreateFormFive(props) {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('timeGridDay')
           setView('Jour')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Jour
       </Menu.Item>
       <Menu.Item
-        key="0"
+        key="2"
         onClick={ () => {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('dayGridMonth')
           setView('Mois')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Mois
@@ -269,14 +272,14 @@ function CreateFormFive(props) {
   function confirm(e) {
     setMyEvents(myEvents.filter( e => e.id != appointmentModalEventId))
     setNewEvents(newEvents.filter( e => e.id != appointmentModalEventId))
-    message.success('Créneau supprimé');
-    setAppointmentModalVisible(false);
-    setAppointmentModalEventDate(null);
-    setAppointmentModalEventHour1(null);
-    setAppointmentModalEventHour2(null);
-    setAppointmentModalEventProperty(null);
-    setAppointmentModalEventId(null);
-    setAppointmentModalMode(null);
+    message.success('Créneau supprimé')
+    setAppointmentModalVisible(false)
+    setAppointmentModalEventDate(null)
+    setAppointmentModalEventHour1(null)
+    setAppointmentModalEventHour2(null)
+    setAppointmentModalEventProperty(null)
+    setAppointmentModalEventId(null)
+    setAppointmentModalMode(null)
   }
 
   /* MODAL FOOTER */

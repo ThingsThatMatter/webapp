@@ -1,8 +1,8 @@
-import React, {useState, useEffect} from 'react';
-import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, Radio, InputNumber} from 'antd';
-import {Redirect} from 'react-router-dom';
-import {connect} from 'react-redux';
+import React, {useState, useEffect} from 'react'
+import Sidebar from '../../components/Agent/Sidebar'
+import { Layout, Steps, Button, Radio, InputNumber} from 'antd'
+import {Redirect} from 'react-router-dom'
+import {connect} from 'react-redux'
 
 const { Step } = Steps;
 const {Content} = Layout;

@@ -1,5 +1,5 @@
 import React from 'react';
-import UserNavHeader from '../../components/UserNavHeader';
+import UserNavHeader from '../../components/Buyer/UserNavHeader';
 import {Layout} from 'antd';
 const {Content} = Layout;
 
@@ -17,7 +17,7 @@ function EmailConf() {
                 <Content style={{ margin: '24px 16px 0' }}>
 
                     <div>
-                        <h1>Votre email est confirmé !</h1>
+                        <h1>Votre adresse email est confirmée !</h1>
                         <button>Me connecter</button>
                     </div>
                    
