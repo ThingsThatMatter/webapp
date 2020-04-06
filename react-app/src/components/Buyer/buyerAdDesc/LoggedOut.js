@@ -1,6 +1,6 @@
-import React, {useState} from 'react';
-import { Col, Button } from 'antd';
-import {Redirect} from 'react-router-dom';
+import React, {useState} from 'react'
+import { Button } from 'antd'
+import {Redirect} from 'react-router-dom'
 
 import {connect} from 'react-redux'
 
@@ -15,7 +15,8 @@ function AdDescSidebarLogout(props) {
         setRedirectToSign(true)
     }
 
-    if (redirectToSign) { 
+    if (redirectToSign) {
+        props.loggedOut() // Evite la redirection de déconnexion si il y avait un vieux token
         return <Redirect to='/sign' /> 
     }
 
@@ -23,7 +24,7 @@ function AdDescSidebarLogout(props) {
         
         <div className="sidebar-buyer">
             <div className="sidebar-logout">
-                <p>Pour accéder aux visites, veuillez vous connecter.</p>
+                <p>Pour visiter le bien ou déposer une offre, veuillez vous connecter.</p>
                 <Button
                 type="primary"
                 onClick={() => handleConnectSidebar()}
@@ -40,6 +41,9 @@ function mapDispatchToProps(dispatch){
     return {
         setRedirectAdId : function(id) { 
             dispatch( {type: 'setRedirectAdId', adId: id} ) 
+        },
+        loggedOut: function() {
+            dispatch({ type: 'user_loggedOut' })
         }
     }
 }

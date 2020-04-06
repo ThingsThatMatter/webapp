@@ -1,16 +1,16 @@
-var express = require('express');
-var router = express.Router();
-var fs = require('fs');
-var mongoose = require('../models/bdd');
+var express = require('express')
+var router = express.Router()
+var fs = require('fs')
+var mongoose = require('../models/bdd')
 var agencyModel = require('../models/agencyModel.js')
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
 var cloudinary = require('cloudinary').v2;
-const path = require('path');
+const path = require('path')
+
+require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
-const keys = require('../env/keys.js')
-const {JWT_ACCESS_KEY, JWT_REFRESH_KEY}  = keys
 const bcrypt = require('bcryptjs');
 const saltRounds = 12;
 
@@ -29,7 +29,7 @@ let login_duration = 30 //30 minutes
 
 /* --------------------------------------------------TOKEN GENERATION & CHECK--------------------------------------------------------- */
 const generateAgentAccessToken = (agentInfo, minutes) => { 
-  return jwt.sign(agentInfo, JWT_ACCESS_KEY, {
+  return jwt.sign(agentInfo, process.env.JWT_AGENT_ACCESS_KEY, {
     expiresIn: 60 * minutes // 60sec * 30min
   })
 }
@@ -47,7 +47,7 @@ const authenticateAgent = (req, res, next) => {
     }
   } else {
 
-    jwt.verify(accessToken, JWT_ACCESS_KEY, async (err, agent) => {
+    jwt.verify(accessToken, process.env.JWT_AGENT_ACCESS_KEY, async (err, agent) => {
       if (err) {  //if access token is not valid
         status = 403;
         response = {
@@ -165,7 +165,7 @@ router.post('/sign-in', async function(req, res, next) {
         if (pwdMatch) {
 
           /* Update refresh token */
-          const refreshToken = jwt.sign({}, JWT_REFRESH_KEY)
+          const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
           let updatePwd = await agentModel.updateOne(
             {_id: findAgent._id},
             {$set: {token: refreshToken}}
@@ -176,7 +176,7 @@ router.post('/sign-in', async function(req, res, next) {
             response = {
               message: 'Internal error',
               details: 'Le serveur a rencontré une erreur.'
-            };
+            }
           } else {
             const agentInfo = {
               lastname: findAgent.lastname,
@@ -247,7 +247,7 @@ router.post('/sign-up', async function(req, res, next) {
           details: 'Cet utilisateur existe déjà'
         }
       } else {
-        const refreshToken = jwt.sign({}, JWT_REFRESH_KEY)
+        const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
         const hash = await bcrypt.hash(req.body.password, saltRounds)
         /* Création agent */
         const newAgent = new agentModel({
@@ -291,12 +291,12 @@ router.post('/sign-up', async function(req, res, next) {
     response = {
       message: 'Internal error',
       details: 'Le serveur a rencontré une erreur.'
-    };
+    }
   }
 
   res.cookie('aRT', refreshCookie, {httpOnly: true, path:'/pro'})
   res.status(status).json(response);
-});
+})
 
 /* --------------------------------------------------LIST ALL ADS FOR AN AGENT--------------------------------------------------------- */
 /* GET PRO ads */
@@ -341,13 +341,13 @@ router.get('/ad/:id_ad', authenticateAgent, async function(req, res) {
 
   try {
 
-    let adForDetails = await adModel.findById(req.params.id_ad); // Trouver les détails de l'annonce
+    let ad = await adModel.findById(req.params.id_ad); // Trouver les détails de l'annonce
     status = 200;
     response = {
       message: 'OK',
       data: {
         accessToken: req.accessToken,
-        adForDetails
+        ad
       }
     }
   
@@ -774,14 +774,14 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', authenticateAgent, async funct
     let deleteTimeslot = await adModel.updateOne(
         { _id: req.params.id_ad }, 
         { $set: { timeSlots: timeslotsFromBdd } }
-    );
+    )
 
     if(!deleteTimeslot) { 
       status = 500;
       response = {
         message: 'Internal error',
         details: 'Le serveur a rencontré une erreur.'
-      };
+      }
     } else {
       status = 200;
       response = {

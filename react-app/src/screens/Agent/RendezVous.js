@@ -13,7 +13,7 @@ import 'moment/locale/fr'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Sidebar'
+import Sidebar from '../../components/Agent/Sidebar'
 
 import './Calendar.css'
 import 'antd/dist/antd.css'
@@ -129,6 +129,7 @@ function RendezVous(props) {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('timeGridWeek')
           setView('Semaine')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Semaine
@@ -139,16 +140,18 @@ function RendezVous(props) {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('timeGridDay')
           setView('Jour')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Jour
       </Menu.Item>
       <Menu.Item
-        key="0"
+        key="2"
         onClick={ () => {
           const calendarApi = calendar.current.getApi()
           calendarApi.changeView('dayGridMonth')
           setView('Mois')
+          setTitle(calendar.current.calendar.view.title)
         }}
       >
         Mois

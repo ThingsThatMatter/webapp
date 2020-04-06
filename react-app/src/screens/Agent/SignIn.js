@@ -89,15 +89,14 @@ function SignIn(props) {
                                     </Form.Item>
 
                                     <Form.Item>
-                                    <Checkbox
-                                        className="stay-logged-in"
-                                        onChange={ e => {
-                                            setStayLoggedIn(e.target.checked)
-                                        }}
-                                    >
-                                        Rester connecté(e)
-                                    </Checkbox>
-
+                                        <Checkbox
+                                            className="stay-logged-in"
+                                            onChange={ e => {
+                                                setStayLoggedIn(e.target.checked)
+                                            }}
+                                        >
+                                            Rester connecté(e)
+                                        </Checkbox>
                                     </Form.Item>
 
                                     <p className="sign-error-text">{msgErrorSignin}</p>

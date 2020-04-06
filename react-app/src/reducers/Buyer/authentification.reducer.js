@@ -1,23 +1,33 @@
-export default function(buyerLoginInfo = {login_request: false, login_success: false, token: null}, action){
-    if (action.type === 'buyer_login_request') {
+export default function(userLoginStatus = {login_request: false, login_success: false, login_failed: false, logout: true}, action){
+    if (action.type === 'user_login_request') {
         return {
             login_request: true,
             login_success: false,
-            token: null
+            login_failed: false,
+            logout: false,
         }
-    } else if(action.type === 'buyer_login'){
-        return {
-            login_request: false,
-            login_success: true,
-            token: action.token
-        }
-    } else if (action.type === 'buyer_logout') {
+    } else if(action.type === 'user_authenticationFailed'){
         return {
             login_request: false,
             login_success: false,
-            token: null
+            login_failed: true,
+            logout: false,
+        }
+    } else if(action.type === 'user_loggedIn'){
+        return {
+            login_request: false,
+            login_success: true,
+            login_failed: false,
+            logout: false,
+        }
+    } else if (action.type === 'user_loggedOut') {
+        return {
+            login_request: false,
+            login_success: false,
+            login_failed: true,
+            logout: true,
         }
     } else {
-        return buyerLoginInfo
+        return userLoginStatus
     }
 }

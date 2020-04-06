@@ -35,9 +35,19 @@ function UserNavHeader(props) {
     }, [])
 
 
-    const reset = () => {
-        removeCookie('bT', { path: '/' });
-        props.logout();
+    const logout = async () => {
+        removeCookie('uT', { path: '/' })
+
+        const loginout = await fetch('/user/logout', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              Accept: 'application/json',
+              'Authorization': `Bearer ${cookies.uT}`
+            }
+          })
+
+        props.loggedOut()
         setRedirHome(true)
     }
 
@@ -55,36 +65,42 @@ function UserNavHeader(props) {
                         <li><Link className={`nav-header-link ${propertiesClass}`} to="/">Mes biens</Link></li>
                         <li><Link className={`nav-header-link ${visitsClass}`} to="/visits">Mes visites</Link></li>
                     </ul>
-                    <ul className="nav-header-content nav-header-block-link">
-                        <li style={{margin:"0 10px 0 0"}}>
-                            <Button 
-                            onClick={reset}
-                            style={{ 
-                                backgroundColor: "#355c7d", 
-                                color: "#fff", 
-                                padding: "5px 10px",
-                                border: "2px solid #355c7d"
-                            }}>
-                            <StopOutlined /> Déconnexion</Button>
-                        </li>
-                    </ul>
-                        
+                    {props.userLoginStatus.login_success &&
+                        <ul className="nav-header-content nav-header-block-link">
+                            <li style={{margin:"0 10px 0 0"}}>
+                                <Button 
+                                onClick={logout}
+                                style={{ 
+                                    backgroundColor: "#355c7d", 
+                                    color: "#fff", 
+                                    padding: "5px 10px",
+                                    border: "2px solid #355c7d"
+                                }}>
+                                <StopOutlined /> Déconnexion</Button>
+                            </li>
+                        </ul>
+                    }
                 </nav>
             </header>
         </Affix>
     )
 }
 
+function mapStateToProps(state) {
+    return { 
+        userLoginStatus : state.userLoginStatus,
+    }
+}
 
 function mapDispatchToProps(dispatch) {
     return {
-        logout: function() {
-            dispatch({ type: 'buyer_logout' })
+        loggedOut: function() {
+            dispatch({ type: 'user_loggedOut' })
         }
     }
 }
   
 export default connect(
-    null,
+    mapStateToProps,
     mapDispatchToProps
 )(UserNavHeader)

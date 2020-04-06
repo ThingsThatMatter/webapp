@@ -1,10 +1,10 @@
-import React, {useState, useEffect} from 'react';
-import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, message, Row, Col } from 'antd';
-import {Redirect} from 'react-router-dom';
-import {connect} from 'react-redux';
+import React, {useState, useEffect} from 'react'
+import Sidebar from '../../components/Agent/Sidebar'
+import { Layout, Steps, Button, message, Row, Col } from 'antd'
+import {Redirect} from 'react-router-dom'
+import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
-import { Slide } from 'react-slideshow-image';
+import { Slide } from 'react-slideshow-image'
 
 
 const { Step } = Steps;

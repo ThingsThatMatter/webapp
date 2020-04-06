@@ -1,14 +1,14 @@
-import React, {useState, useEffect} from 'react';
-import Sidebar from '../../components/Sidebar';
-import { Layout, Steps, Button, Upload, message } from 'antd';
-import { InboxOutlined } from '@ant-design/icons';
-import {Redirect} from 'react-router-dom';
-import {DeleteOutlined} from '@ant-design/icons';
-import {connect} from 'react-redux';
+import React, {useState, useEffect} from 'react'
+import Sidebar from '../../components/Agent/Sidebar'
+import { Layout, Steps, Button, Upload, message } from 'antd'
+import { InboxOutlined } from '@ant-design/icons'
+import {Redirect} from 'react-router-dom'
+import {DeleteOutlined} from '@ant-design/icons'
+import {connect} from 'react-redux'
 
-const { Step } = Steps;
-const {Content} = Layout;
-const { Dragger } = Upload;
+const { Step } = Steps
+const {Content} = Layout
+const { Dragger } = Upload
 
 function CreateFormThree(props) {
 

@@ -6,7 +6,7 @@ import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Sidebar';
+import Sidebar from '../../components/Agent/Sidebar'
 import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse;
 const {TextArea} = Input

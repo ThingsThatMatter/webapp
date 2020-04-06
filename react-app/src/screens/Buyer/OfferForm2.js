@@ -1,6 +1,6 @@
 import React, {useState, useEffect} from 'react'
 import {Redirect} from 'react-router-dom'
-import UserNavHeader from '../../components/UserNavHeader'
+import UserNavHeader from '../../components/Buyer/UserNavHeader'
 
 import {connect} from 'react-redux'
 
@@ -9,8 +9,6 @@ const {Content} = Layout
 
 
 function OfferForm2(props) {
-
-    const [adFromDb, setAdFromDb] = useState(null)
 
     const [offerAmount, setOfferAmount] = useState('')
     const [loanAmount, setLoanAmount] = useState('')
@@ -42,48 +40,31 @@ function OfferForm2(props) {
         return new Date(year, month, day, hour, min)
     }
 
-    /* Get Ad info */
-    useEffect( () => {
-        const adFetch = async () => {
-            const ad = await fetch(`/user/ad/${props.adId}/private`, {
-                method: 'GET',
-                headers: {'token': props.buyerLoginInfo.token}
-        })
-          const body = await ad.json();
-          setAdFromDb(body.data.ad)
-        }
-        adFetch()
-      }, [])
-
-    let ad;
-    if (adFromDb !== null) {
-
-    const visitStartDate= dateCreate(adFromDb.timeSlots[0].start)
+    const visitStartDate= dateCreate(props.newOfferAd.timeSlots[0].start)
     const visitMessage = 
         <p className="annonce-messages-buyer">
             Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}
         </p>
 
-    ad = 
+    const ad = 
         <div className="annonce-element offer-form">
-            <img className="annonce-image" width="100%" src={adFromDb.photos[0]} />
+            <img className="annonce-image" width="100%" src={props.newOfferAd.photos[0]} />
             <div className="annonce-text-buyer">
                 <div className="annonce-price-container">
-                    <span className="annonce-price">{priceFormatter.format(adFromDb.price)}</span>
+                    <span className="annonce-price">{priceFormatter.format(props.newOfferAd.price)}</span>
                 </div>
-                <p className="annonce-address-title">{adFromDb.title}</p>
-                <p className="annonce-address-sub">{adFromDb.postcode} {adFromDb.city}</p>
+                <p className="annonce-address-title">{props.newOfferAd.title}</p>
+                <p className="annonce-address-sub">{props.newOfferAd.postcode} {props.newOfferAd.city}</p>
             </div>
             <div className="annonce-infos-buyer">
-                <span className="annonce-area"><img src="../expand.svg" width="20px"/> {adFromDb.area} <span>&nbsp;m2</span></span>
-                <span className="annonce-room"><img src="../floor-plan.png" width="20px"/> {adFromDb.rooms} <span>&nbsp;pièces</span></span>
-                <span className="annonce-bedroom"><img src="../bed.svg" width="20px"/> {adFromDb.bedrooms} <span>&nbsp;chambres</span></span>
+                <span className="annonce-area"><img src="../expand.svg" width="20px"/> {props.newOfferAd.area} <span>&nbsp;m2</span></span>
+                <span className="annonce-room"><img src="../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;pièces</span></span>
+                <span className="annonce-bedroom"><img src="../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;chambres</span></span>
             </div>
             <div className="annonce-status-buyer">
                 {visitMessage}
             </div>
         </div>
-    }
 
 /* ------------------------------------------------------DOTS-------------------------------------------- */
 
@@ -249,8 +230,8 @@ function mapStateToProps(state) {
     return { 
         newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData,
-        adId: state.adId,
-        buyerLoginInfo: state.buyerLoginInfo
+        newOfferAd: state.newOfferAd,
+        userLoginStatus: state.userLoginStatus
     }
 }
 

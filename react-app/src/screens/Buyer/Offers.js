@@ -1,5 +1,5 @@
 import React from 'react';
-import UserNavHeader from '../../components/UserNavHeader';
+import UserNavHeader from '../../components/Buyer/UserNavHeader';
 import { Layout} from 'antd';
 const {Content} = Layout;
 
