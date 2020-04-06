@@ -111,10 +111,7 @@ function AdDesc(props) {
 
     let dbFetch = await fetch(`/user/ad/${props.match.params.ad_id}/question`, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'token': props.userToken
-        },
+        headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.buyerLoginInfo.token},
         body: JSON.stringify({question:question})
     })
 
@@ -123,7 +120,7 @@ function AdDesc(props) {
     setQuestionModalVisible(false)
     
     if(response.message === "OK") {
-        message.success({ content: "Question envoyée !", key, duration: 2 });
+        message.success({ content: "Question envoyée !", duration: 2 });
         setQuestion('')
     } else {
         message.error(response.details);
@@ -297,28 +294,29 @@ function AdDesc(props) {
                     {questions}
                     
                   </Collapse>
+
+                <Button className="question-button" type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
                 </Col>
               </Row>
 
 
-              <Button type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
 
               <Modal
-                        className="new-question-modal"
-                        title= {<p className="newoffer-modal-title">Ma question</p>}
-                        visible={questionModalVisible}
-                        centered
-                        footer={<Button type="primary" onClick={ () => sendQuestion()}>Envoyer</Button>}
-                        destroyOnClose= {true}
-                        width= "80%"
-                        closable={true}
-                        mask={true}
-                        maskClosable={true}
-                        onCancel={() => setQuestionModalVisible(false)}
-                    >
-                    <label>
-                    <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
-                    </label>
+                  className="new-question-modal"
+                  title= {<p className="newoffer-modal-title">Ma question</p>}
+                  visible={questionModalVisible}
+                  centered
+                  footer={<Button type="primary" onClick={ () => sendQuestion()}>Envoyer</Button>}
+                  destroyOnClose= {true}
+                  width= "50%"
+                  closable={true}
+                  mask={true}
+                  maskClosable={true}
+                  onCancel={() => setQuestionModalVisible(false)}
+              >
+              <label>
+              <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
+              </label>
                     
               </Modal>
 
