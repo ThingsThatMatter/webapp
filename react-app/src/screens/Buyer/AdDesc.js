@@ -388,14 +388,57 @@ function AdDesc(props) {
                   lg={{ span: 6 }}
                   xl={{ span: 6 }}
                 >
+                  <h2 className="pageSubTitle">Questions fréquentes</h2>
+
+                  <Collapse
+                    style={{ marginBottom: 20 }}
+                    bordered={false}
+                    defaultActiveKey={["1"]}
+                  >
+                    
+                    {questions}
+                    
+                  </Collapse>
+
+                <Button className="question-button" type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
                   {sidebar}
                 </Col>
 
-              </Row>
-            </Content>
-          </Layout>
-        </Layout>
 
+              <Modal
+                  className="new-question-modal"
+                  title= {<p className="newoffer-modal-title">Ma question</p>}
+                  visible={questionModalVisible}
+                  centered
+                  footer={<Button type="primary" onClick={ () => sendQuestion()}>Envoyer</Button>}
+                  destroyOnClose= {true}
+                  width= "50%"
+                  closable={true}
+                  mask={true}
+                  maskClosable={true}
+                  onCancel={() => setQuestionModalVisible(false)}
+              >
+              <label>
+              <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
+              </label>
+                    
+              </Modal>
+
+            <Col
+              xs={{ span: 24 }}
+              md={{ span: 6 }}
+              lg={{ span: 6 }}
+              xl={{ span: 6 }}
+            >
+
+              {sidebar}
+          
+            </Col>
+          </Row>
+        </Content>
+      </Layout>
+    </Layout>
+  );
       </APIFetch>
     )
   }

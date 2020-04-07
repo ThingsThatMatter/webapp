@@ -1,174 +1,285 @@
-import React, {useState} from 'react'
-import { Layout, Button, Modal, Input } from 'antd'
+import React, {useState, useInput, useEffect} from 'react';
+import { Layout, Row, Button, Col, Collapse, Modal, Input, Radio } from 'antd';
+import {Redirect} from 'react-router-dom';
 
 import {connect} from 'react-redux'
+
 import {useCookies} from 'react-cookie'
 
 import Sidebar from '../../components/Agent/Sidebar'
-
-import APIFetch from '../../components/Agent/APIFetch'
-
-const { Content } = Layout
+import {PlusCircleOutlined, CheckCircleOutlined} from '@ant-design/icons'
+const { Panel } = Collapse;
+const {TextArea} = Input
+const { Content } = Layout;
 
 
 function Questions(props) {
-
-    const [dataLoaded, setDataLoaded] = useState(false)
 
     const [questionsList, setQuestionslist] = useState([])
 
     const [displayQuestions, setDisplayQuestions] = useState(true)
     const [questionStatus, setQuestionStatus] = useState(null)
 
-    const [questionModalVisible, setQuestionModalVisible] = useState(false)
+    const [declineModalVisible, setDeclineModalVisible] = useState(false)
+    const [answerModalVisible, setAnswerModalVisible] = useState(false)
 
     const [questionModalProperties, setQuestionModalProperties] = useState({_id:'',status:'',question:'',response:''})
     const [adModalProperties, setAdModalProperties] = useState({_id:''})
 
-    const [response, setResponse] = useState()
+    const [response, setResponse] = useState();
+    const [otherReason, setOtherReason] = useState();
 
-    const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
-  
+    const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
+
+    const [reason] = useState({alreadyExists:"J’ai déjà répondu à cette question",answerAd:"L’information demandée est disponible sur l’annonce",dontUnderstand:"Je ne comprends pas la question",badQuestion:"La question comprend des propos injurieux"});
+    const [declineReason, setDeclineReason] = useState("");
+
     /* Token refresh */
     const renewAccessToken = (token) => {
         if (token !== cookies.aT) {
             setCookie('aT', token, {path:'/pro'})
         }
     }
+  
+    /* Offre Cards */
+    useEffect( () => {
+        const dbFetch = async () => {
+            const ads = await fetch('/pro/ads', {
+                method: 'GET',
+                headers: {
+                  'Content-Type': 'application/json',
+                  Accept: 'application/json',
+                  'Authorization': `Bearer ${cookies.aT}`
+                }
+            })
+            const body = await ads.json();
+            renewAccessToken(body.data.accessToken) // Renew token if invalid soon
 
+            let adsWithQuestions = body.data.ads.filter( e => e.questions.length > 0);    
+            setQuestionslist(adsWithQuestions)
 
-    let showModal = () => {
-        setQuestionModalVisible(true)
-    }
+        }   
+        dbFetch()
+    }, [displayQuestions]);
+
 
     let hideModal = () => {
-        setQuestionModalVisible(false)
-    }
+        setDeclineModalVisible(false)
+        setAnswerModalVisible(false)
+    };
 
     // Répondre à une question
     const handleAnswerQuestion = async () => {
+
         const answerQuestion = await fetch(`/pro/ad/${adModalProperties._id}/question/${questionModalProperties._id}/answer`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token},
-            body: `response=${response}`
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+            },
+            body: JSON.stringify({response:response})
         })
-        const body = await answerQuestion.json()
+        const body = await answerQuestion.json();
 
         setQuestionModalProperties({_id:'',status:'',question:'',response:'',creationDate:'',user:''})
-        setQuestionModalVisible(false)
+        setAnswerModalVisible(false)
         setDisplayQuestions(!displayQuestions)
+    }
+
+    function handleDeclineSubmit(e) {
+        e.preventDefault();
+        console.log(declineReason);
     }
 
     // Supprimer une question
     const handleDeclineQuestion = async () => {
         const declineQuestion = await fetch(`/pro/ad/${adModalProperties._id}/question/${questionModalProperties._id}/decline`, {
             method: 'PUT',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+            },
+            body: JSON.stringify({declineReason:declineReason})
         })
-        const body = await declineQuestion.json()
+        const body = await declineQuestion.json();
 
         setQuestionModalProperties({_id:'',status:'',question:'',response:'',creationDate:'',user:''})
-        setQuestionModalVisible(false)
+        setDeclineModalVisible(false)
         setDisplayQuestions(!displayQuestions)
     }
 
     let sortedQuestions = questionsList.map((e,i) => {
+
         return (
-            <div key={i} id={e._id} className='question-section'>
-                <h4 className='title'>{e.title}</h4>
-                <ul className="questions-list">
+            <Row key={i} id={e._id}>
+                <Col
+                  xs={{ span: 24 }}
+                  md={{ span: 24 }}
+                  lg={{ span: 24 }}
+                  xl={{ span: 24 }}
+                >
+                  <h4 className='title'>{e.title}</h4>
+
+                  <Collapse
+                    style={{ marginBottom: 20 }}
+                    bordered={false}
+                  >
+                  
                     { e.questions.map( (f,i) => {
                         
-                        return (
-                            <li key={i} className="question-element">
-                                <span className={`question-state ${f.status}`}></span>
-                                <div className="question-content">
-                                    <p className="question-text">{f.question}</p>
-                                    <p className="response-text">{f.response}</p>
-                                </div>
-                                <span className="question-details">reçue le {new Date(f.creationDate).toLocaleDateString('fr-FR')} 
-                                <br/>à {new Date(f.creationDate).toLocaleTimeString('fr-FR')}</span>
-                                <Button 
-                                    type="primary" 
-                                    onClick={() => {
-                                        setQuestionModalVisible(true)
-                                        setQuestionModalProperties(f)
-                                        setAdModalProperties(e)
-                                    }}
-                                >
-                                Voir
-                                </Button>
-                            </li>
-                        )
-                    })}
-                </ul>
-            </div>
-            )
-    })
-
-    return (
-
-        <APIFetch
-            fetchUrl= '/pro/ads'
-            fetchOptions={{
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
-                'Authorization': `Bearer ${cookies.aT}`
-                }
-            }}
-            getApiResponse = { response => {
-                if (!dataLoaded) {
-                    renewAccessToken(response.data.accessToken)
-                    setQuestionslist(response.data.ads.filter( e => e.questions.length > 0))
-                }
-                setDataLoaded(true)
-            }}
-        >
-  
-            <Layout>
-                <Sidebar/>
-                <Layout className='main-content'>
-                    <Content>
-
-                        <h1 className='pageTitle'>Les messages</h1>
-
-                        {sortedQuestions}
-                        
-                        <Modal
-                            title="Question"
-                            visible={questionModalVisible}
-                            footer= {
-                                <div className="modal-footer-buttons">
-                                    <Button type="primary" className="button-decline" onClick={ () => handleDeclineQuestion()}>Supprimer</Button>
-                                    <Button type="primary" className="button-validate" onClick={ () => handleAnswerQuestion()}>Répondre</Button>
+                    return (
+                        <Panel
+                            className="faq"
+                            key={i}
+                            header={
+                                <div className="question-element">
+                                    <span className={`question-state ${f.status}`}></span>
+                                    <p className="question-content">{f.question}</p>
+                                    <span className="question-details">{new Date(f.creationDate).toLocaleDateString('fr-FR')}</span>
                                 </div>
                             }
-                            destroyOnClose= {true}
-                            width= "50%"
-                            closable={true}
-                            mask={true}
-                            maskClosable={true}
-                            onCancel={hideModal}
                         >
-                            <div className="question-modal">
-                                <p>{questionModalProperties.question}</p>
-                                <Input className="response-content" onChange={ e => setResponse(e.target.value)} value={response} />
+                            
+                            <p className="response-text">{f.response}</p>
+
+                            <TextArea className="response-content" style={{ display: (f.status === 'answered' || 'declined' ? 'none' : 'block') }} 
+                                value={response}
+                                onChange={ e => setResponse(e.target.value)}
+                            />
+
+                            <div className="modal-footer-buttons" style={{ display: (f.status === 'answered' || 'declined' ? 'none' : 'flex') }} >
+                                
+                                <Button 
+                                    type="primary" 
+                                    className="button-decline" 
+                                    onClick={() => {
+                                        setQuestionModalProperties(f)
+                                        setAdModalProperties(e)
+                                        setDeclineModalVisible(true)
+                                    }}
+                                >
+                                Supprimer
+                                </Button>
+                                <Button 
+                                    type="primary" 
+                                    className="button-validate" 
+                                    onClick={() => {
+                                        setQuestionModalProperties(f)
+                                        setAdModalProperties(e)
+                                        setAnswerModalVisible(true)
+                                    }}
+                                >
+                                Répondre
+                                </Button>
+                                
                             </div>
-                        </Modal>
-                    </Content>         
-                </Layout>
+                            
+                        </Panel>
+                    )
+                    })
+                    }
+
+                </Collapse>
+
+            </Col>
+            </Row>
+            )
+    });
+
+    return (
+  
+        <Layout>
+
+            <Sidebar/>
+
+            <Layout className='main-content'>
+                <Content>
+                    <h1 className='pageTitle'>Les messages</h1>
+
+                    {sortedQuestions}
+                    
+                    <Modal
+                        title={questionModalProperties.question}
+                        visible={answerModalVisible}
+                        footer= {
+                            <Button type="primary" className="button-validate" 
+                            onClick={ () => handleAnswerQuestion()}
+                            >
+                            Envoyer
+                            </Button>
+                        }
+                        destroyOnClose= {true}
+                        width= "50%"
+                        closable={true}
+                        mask={true}
+                        maskClosable={true}
+                        onCancel={hideModal}
+                    >
+                        <div className="question-modal">
+                            <p>{response}</p>
+                        </div>
+                    </Modal>
+
+                    <Modal
+                        title='Raison de la suppression'
+                        visible={declineModalVisible}
+                        footer= {
+                            <Button type="primary" className="button-decline" 
+                            onClick={ () => handleDeclineQuestion()}
+                            >
+                            Supprimer
+                            </Button>
+                        }
+                        destroyOnClose= {true}
+                        width= "50%"
+                        closable={true}
+                        mask={true}
+                        maskClosable={true}
+                        onCancel={hideModal}
+                    >
+                        <div className="question-modal">
+                            <Radio.Group 
+                                onChange={ 
+                                    e => setDeclineReason(e.target.value)
+                                }
+                                value={declineReason}
+                            >
+                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'J’ai déjà répondu à cette question'}>
+                                J’ai déjà répondu à cette question
+                                </Radio>
+                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'L’information demandée est disponible sur l’annonce'}>
+                                L’information demandée est disponible sur l’annonce
+                                </Radio>
+                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'Je ne comprends pas la question'}>
+                                Je ne comprends pas la question
+                                </Radio>
+                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'La question comprend des propos injurieux'}>
+                                La question comprend des propos injurieux
+                                </Radio>
+                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={otherReason}>
+                                Autre raison (à préciser)
+                                <br/>
+                                <Input onChange={ ev => setOtherReason(ev.target.value) } value={otherReason} />
+                                </Radio>
+                            </Radio.Group>
+                        </div>
+                    </Modal>
+
+                </Content>         
             </Layout>
-        </APIFetch>
+  
+        </Layout>
+
     )
   }
 
-function mapStateToProps(state) {
+  function mapStateToProps(state) {
     return { 
-        token : state.token
+      agentLoginInfo : state.agentLoginInfo
     }
-}
+  }
 
 export default connect(
     mapStateToProps,

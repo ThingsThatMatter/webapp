@@ -787,18 +787,11 @@ router.delete('/image/:name', async function(req, res, next) {
 
 
 /* PUT answer question */
-router.put('/ad/:id_ad/question/:id_question/answer', async function(req, res, next) {
+router.put('/ad/:id_ad/question/:id_question/answer', authenticateAgent, async function(req, res) {
+
+  console.log('response : ' + req.body.response)
 
   try {
-    let findAgent = await agentModel.findOne({ token:req.headers.token });
-
-    if(!findAgent) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
 
       let answeredQuestion = await adModel.updateOne(
         { _id: req.params.id_ad, "questions._id": req.params.id_question  }, 
@@ -810,7 +803,6 @@ router.put('/ad/:id_ad/question/:id_question/answer', async function(req, res, n
         message: 'OK',
         data: answeredQuestion
       }
-    };
 
   } catch(e) {
     status = 500;
@@ -825,30 +817,20 @@ router.put('/ad/:id_ad/question/:id_question/answer', async function(req, res, n
 });
 
 /* PUT decline question */
-router.put('/ad/:id_ad/question/:id_question/decline', async function(req, res, next) {
+router.put('/ad/:id_ad/question/:id_question/decline', authenticateAgent, async function(req, res) {
 
   try {
-    let findAgent = await agentModel.findOne({ token:req.headers.token });
 
-    if(!findAgent) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-
-      let answeredQuestion = await adModel.updateOne(
+      let declinedQuestion = await adModel.updateOne(
         { _id: req.params.id_ad, "questions._id": req.params.id_question  }, 
-        { "questions.$.status": 'declined' }
+        { "questions.$.status": 'declined', "questions.$.response": req.body.declineReason  }
       );
 
       status = 200;
       response = {
         message: 'OK',
-        data: answeredQuestion
+        data: declinedQuestion
       }
-    };
 
   } catch(e) {
     status = 500;
