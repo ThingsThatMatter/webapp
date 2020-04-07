@@ -15,13 +15,15 @@ import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
+import APIFetch from '../../components/Agent/APIFetch'
+
 import Sidebar from '../../components/Agent/Sidebar'
 
 import './Calendar.css'
 import 'antd/dist/antd.css'
 
-const { Step } = Steps;
-const {Content} = Layout;
+const { Step } = Steps
+const {Content} = Layout
 const { RangePicker } = TimePicker
 
 const ts = require("time-slots-generator")
@@ -29,12 +31,17 @@ const ts = require("time-slots-generator")
 function CreateFormFive(props) {
 
   /* ------------------------------------------CALENDAR---------------------------------------------- */  
+  
+  const [dataLoaded, setDataLoaded] = useState(false)
+
+  const [adsListFromDb, setAdsListFromDb] = useState()
+  
   const [myEvents, setMyEvents] = useState([])
   const [newEvents, setNewEvents] = useState([])
   const [title, setTitle] = useState('')
   const [view, setView] = useState('Semaine')
   const [adColor, setAdColor] = useState(['#052040', '#1abc9c', '#2ecc71', '#f1c40f', '#e67e22', '#e74c3c', '#3498db', '#95a5a6', '#9b59b6', '#bdc3c7', '#16a085', '#2980b9', '#7f8c8d', '#c0392b', '#474787'])
-  const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
+  const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
 
   var calendar = useRef(null)
 
@@ -46,23 +53,10 @@ function CreateFormFive(props) {
   }
 
   useEffect( () => {
-    const changeTitle = async () => {
-      setTitle(calendar.current.calendar.view.title)
-    }
 
-    const dbFetch = async () => {
-      const ads = await fetch('/pro/ads', {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          Accept: 'application/json',
-          'Authorization': `Bearer ${cookies.aT}`
-        }
-      })
-      const body = await ads.json()
-      renewAccessToken(body.data.accessToken) // Renew token if invalid soon
+    if(adsListFromDb) {
       
-      let adsWithTimeslots = body.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
+      let adsWithTimeslots = adsListFromDb.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
       let timeslots = adsWithTimeslots.map( e => { //create a table of timeslots with their title and color
         return (e.timeSlots.map( f => {
           return {
@@ -106,17 +100,18 @@ function CreateFormFive(props) {
           }
         }
       })
-    setMyEvents(events)
+      setMyEvents(events)
 
-    /* Création de la liste des couleurs disponibles */
-    const bookedColors = body.data.ads.map(e => e.color)
-    const availableColors = adColor.filter(e => bookedColors.indexOf(e) < 0)
-    setAdColor(availableColors[Math.floor(Math.random() * availableColors.length)])
+      /* Création de la liste des couleurs disponibles */
+      const bookedColors = adsListFromDb.map(e => e.color)
+      const availableColors = adColor.filter(e => bookedColors.indexOf(e) < 0)
+      setAdColor(availableColors[Math.floor(Math.random() * availableColors.length)])
 
+      setTitle(calendar.current.calendar.view.title)
     }
-  changeTitle()
-  dbFetch()
-  }, [])
+
+  }, [dataLoaded])
+
 
 
   /* View choice : day, week, month */
@@ -203,7 +198,7 @@ function CreateFormFive(props) {
       endTime = Number(hour1)*60+Number(min1)
     }
 
-    function capFirst(a){return (a+'').charAt(0).toUpperCase()+a.substr(1);}
+    function capFirst(a){return (a+'').charAt(0).toUpperCase()+a.substr(1)}
 
       /* Warning: timeslots does not include bounds (so first slot is starTime minus the interval) */
     const interval = 30
@@ -299,7 +294,7 @@ function CreateFormFive(props) {
               cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
               placement="bottomLeft"
             >
-              <Button type="secondary" className="button-delete modal-footer-button-delete">
+              <Button type="secondary" className="button-decline modal-footer-button-delete">
                 Supprimer
               </Button>
             </Popconfirm> 
@@ -333,8 +328,8 @@ function CreateFormFive(props) {
   const [backRedir, setBackRedir] = useState(false)
 
   useEffect(() => {
-      setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
-    },[]);
+    setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
+  },[])
 
   if(redir === true) {
       return <Redirect to="/pro/createform/step6"/> // Triggered by button-add handleClick
@@ -349,220 +344,238 @@ function CreateFormFive(props) {
       setRedir(true)
   }
   
+  /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 
     return (
 
-      <Layout>
+      <APIFetch
+        fetchUrl= '/pro/ads'
+        fetchOptions={{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+            'Authorization': `Bearer ${cookies.aT}`
+          }
+        }}
+        getApiResponse = { response => {
+            if (!dataLoaded) {
+              renewAccessToken(response.data.accessToken)
+              setAdsListFromDb(response.data.ads)
+            }
+            setDataLoaded(true)
+        }}
+      >
 
-        <Sidebar/>
+        <Layout>
+          <Sidebar/>
+          <Layout className='main-content'>
+            <Content style={{ margin: '2em 3em' }}>
 
-        <Layout className='main-content'>
+              <Steps progressDot current={currentPage}>
+                <Step title="Localisation" />
+                <Step title="Description" />
+                <Step title="Documents" />
+                <Step title="Prix/honoraires" />
+                <Step title="Créneaux" />
+                <Step title="Récap" />
+              </Steps>
 
-          <Content style={{ margin: '2em 3em' }}>
-
-            <Steps progressDot current={currentPage}>
-              <Step title="Localisation" />
-              <Step title="Description" />
-              <Step title="Documents" />
-              <Step title="Prix/honoraires" />
-              <Step title="Créneaux" />
-              <Step title="Récap" />
-            </Steps>
-
-            <div>
-              <div className="calendar-header">
-                <div className="calendar-headerNavLeft">
-                  <LeftOutlined
-                      className="calendar-headerNavLeft-chevronIcon"
-                      onClick={ () => {
-                      const calendarApi = calendar.current.getApi()
-                      calendarApi.prev()
-                      setTitle(calendar.current.calendar.view.title)
-                      }}
-                  />
-
-                  <div className="calendar-headerNavLeft-dateTitle">
-                      {title}
-                  </div>
-
-                  <RightOutlined
-                      className="calendar-headerNavLeft-chevronIcon"
-                      onClick={ () => {
-                      const calendarApi = calendar.current.getApi()
-                      calendarApi.next()
-                      setTitle(calendar.current.calendar.view.title)
-                      }}
-                  />
-                </div>
-
-                <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
-                    <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                        {view} <DownOutlined />
-                    </a>
-                </Dropdown>
-              </div>
-
-              <FullCalendar
-                  /* Global Settings */
-                  ref={calendar}
-                  plugins={[ dayGridPlugin, timeGrid, interaction ]}
-                  defaultView="timeGridWeek"
-                  locale= 'fr'
-                  header={{
-                  left: '',
-                  center: '',
-                  right: ''
-                  }}
-                  contentHeight= "auto"
-
-                  /* Events */
-                  events={myEvents}
-
-                  /* Time Settings */
-                  timeZone='UTC'
-                  firstDay= {1}
-                  hiddenDays={[0]}
-                  allDaySlot={false}
-                  minTime={'08:00'}
-                  maxTime={'20:00'}
-                  defaultTimedEventDuration={'00:30'}
-
-                  /* Column headers */
-                  columnHeaderHtml={ (date) => {
-                      if (view==='Semaine') {
-                          return (
-                          `<div class="calendar-week-column-header" >
-                              <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
-                              <div class="calendar-week-column-header-number">${date.getDate()}</div>
-                          </div>`
-                          )
-                      }
-                      else if (view==='Mois') {
-                          return (
-                              `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                          )
-                      }
-                      else if (view==='Jour') {
-                          return (
-                              `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                          )
-                      }
-                  }}
-                  
-                  /*Manage clicks on elements*/
-                  selectable= {true}
-                  navLinks= {true}
-                  navLinkDayClick="timeGridDay"
-                  select={(info) => {
-                    setAppointmentModalEventDate(info.start.toISOString().slice(0,10))
-                    setAppointmentModalEventHour1(info.start.toTimeString().slice(0,5))
-                    setAppointmentModalEventHour2(info.end.toTimeString().slice(0,5))
-                    setAppointmentModalMode("create")
-                    setAppointmentModalVisible(true)
-                  }}
-                  eventClick= { (info) => {
-                    if (info.event.extendedProps.isEditable) {
-                      setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
-                      setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
-                      setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
-                      setAppointmentModalEventProperty(info.event.title)
-                      setAppointmentModalEventPrivate(info.event.extendedProps.private)
-                      setAppointmentModalEventId(info.event.id)
-                      setAppointmentModalMode('edit')
-                      setAppointmentModalVisible(true)
-                    } else {
-                      
-                    }
-                  }}    
-              />
-
-              <Modal
-                title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}
-                visible={appointmentModalVisible}
-                footer= {modalFooter}
-                destroyOnClose= {true}
-                width= "50%"
-                closable={true}
-                maskl={true}
-                maskClosable={true}
-                onCancel={handleCancel}
-              >
-                <div className='input-modal'>
-                    <p className="input-modal-label">Date du RDV</p>
-                    <DatePicker
-                      locale={locale}
-                      defaultValue={moment(appointmentModalEventDate, 'YYYY-MM-DD')}
-                      onChange= {(date, dateString) => { setAppointmentModalEventDate(dateString) }}
-                    />
-                </div>
-
-                <div className='input-modal'>
-                    <p className="input-modal-label">Horaires du RDV</p>
-                    <RangePicker
-                        locale={locale}
-                        format= 'HH:mm'
-                        minuteStep={30}
-                        disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23]}
-                        hideDisabledOptions={true}
-                        placeholder={["Début", "Fin"]}
-                        defaultValue={[moment(appointmentModalEventHour1, 'HH:mm'), moment(appointmentModalEventHour2, 'HH:mm')]}
-                        onChange= { (time, timeSring) => {
-                          setAppointmentModalEventHour1(timeSring[0])
-                          setAppointmentModalEventHour2(timeSring[1])
+              <div>
+                <div className="calendar-header">
+                  <div className="calendar-headerNavLeft">
+                    <LeftOutlined
+                        className="calendar-headerNavLeft-chevronIcon"
+                        onClick={ () => {
+                        const calendarApi = calendar.current.getApi()
+                        calendarApi.prev()
+                        setTitle(calendar.current.calendar.view.title)
                         }}
                     />
+
+                    <div className="calendar-headerNavLeft-dateTitle">
+                        {title}
+                    </div>
+
+                    <RightOutlined
+                        className="calendar-headerNavLeft-chevronIcon"
+                        onClick={ () => {
+                        const calendarApi = calendar.current.getApi()
+                        calendarApi.next()
+                        setTitle(calendar.current.calendar.view.title)
+                        }}
+                    />
+                  </div>
+
+                  <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
+                      <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                          {view} <DownOutlined />
+                      </a>
+                  </Dropdown>
                 </div>
 
-                <div>
-                <Radio.Group
-                  onChange={e => { setAppointmentModalEventPrivate(e.target.value) }}
-                  value={appointmentModalEventPrivate} 
+                <FullCalendar
+                    /* Global Settings */
+                    ref={calendar}
+                    plugins={[ dayGridPlugin, timeGrid, interaction ]}
+                    defaultView="timeGridWeek"
+                    locale= 'fr'
+                    header={{
+                    left: '',
+                    center: '',
+                    right: ''
+                    }}
+                    contentHeight= "auto"
+
+                    /* Events */
+                    events={myEvents}
+
+                    /* Time Settings */
+                    timeZone='UTC'
+                    firstDay= {1}
+                    hiddenDays={[0]}
+                    allDaySlot={false}
+                    minTime={'08:00'}
+                    maxTime={'20:00'}
+                    defaultTimedEventDuration={'00:30'}
+
+                    /* Column headers */
+                    columnHeaderHtml={ (date) => {
+                        if (view==='Semaine') {
+                            return (
+                            `<div class="calendar-week-column-header" >
+                                <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
+                                <div class="calendar-week-column-header-number">${date.getDate()}</div>
+                            </div>`
+                            )
+                        }
+                        else if (view==='Mois') {
+                            return (
+                                `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                            )
+                        }
+                        else if (view==='Jour') {
+                            return (
+                                `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                            )
+                        }
+                    }}
+                    
+                    /*Manage clicks on elements*/
+                    selectable= {true}
+                    navLinks= {true}
+                    navLinkDayClick="timeGridDay"
+                    select={(info) => {
+                      setAppointmentModalEventDate(info.start.toISOString().slice(0,10))
+                      setAppointmentModalEventHour1(info.start.toTimeString().slice(0,5))
+                      setAppointmentModalEventHour2(info.end.toTimeString().slice(0,5))
+                      setAppointmentModalMode("create")
+                      setAppointmentModalVisible(true)
+                    }}
+                    eventClick= { (info) => {
+                      if (info.event.extendedProps.isEditable) {
+                        setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
+                        setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
+                        setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
+                        setAppointmentModalEventProperty(info.event.title)
+                        setAppointmentModalEventPrivate(info.event.extendedProps.private)
+                        setAppointmentModalEventId(info.event.id)
+                        setAppointmentModalMode('edit')
+                        setAppointmentModalVisible(true)
+                      } else {
+                        
+                      }
+                    }}    
+                />
+
+                <Modal
+                  title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}
+                  visible={appointmentModalVisible}
+                  footer= {modalFooter}
+                  destroyOnClose= {true}
+                  width= "50%"
+                  closable={true}
+                  maskl={true}
+                  maskClosable={true}
+                  onCancel={handleCancel}
                 >
-                  <Radio value={true}>Visite individuelle</Radio>
-                  <Radio value={false}>Visite en groupe</Radio>
-                </Radio.Group>
-                </div>
-              </Modal>
+                  <div className='input-modal'>
+                      <p className="input-modal-label">Date du RDV</p>
+                      <DatePicker
+                        locale={locale}
+                        defaultValue={moment(appointmentModalEventDate, 'YYYY-MM-DD')}
+                        onChange= {(date, dateString) => { setAppointmentModalEventDate(dateString) }}
+                      />
+                  </div>
 
-            </div>
-            
-            <div className="form-buttons">
+                  <div className='input-modal'>
+                      <p className="input-modal-label">Horaires du RDV</p>
+                      <RangePicker
+                          locale={locale}
+                          format= 'HH:mm'
+                          minuteStep={30}
+                          disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23]}
+                          hideDisabledOptions={true}
+                          placeholder={["Début", "Fin"]}
+                          defaultValue={[moment(appointmentModalEventHour1, 'HH:mm'), moment(appointmentModalEventHour2, 'HH:mm')]}
+                          onChange= { (time, timeSring) => {
+                            setAppointmentModalEventHour1(timeSring[0])
+                            setAppointmentModalEventHour2(timeSring[1])
+                          }}
+                      />
+                  </div>
 
-              <Button
-                type="primary" 
-                className="button-back"
-                onClick={() => {
-                    setBackRedir(true)
-                    props.previousStep()
-                }}
-              >
-                Précédent
-              </Button>  
+                  <div>
+                  <Radio.Group
+                    onChange={e => { setAppointmentModalEventPrivate(e.target.value) }}
+                    value={appointmentModalEventPrivate} 
+                  >
+                    <Radio value={true}>Visite individuelle</Radio>
+                    <Radio value={false}>Visite en groupe</Radio>
+                  </Radio.Group>
+                  </div>
+                </Modal>
 
-              <Button
-                type="primary" 
-                className="button-skip"
-                onClick= { () => {
-                  setRedir(true)
-                  props.nextStep()
-                }}
-              >
-                Passer cette étape
-              </Button>
+              </div>
+              
+              <div className="form-buttons">
 
-              <Button
-                type="primary"
-                className="button-validate"
-                onClick={() => handleClick()}
-              >
-                Suivant
-              </Button>
-            </div>
-                          
-          </Content>  
+                <Button
+                  type="primary" 
+                  className="button-back"
+                  onClick={() => {
+                      setBackRedir(true)
+                      props.previousStep()
+                  }}
+                >
+                  Précédent
+                </Button>  
+
+                <Button
+                  type="primary" 
+                  className="button-skip"
+                  onClick= { () => {
+                    setRedir(true)
+                    props.nextStep()
+                  }}
+                >
+                  Passer cette étape
+                </Button>
+
+                <Button
+                  type="primary"
+                  className="button-validate"
+                  onClick={() => handleClick()}
+                >
+                  Suivant
+                </Button>
+              </div>
+                            
+            </Content>  
+          </Layout>
         </Layout>
-      </Layout>
-    );
+      </APIFetch>
+    )
   }
 
 function mapStateToProps(state) {
@@ -593,4 +606,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps, 
   mapDispatchToProps
-)(CreateFormFive);
+)(CreateFormFive)

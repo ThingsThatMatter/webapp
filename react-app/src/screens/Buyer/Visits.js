@@ -15,7 +15,7 @@ import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Buyer/APIFetch'
 import UserNavHeader from '../../components/Buyer/UserNavHeader'
-import Unauthorized_401 from './Unauthorized_401'
+import Unauthorized401 from './Unauthorized401'
 
 import 'antd/dist/antd.css'
 
@@ -226,7 +226,7 @@ function Visits() {
             cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
             placement="bottomLeft"
           >
-            <Button type="secondary" className="button-delete modal-footer-button-delete">
+            <Button type="secondary" className="button-decline modal-footer-button-delete">
               Annuler la visite
             </Button>
           </Popconfirm>
@@ -248,7 +248,7 @@ function Visits() {
   /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 
   if (redirectTo401) {
-    return <Unauthorized_401 />
+    return <Unauthorized401 />
   } else {
 
     return (
@@ -265,12 +265,11 @@ function Visits() {
         }}
         getApiResponse = { response => {
             if (!dataLoaded) {
-                setAdsListFromDb(response.data.ads)
+              setAdsListFromDb(response.data.ads)
             }
             setDataLoaded(true)
         }}
       >
-
         <Layout className="user-layout">
             <UserNavHeader current="Biens consultés"/>
                 <Layout className='user-layout main-content'>

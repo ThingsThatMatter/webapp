@@ -1,9 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState} from 'react'
 import {Redirect,Link} from 'react-router-dom'
 
-import {Form, Input, Button, Row, Col } from 'antd';
+import {Form, Input, Button, Row, Col, Spin } from 'antd'
+import {LoadingOutlined} from '@ant-design/icons'
+
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
+
+const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginTop: '8px' }} spin/>
 
 
 function SignUp(props) {
@@ -12,29 +16,42 @@ function SignUp(props) {
     const [password, setPassword] = useState(null)
     const [lastname, setLastName] = useState(null)
     const [firstname, setFirstName] = useState(null)
-    const [msgErrorSignin, setMsgErrorSignin] = useState()
+
+    const [msgErrorSignup, setMsgErrorSignup] = useState()
+    const [signupLoad, setSignupLoad] = useState(false)
+
     const [toRedirect, setToRedirect] = useState(false)
     const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
 
 
     const handleSubmitSignup = async () => {
 
-        setMsgErrorSignin(null) //reset messagesError
+        setMsgErrorSignup(null)
+        setSignupLoad(true)
+
         const postNewAgent = await fetch('/pro/sign-up', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
             body: `email=${email}&password=${password}&lastname=${lastname}&firstname=${firstname}`
         })
 
-        const body = await postNewAgent.json()
-        if (body.message === 'OK') {
-            const {lastname, firstname, email, id} = body.data.agentInfo
-            setCookie('aT', body.data.accessToken, {path:'/pro'})
-            props.login()
-            props.saveAgentInfo({lastname, firstname, email, id})
-            setToRedirect(true)
+        if (postNewAgent.status === 500) {
+            setSignupLoad(false)
+            setMsgErrorSignup('Nous rencontrons des difficultés pour vous inscrire, veuillez réessayer.')
+        
         } else {
-            setMsgErrorSignin(body.details)
+            const body = await postNewAgent.json()
+            setSignupLoad(false)
+            if (postNewAgent.status === 400) {
+                setMsgErrorSignup(body.details)
+            
+            } else if (postNewAgent.status === 200) {
+                const {lastname, firstname, email, id} = body.data.agentInfo
+                setCookie('aT', body.data.accessToken, {path:'/pro'})
+                props.loggedIn()
+                props.saveAgentInfo({lastname, firstname, email, id})
+                setToRedirect(true)
+            }
         }
     }
 
@@ -106,14 +123,22 @@ function SignUp(props) {
                                     onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
                                 />
                             </Form.Item>
-                            <p className="sign-error-text">{msgErrorSignin}</p>
+                            <p className="sign-error-text">{msgErrorSignup}</p>
                             <Form.Item >
-                                <Button
-                                    type="primary"
-                                    onClick={handleSubmitSignup}
-                                >
-                                    Inscription
-                                </Button>
+                                <div className='local-loader-block'>
+                                    <Button
+                                        type="primary"
+                                        onClick={handleSubmitSignup}
+                                    >
+                                        Inscription
+                                    </Button>
+                                    {signupLoad &&
+                                        <Spin
+                                            size="large"
+                                            indicator={logo}
+                                        />
+                                    }
+                                </div>
                             </Form.Item>
                         </Form>
                     </div>
@@ -133,8 +158,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch){
     return {
-        login: function() {
-            dispatch( {type: 'agent_login'} )
+        loggedIn: function() {
+            dispatch( {type: 'agent_loggedIn'} )
         },
         saveAgentInfo: function(agentInfo) {
             dispatch({

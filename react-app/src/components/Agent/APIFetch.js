@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
 
-import NotFound404Ad from '../../screens/Buyer/NotFound404Ad'
-import Unauthorized401 from '../../screens/Buyer/Unauthorized401'
+import NotFound404Ad from '../../screens/Agent/NotFound404Ad'
+import Unauthorized401 from '../../screens/Agent/Unauthorized401'
 import GlobalSpin from './GlobalSpin'
-import InternalError500 from '../../screens/Buyer/InternalError500'
+import InternalError500 from '../../screens/Agent/InternalError500'
 
 function APIFetch(props) {
 

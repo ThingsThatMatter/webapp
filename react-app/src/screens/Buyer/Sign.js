@@ -4,7 +4,7 @@ import { Form, Input, Button, Checkbox, Col, Row, Spin } from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import Spinner from '../../components/Buyer/GlobalSpin'
-import Unauthorized_401 from './Unauthorized_401'
+import Unauthorized401 from './Unauthorized401'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
@@ -105,7 +105,7 @@ function Sign(props) {
 
     } else {
         if (props.userLoginStatus.login_failed && !props.userLoginStatus.logout) {
-            return <Unauthorized_401 />
+            return <Unauthorized401 />
             
         } else {
             if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_request) {

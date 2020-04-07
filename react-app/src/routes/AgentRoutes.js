@@ -5,8 +5,8 @@ import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 import Home from '../screens/Agent/Home'
-import Offres from '../screens/Agent/Offres'
-import RendezVous from '../screens/Agent/RendezVous'
+import Offers from '../screens/Agent/Offers'
+import Visits from '../screens/Agent/Visits'
 import Questions from '../screens/Agent/Questions'
 import AdDesc from '../screens/Agent/AdDesc'
 import CreateFormOne from '../screens/Agent/CreateForm1'
@@ -17,15 +17,15 @@ import CreateFormFive from '../screens/Agent/CreateForm5'
 import CreateFormSix from '../screens/Agent/CreateForm6'
 import agentSignIn from '../screens/Agent/SignIn'
 import agentSignUp from '../screens/Agent/SignUp'
-import Error_404 from '../screens/Agent/404'
+import NotFound404 from '../screens/Agent/NotFound404'
 
 
 function AgentRoutes(props) {
 
-    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initializing state cookies
+    const [cookies] = useCookies(['name']); // initializing state cookies
 
     const checkToken = async () => {
-        const getToken = await fetch('/pro/user-access', {
+        const authenticateAgent = await fetch('/pro/user-access', {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
@@ -33,15 +33,19 @@ function AgentRoutes(props) {
                 'Authorization': `Bearer ${cookies.aT}`
             }
         })
-        const body = await getToken.json()
-        if (body.message === 'OK') {
+
+        if (authenticateAgent.status === 401) {
+            props.authenticationFailed()
+
+        } else if (authenticateAgent.status === 200) {
+            const body = await authenticateAgent.json()
             const {lastname, firstname, email, id} = body.data.agentInfo
-            props.login()
-            props.saveAgentInfo({lastname, firstname, email, id})
+            props.loggedIn()
+            props.saveAgentInfo({lastname, firstname, email, id})            
         }
     }
 
-    if (cookies.aT && !props.agentLoginStatus.login_success && !props.agentLoginStatus.login_request) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de agentLoginInfo)
+    if (cookies.aT && !props.agentLoginStatus.login_success && !props.agentLoginStatus.login_request && !props.agentLoginStatus.login_failed && props.agentLoginStatus.logout) { // si il y a un cookie, on vérifie qu'il existe bien en base. Les deux autres conditions sont présentes pour empêcher les infinite render (car les fonctions appelées viennent changer les valeurs de agentLoginInfo)
         props.login_request()
         checkToken()
     }
@@ -59,8 +63,8 @@ function AgentRoutes(props) {
         <Router>
             <Switch>
                 <PrivateRoute component={Home} path='/pro' exact />
-                <PrivateRoute component={Offres} path='/pro/offres' exact/>
-                <PrivateRoute component={RendezVous} path='/pro/rendezvous' exact/>
+                <PrivateRoute component={Offers} path='/pro/offers' exact/>
+                <PrivateRoute component={Visits} path='/pro/visits' exact/>
                 <PrivateRoute component={Questions} path='/pro/questions' exact/>
                 <PrivateRoute component={AdDesc} path='/pro/ad/:id' exact/>
                 <PrivateRoute component={CreateFormOne} path='/pro/createform/step1' exact/>
@@ -72,7 +76,7 @@ function AgentRoutes(props) {
 
                 <Route component={agentSignIn} path='/pro/signin' exact/>
                 <Route component={agentSignUp} path='/pro/signup' exact/>
-                <Route component = {Error_404} path='/pro' />
+                <Route component = {NotFound404} path='/pro' />
             </Switch>
         </Router>
           
@@ -87,11 +91,14 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch){
     return {
-        login: function(){
-            dispatch( {type: 'agent_login'} )
+        loggedIn: function(){
+            dispatch( {type: 'agent_loggedIn'} )
         },
         login_request: function() {
             dispatch( {type: 'agent_login_request'} )
+        },
+        authenticationFailed: function() {
+            dispatch({ type: 'agent_authenticationFailed' })
         },
         saveAgentInfo: function(agentInfo) {
             dispatch({

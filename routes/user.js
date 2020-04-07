@@ -30,6 +30,7 @@ const generateUserAccessToken = (userInfo, minutes) => {
 const authenticateUser = (req, res, next) => {
   const authHeader = req.headers.authorization
   let accessToken = authHeader && authHeader.split(' ')[1]
+
   if (accessToken === null || !req.cookies.uRT) {  //if no token
     resp = unauthorized()
     res.status(resp.status).json(resp.response)
@@ -43,6 +44,7 @@ const authenticateUser = (req, res, next) => {
       } else {
         const currentTime = Math.round((new Date()).getTime() / 1000)
         const tokenExpiresIn = userInfo.exp - currentTime
+        
         if (tokenExpiresIn < 300) { // if token expires in less than 5minutes, try to update it
           const findUser = await userModel.findOne({ token:req.cookies.uRT })
           if (!findUser) { // if refresh token is not valid
@@ -50,7 +52,7 @@ const authenticateUser = (req, res, next) => {
             res.status(resp.status).json(resp.response)
           
           } else {
-            const userInfo = {
+            userInfo = {
               lastname: findUser.lastname,
               firstname: findUser.firstname,
               email: findUser.email,
@@ -76,8 +78,8 @@ const authenticateUser = (req, res, next) => {
 /* --------------------------------------------------ACCESS / SIGN IN / SIGN UP--------------------------------------------------------- */
 /* Check token to access app*/
 router.get('/user-access', authenticateUser, async function(req, res) {
+  
   // if authenticateUser don't block, then authenticate user
-
   res.status(resp.status).json(resp.response)
 })
 
@@ -114,7 +116,7 @@ router.post('/sign-in', async function(req, res, next) {
 
     } else {
       const findUser = await userModel.findOne({ email:req.body.email })
-      if(findUser === null) {
+      if(!findUser) {
         resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
 
       } else {
@@ -169,7 +171,7 @@ router.post('/sign-up', async function(req, res, next) {
 
     } else {
       const findUser = await userModel.findOne({email: req.body.email})
-      if(findUser != null){
+      if(findUser){
         resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
 
       } else {

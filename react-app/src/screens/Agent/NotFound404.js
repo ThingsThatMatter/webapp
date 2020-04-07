@@ -5,7 +5,7 @@ import { Layout, Button} from 'antd'
 const {Content} = Layout;
 
 
-function Error_404() {
+function NotFound404() {
 
     const [redirHome, setRedirHome] = useState(false)
 
@@ -33,4 +33,4 @@ function Error_404() {
     }
   }
 
-  export default Error_404
+  export default NotFound404

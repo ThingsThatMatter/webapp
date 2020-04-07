@@ -1,4 +1,4 @@
-import React, {useState} from 'react'
+import React from 'react'
 import Sidebar from '../../components/Agent/Sidebar'
 import { Layout} from 'antd'
 const {Content} = Layout
@@ -21,4 +21,4 @@ function Template() {
     )
   }
 
-  export default Template;
+  export default Template

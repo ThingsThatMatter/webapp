@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Col, Row, Popconfirm, message, Button } from 'antd'
 import {useCookies} from 'react-cookie'
 
-import Unauthorized_401 from '../../../screens/Buyer/Unauthorized_401'
+import Unauthorized401 from '../../../screens/Buyer/Unauthorized401'
 
 export default function TimeslotPicker(props) {
 
@@ -169,7 +169,7 @@ export default function TimeslotPicker(props) {
   /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 
   if (redirectTo401) {
-    return <Unauthorized_401 />
+    return <Unauthorized401 />
   } else {
 
         return (

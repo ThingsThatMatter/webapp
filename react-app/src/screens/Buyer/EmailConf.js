@@ -1,7 +1,7 @@
-import React from 'react';
-import UserNavHeader from '../../components/Buyer/UserNavHeader';
-import {Layout} from 'antd';
-const {Content} = Layout;
+import React from 'react'
+import UserNavHeader from '../../components/Buyer/UserNavHeader'
+import {Layout} from 'antd'
+const {Content} = Layout
 
 
 function EmailConf() {
@@ -28,7 +28,7 @@ function EmailConf() {
     
     </Layout>
 
-    );
+    )
   }
 
   export default EmailConf;

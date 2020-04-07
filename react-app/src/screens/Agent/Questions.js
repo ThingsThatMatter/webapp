@@ -1,14 +1,19 @@
-import React, {useState, useEffect} from 'react'
+import React, {useState} from 'react'
 import { Layout, Button, Modal, Input } from 'antd'
 
 import {connect} from 'react-redux'
+import {useCookies} from 'react-cookie'
 
 import Sidebar from '../../components/Agent/Sidebar'
+
+import APIFetch from '../../components/Agent/APIFetch'
 
 const { Content } = Layout
 
 
 function Questions(props) {
+
+    const [dataLoaded, setDataLoaded] = useState(false)
 
     const [questionsList, setQuestionslist] = useState([])
 
@@ -20,34 +25,25 @@ function Questions(props) {
     const [questionModalProperties, setQuestionModalProperties] = useState({_id:'',status:'',question:'',response:''})
     const [adModalProperties, setAdModalProperties] = useState({_id:''})
 
-    const [response, setResponse] = useState();
+    const [response, setResponse] = useState()
+
+    const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
   
-    /* Offre Cards */
-    useEffect( () => {
-        const dbFetch = async () => {
-            const ads = await fetch(`/pro/ads`, {
-                method: 'GET',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
-            })
-            const body = await ads.json();
-          
-            let adsWithQuestions = body.data.ads.filter( e => e.questions.length > 0);    
-            setQuestionslist(adsWithQuestions)
+    /* Token refresh */
+    const renewAccessToken = (token) => {
+        if (token !== cookies.aT) {
+            setCookie('aT', token, {path:'/pro'})
+        }
+    }
 
-        }   
-        dbFetch()
-    }, [displayQuestions]);
-
-
-    console.log(questionsList)
 
     let showModal = () => {
         setQuestionModalVisible(true)
-    };
+    }
 
     let hideModal = () => {
         setQuestionModalVisible(false)
-    };
+    }
 
     // Répondre à une question
     const handleAnswerQuestion = async () => {
@@ -56,7 +52,7 @@ function Questions(props) {
             headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token},
             body: `response=${response}`
         })
-        const body = await answerQuestion.json();
+        const body = await answerQuestion.json()
 
         setQuestionModalProperties({_id:'',status:'',question:'',response:'',creationDate:'',user:''})
         setQuestionModalVisible(false)
@@ -69,7 +65,7 @@ function Questions(props) {
             method: 'PUT',
             headers: {'Content-Type': 'application/x-www-form-urlencoded', token: props.token}
         })
-        const body = await declineQuestion.json();
+        const body = await declineQuestion.json()
 
         setQuestionModalProperties({_id:'',status:'',question:'',response:'',creationDate:'',user:''})
         setQuestionModalVisible(false)
@@ -80,10 +76,9 @@ function Questions(props) {
         return (
             <div key={i} id={e._id} className='question-section'>
                 <h4 className='title'>{e.title}</h4>
-
-                    <ul className="questions-list">
-                        { e.questions.map( (f,i) => {
-                            
+                <ul className="questions-list">
+                    { e.questions.map( (f,i) => {
+                        
                         return (
                             <li key={i} className="question-element">
                                 <span className={`question-state ${f.status}`}></span>
@@ -105,53 +100,68 @@ function Questions(props) {
                                 </Button>
                             </li>
                         )
-                        })
-                        }
+                    })}
                 </ul>
             </div>
             )
-    });
+    })
 
     return (
+
+        <APIFetch
+            fetchUrl= '/pro/ads'
+            fetchOptions={{
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.aT}`
+                }
+            }}
+            getApiResponse = { response => {
+                if (!dataLoaded) {
+                    renewAccessToken(response.data.accessToken)
+                    setQuestionslist(response.data.ads.filter( e => e.questions.length > 0))
+                }
+                setDataLoaded(true)
+            }}
+        >
   
-        <Layout>
+            <Layout>
+                <Sidebar/>
+                <Layout className='main-content'>
+                    <Content>
 
-            <Sidebar/>
+                        <h1 className='pageTitle'>Les messages</h1>
 
-            <Layout className='main-content'>
-                <Content>
-                    <h1 className='pageTitle'>Les messages</h1>
-
-                    {sortedQuestions}
-                    
-                    <Modal
-                        title="Question"
-                        visible={questionModalVisible}
-                        footer= {
-                            <div className="modal-footer-buttons">
-                                <Button type="primary" className="button-decline" onClick={ () => handleDeclineQuestion()}>Supprimer</Button>
-                                <Button type="primary" className="button-validate" onClick={ () => handleAnswerQuestion()}>Répondre</Button>
+                        {sortedQuestions}
+                        
+                        <Modal
+                            title="Question"
+                            visible={questionModalVisible}
+                            footer= {
+                                <div className="modal-footer-buttons">
+                                    <Button type="primary" className="button-decline" onClick={ () => handleDeclineQuestion()}>Supprimer</Button>
+                                    <Button type="primary" className="button-validate" onClick={ () => handleAnswerQuestion()}>Répondre</Button>
+                                </div>
+                            }
+                            destroyOnClose= {true}
+                            width= "50%"
+                            closable={true}
+                            mask={true}
+                            maskClosable={true}
+                            onCancel={hideModal}
+                        >
+                            <div className="question-modal">
+                                <p>{questionModalProperties.question}</p>
+                                <Input className="response-content" onChange={ e => setResponse(e.target.value)} value={response} />
                             </div>
-                        }
-                        destroyOnClose= {true}
-                        width= "50%"
-                        closable={true}
-                        mask={true}
-                        maskClosable={true}
-                        onCancel={hideModal}
-                    >
-                        <div className="question-modal">
-                            <p>{questionModalProperties.question}</p>
-                            <Input className="response-content" onChange={ e => setResponse(e.target.value)} value={response} />
-                        </div>
-                    </Modal>
-
-                </Content>         
+                        </Modal>
+                    </Content>         
+                </Layout>
             </Layout>
-  
-        </Layout>
-
-    );
+        </APIFetch>
+    )
   }
 
 function mapStateToProps(state) {

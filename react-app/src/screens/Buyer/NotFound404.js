@@ -5,7 +5,7 @@ import { Layout, Button} from 'antd'
 const {Content} = Layout
 
 
-function NotFound_404_Ad() {
+function NotFound404() {
 
     const [redirHome, setRedirHome] = useState(false)
 
@@ -19,7 +19,7 @@ function NotFound_404_Ad() {
                 <UserNavHeader/> 
                 <Layout className='user-layout main-content'>
                     <Content style={{ margin: '24px 16px 0' }}>
-                        <h1>L'annonce que vous souhaitez consulter n'existe plus</h1>
+                        <h1>La page demandée n'existe pas</h1>
                         <Button
                            onClick={() => setRedirHome(true)}
                             type="primary"
@@ -35,4 +35,4 @@ function NotFound_404_Ad() {
     }
   }
 
-  export default NotFound_404_Ad
+  export default NotFound404

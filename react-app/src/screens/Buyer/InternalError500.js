@@ -1,18 +1,17 @@
 import React from 'react'
 import UserNavHeader from '../../components/Buyer/UserNavHeader'
 
-import { Layout} from 'antd';
-import {LoadingOutlined} from '@ant-design/icons'
-const {Content} = Layout;
+import { Layout} from 'antd'
+const {Content} = Layout
 
 
-function InternalError() {
+function InternalError500() {
 
     return (
         <Layout>
             <UserNavHeader/>
             <Layout className='main-content'>
-                <Content className="spinner">
+                <Content style={{ margin: '24px 16px 0' }}>
                     <p style = {{marginBottom: '20em'}}>
                         Nous rencontrons des difficultés pour afficher la page demandée. Merci de réessayer.
                     </p>
@@ -22,4 +21,4 @@ function InternalError() {
     )
 }
 
-export default InternalError
+export default InternalError500

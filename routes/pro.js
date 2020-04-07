@@ -1,30 +1,35 @@
 var express = require('express')
 var router = express.Router()
 var fs = require('fs')
+
 var mongoose = require('../models/bdd')
 var agencyModel = require('../models/agencyModel.js')
 var agentModel = require('../models/agentModel.js')
 var adModel = require('../models/adModel.js')
-var cloudinary = require('cloudinary').v2;
+
+const {success, created, deleted, badRequest, unauthorized, forbidden, notFound, internalError} = require('./http-responses')
+
+var cloudinary = require('cloudinary').v2
 const path = require('path')
 
 require('dotenv').config()
 
 const jwt = require('jsonwebtoken')
-const bcrypt = require('bcryptjs');
-const saltRounds = 12;
+const bcrypt = require('bcryptjs')
+const saltRounds = 12
 
 
 cloudinary.config({ 
-  cloud_name: 'dp4mkibm2', 
-  api_key: '692324412372859', 
-  api_secret: 'IIAMf3ZmBfXycAVxnqGFpctM-YE' 
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
+  api_key: process.env.CLOUDINARY_PUBLIC_KEY, 
+  api_secret: process.env.CLOUDINARY_SECRET_KEY
 });
 
 const agencyID = "5e6222aa670cd85f2fb6ba51" // temporaire le temps de gérer les agences 
 
 let status
 let response
+let resp
 let login_duration = 30 //30 minutes
 
 /* --------------------------------------------------TOKEN GENERATION & CHECK--------------------------------------------------------- */
@@ -40,36 +45,27 @@ const authenticateAgent = (req, res, next) => {
   let accessToken = authHeader && authHeader.split(' ')[1]
 
   if (accessToken === null || !req.cookies.aRT) {  //if no token 
-    status = 401,
-    response = {
-      message: 'Authentification error',
-      details: "Erreur d'authentification"
-    }
+    resp = unauthorized()
+    res.status(resp.status).json(resp.response)
+
   } else {
-
-    jwt.verify(accessToken, process.env.JWT_AGENT_ACCESS_KEY, async (err, agent) => {
+    jwt.verify(accessToken, process.env.JWT_AGENT_ACCESS_KEY, async (err, agentInfo) => {
       if (err) {  //if access token is not valid
-        status = 403;
-        response = {
-          message: 'Bad token',
-          details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-        }
-      res.status(status).json(response)
-      } else {
+        resp = unauthorized()
+        res.status(resp.status).json(resp.response)
 
+      } else {
         const currentTime = Math.round((new Date()).getTime() / 1000);
-        const tokenExpiresIn = agent.exp - currentTime
+        const tokenExpiresIn = agentInfo.exp - currentTime
 
         if (tokenExpiresIn < 300) { // if token expires in less than 5minutes, try to update it
           const findAgent = await agentModel.findOne({ token:req.cookies.aRT })
           if (!findAgent) { // if refresh token is not valid
-            status = 403
-            response = {
-              message: 'Bad token',
-              details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-            }
+            resp = unauthorized()
+            res.status(resp.status).json(resp.response)
+
           } else {
-            const agentInfo = {
+            agentInfo = {
               lastname: findAgent.lastname,
               firstname: findAgent.firstname,
               email: findAgent.email,
@@ -79,8 +75,13 @@ const authenticateAgent = (req, res, next) => {
           }
         }
 
+        resp = success({
+          accessToken,
+          agentInfo
+        })
+
         req.accessToken = accessToken
-        req.agentInfo = agent
+        req.agentInfo = agentInfo
         next()
       }
     })
@@ -90,16 +91,9 @@ const authenticateAgent = (req, res, next) => {
 /* --------------------------------------------------ACCESS / SIGN IN / SIGN UP--------------------------------------------------------- */
 /* Check token to access app*/
 router.get('/user-access', authenticateAgent, async function(req, res) {
+  
   // if authenticateAgent don't block, then authenticate user
-  status = 200
-    response = {
-      message: 'OK',
-      data: {
-        accessToken: req.accessToken,
-        agentInfo: req.agentInfo
-      }
-    }
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 })
 
 /* Logout to remove refresh token */
@@ -107,35 +101,19 @@ router.get('/logout', async function(req,res) {
 
   try {
 
-    let deleteToken = await agentModel.updateOne(
+    await agentModel.updateOne(
       { token: req.cookies.aRT }, 
       { $unset: { token: null } }
     )
 
-    if (!deleteToken) {
-      status = 500;
-      response = {
-        message: 'Internal error',
-        details: 'Le serveur a rencontré une erreur.'
-      }
-    } else {
-      status = 200
-      response = {
-        message: 'OK',
-        details: 'Successfully logged out'
-      }
-      res.clearCookie('aRT', {path:'/pro'})
-    }
+    resp = deleted()
+    res.clearCookie('aRT', {path:'/pro'})
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 })
 
 /* PRO sign-in */
@@ -146,79 +124,51 @@ router.post('/sign-in', async function(req, res, next) {
   try {
 
     if( ['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
-      status = 401;
-      response = {
-        message: 'Form error',
-        details: 'Veuillez remplir tous les champs'
-      }
-    } else {
+      resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
+    } else {
       const findAgent = await agentModel.findOne({ email:req.body.email });
       if(!findAgent) {
-        status = 401;
-        response = {
-          message: 'Authentification error',
-          details: "Erreur d'authentification"
-        }
+        resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+
       } else {
         const pwdMatch = await bcrypt.compare(req.body.password, findAgent.password);
-        if (pwdMatch) {
+        if (!pwdMatch) {
+          resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+        } else {
 
           /* Update refresh token */
           const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
-          let updatePwd = await agentModel.updateOne(
+          await agentModel.updateOne(
             {_id: findAgent._id},
             {$set: {token: refreshToken}}
           )
 
-          if(!updatePwd) { 
-            status = 500;
-            response = {
-              message: 'Internal error',
-              details: 'Le serveur a rencontré une erreur.'
-            }
-          } else {
-            const agentInfo = {
-              lastname: findAgent.lastname,
-              firstname: findAgent.firstname,
-              email: findAgent.email,
-              id: findAgent._id
-            }
-
-            if (req.body.stayLoggedIn === 'true') {
-              login_duration = 60 * 24 * 365 // stay login for a year
-            }
-
-            refreshCookie = refreshToken
-            status = 200
-            response = {
-              message: 'OK',
-              data: {
-                accessToken: generateAgentAccessToken(agentInfo, login_duration),
-                agentInfo
-              }
-            }
+          const agentInfo = {
+            lastname: findAgent.lastname,
+            firstname: findAgent.firstname,
+            email: findAgent.email,
+            id: findAgent._id
           }
 
-        } else {
-          status = 401;
-          response = {
-            message: 'Authentification error',
-            details: "Erreur d'authentification"
+          if (req.body.stayLoggedIn === 'true') {
+            login_duration = 60 * 24 * 365 // stay login for a year
           }
-        }   
+
+          refreshCookie = refreshToken
+          resp = success({
+            accessToken: generateAgentAccessToken(agentInfo, login_duration),
+            agentInfo
+          })
+        }  
       }
     }
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
   res.cookie('aRT', refreshCookie, {httpOnly: true, path:'/pro'})
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 });
 
 /* PRO sign-up */
@@ -229,23 +179,16 @@ router.post('/sign-up', async function(req, res, next) {
   try {
 
     if(['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
-      status = 401;
-      response = {
-        message: 'Form error',
-        details: 'Veuillez remplir tous les champs'
-      }
-    } else {
+      resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
+    } else {
       const findAgent = await agentModel.findOne({
         email: req.body.email
       })
 
       if(findAgent){
-        status = 401;
-        response = {
-          message: 'User already exists',
-          details: 'Cet utilisateur existe déjà'
-        }
+        resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
+
       } else {
         const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
         const hash = await bcrypt.hash(req.body.password, saltRounds)
@@ -262,7 +205,7 @@ router.post('/sign-up', async function(req, res, next) {
         saveAgent = await newAgent.save()
 
         /* Rattachement à l'agence */
-        const adToAgency = await agencyModel.updateOne(
+        await agencyModel.updateOne(
           { _id: agencyID }, 
           { $push: { agents : saveAgent._id } }
         )
@@ -275,27 +218,19 @@ router.post('/sign-up', async function(req, res, next) {
           id : saveAgent._id
         }
         refreshCookie = refreshToken
-        status = 200;
-        response = {
-          message: 'OK',
-          data: {
-            accessToken: generateAgentAccessToken(agentInfo, login_duration),
-            agentInfo
-          }
-        }
+        resp = success({
+          accessToken: generateAgentAccessToken(agentInfo, login_duration),
+          agentInfo
+        })
       }
     }
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    }
+    resp = internalError()
   }
 
   res.cookie('aRT', refreshCookie, {httpOnly: true, path:'/pro'})
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response);
 })
 
 /* --------------------------------------------------LIST ALL ADS FOR AN AGENT--------------------------------------------------------- */
@@ -306,32 +241,17 @@ router.get('/ads', authenticateAgent, async function(req, res) {
     let adsFromAgent = await agentModel.findOne({ _id:req.agentInfo.id })
       .populate('ads')
       .exec()
-    ;
-    if(!adsFromAgent) { 
-      status = 401;
-      response = {
-        message: 'Bad token',
-        details: 'Erreur d\'authentification. Redirection vers la page de connexion...'
-      };
-    } else {
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          accessToken: req.accessToken,
-          ads: adsFromAgent.ads
-        }
-      }
-    };
+
+    resp = success({
+      ads: adsFromAgent.ads,
+      accessToken: req.accessToken
+    })
+    
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response);
 });
 
 /* --------------------------------------------------GET, POST UPDATE AND DELETE AN AD--------------------------------------------------------- */
@@ -341,25 +261,29 @@ router.get('/ad/:id_ad', authenticateAgent, async function(req, res) {
 
   try {
 
-    let ad = await adModel.findById(req.params.id_ad); // Trouver les détails de l'annonce
-    status = 200;
-    response = {
-      message: 'OK',
-      data: {
-        accessToken: req.accessToken,
-        ad
+    if (!mongoose.Types.ObjectId.isValid(req.params.id_ad)) { // send a 404 if ad_id has not a id format
+      resp = notFound()
+    } else {
+
+      let adFromDb = await adModel.findById(req.params.id_ad)
+      if(!adFromDb) { 
+        resp = notFound()
+
+      } else {
+        adFromDb.timeSlots = []
+        adFromDb.offers = []
+        resp = success({
+          accessToken: req.accessToken,
+          ad: adFromDb
+        })
       }
     }
   
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response);
 });
 
 
@@ -569,9 +493,11 @@ router.delete('/ad/:id_ad', authenticateAgent, async function(req, res, next) {
     })
 
     // delete photos from cloudinary
-    for(i=0; i<formatPhotos.length; i ++) {  
-      const deletePhotos = await cloudinary.uploader.destroy(formatPhotos[i])
-    }
+    // for(i=0; i<formatPhotos.length; i ++) {  
+      // await cloudinary.uploader.destroy(formatPhotos[i])
+      await cloudinary.api.delete_resources(formatPhotos)
+
+    // }
 
     // format files link to extract only the public ID of files
     let formatFiles = findAd.files.map((e) => { 
@@ -580,41 +506,30 @@ router.delete('/ad/:id_ad', authenticateAgent, async function(req, res, next) {
 
     // delete files from cloudinary
     for(i=0; i<formatFiles.length; i ++) {  
-      const deleteFiles = await cloudinary.uploader.destroy(formatFiles[i])
+      await cloudinary.uploader.destroy(formatFiles[i])
     }
 
     //delete ad from DB
-    let deleteAd = await adModel.deleteOne({ _id: req.params.id_ad });
+      await adModel.deleteOne({ _id: req.params.id_ad })
 
     // delete ad id from agent
-    const findAgent = await agentModel.findById(req.agentInfo.id);
-    let adsFromAgent = findAgent.ads; 
+    const findAgent = await agentModel.findById(req.agentInfo.id)
+    let adsFromAgent = findAgent.ads
 
-    adsFromAgent = adsFromAgent.filter(e => e._id != req.params.id_ad);
+    adsFromAgent = adsFromAgent.filter(e => e._id != req.params.id_ad)
 
-    let deleteAdFromAgent = await agentModel.updateOne(
+    await agentModel.updateOne(
         { _id: findAgent._id }, 
         { $set: { ads: adsFromAgent } }
     )
 
-    status = 200;
-    response = {
-      message: 'OK',
-      data: {
-        accessToken: req.accessToken,
-        deleteAdFromAgent
-      }
-    }
+    resp = deleted()
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response);
 });
 
 
@@ -654,9 +569,8 @@ router.post('/ad/:id_ad/timeslots', authenticateAgent, async function(req, res) 
 
   try {
 
-    let tableTimeslots = JSON.parse(req.body.timeslot);
-
-    let frontTimeslots = tableTimeslots.map(obj => {
+    let timeSlots = JSON.parse(req.body.timeslot)
+    timeSlots = timeSlots.map(obj => {
       return { 
         booked: false,
         start: obj.start,
@@ -664,44 +578,25 @@ router.post('/ad/:id_ad/timeslots', authenticateAgent, async function(req, res) 
         private: obj.private,
         agent: req.agentInfo.id
       }
-    });
+    })
 
-    let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
-    timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
+    let timeslotsFromBdd = await adModel.findById(req.params.id_ad)
+    timeslotsFromBdd = timeslotsFromBdd.timeSlots
 
-    let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+    const allTimeslots = timeslotsFromBdd.concat(timeSlots)
 
-    let newTimeslot = await adModel.updateOne(
+    await adModel.updateOne(
         { _id: req.params.id_ad }, 
         { $set: { timeSlots: allTimeslots }, visitStatus: true }
-    );
-
-    if(!newTimeslot) { 
-      status = 500;
-      response = {
-        message: 'Internal error',
-        details: 'Le serveur a rencontré une erreur.'
-      };
-    } else {
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          accessToken: req.accessToken,
-          allTimeslots
-        }
-      }
-    };
+    )
+    
+    resp = created({})
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response);
 });
 
 /* PUT timeslot */
@@ -709,9 +604,8 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', authenticateAgent, async function
 
   try {
 
-    let tableTimeslots = JSON.parse(req.body.timeslot);
-
-    let frontTimeslots = tableTimeslots.map(obj => {
+    let timeSlots = JSON.parse(req.body.timeslot);
+    timeSlots = timeSlots.map(obj => {
       return { 
         booked: false,
         start: obj.start,
@@ -719,46 +613,27 @@ router.put('/ad/:id_ad/timeslot/:id_timeslot', authenticateAgent, async function
         private: obj.private,
         agent: req.agentInfo.id
       }
-    });
+    })
 
-    let timeslotsFromBdd = await adModel.findById(req.params.id_ad);
-    timeslotsFromBdd = timeslotsFromBdd.timeSlots; 
+    let timeslotsFromBdd = await adModel.findById(req.params.id_ad)
+    timeslotsFromBdd = timeslotsFromBdd.timeSlots
 
-    timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot);
+    timeslotsFromBdd = timeslotsFromBdd.filter(e => e._id != req.params.id_timeslot)
 
-    let allTimeslots = timeslotsFromBdd.concat(frontTimeslots);
+    let allTimeslots = timeslotsFromBdd.concat(timeSlots)
 
-    let newTimeslot = await adModel.updateOne(
+    await adModel.updateOne(
         { _id: req.params.id_ad }, 
         { $set: { timeSlots: allTimeslots }, visitStatus: true }
-    );
-
-    if(!newTimeslot) { 
-      status = 500;
-      response = {
-        message: 'Internal error',
-        details: 'Le serveur a rencontré une erreur.'
-      };
-    } else {
-      status = 200;
-      response = {
-        message: 'OK',
-        data: {
-          accessToken: req.accessToken,
-          allTimeslots
-        }
-      }
-    };
+    )
+    
+    resp = success({})
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 });
 
 /* DELETE timeslot */
@@ -798,7 +673,7 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', authenticateAgent, async funct
     response = {
       message: 'Internal error',
       details: 'Le serveur a rencontré une erreur.'
-    };
+    }
   }
 
   res.status(status).json(response);
@@ -806,39 +681,28 @@ router.delete('/ad/:id_ad/timeslot/:id_timeslot', authenticateAgent, async funct
 
 /* -----------------------------------------OFFER: ACCEPT, DECLINE & CANCEL--------------------------------------------------------- */
 /* PUT accept offer */
-router.put('/ad/:id_ad/offer/:id_offer/accept', async function(req, res, next) {
+router.put('/ad/:id_ad/offer/:id_offer/accept', authenticateAgent, async function(req, res) {
 
   try {
 
-    let acceptedOffer = await adModel.updateOne(
+    await adModel.updateOne(
       { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
       { "offers.$.status": 'accepted' }
     )
 
-    let declinedOffers = await adModel.updateMany(
+    await adModel.updateMany(
       { _id: req.params.id_ad,"offers._id": req.params.id_offer },
       { $set: { "offers.$[elem].status" : 'declined' } },
       { arrayFilters: [ { "elem.status": 'pending' } ] }
     )
 
-    status = 200;
-    response = {
-      message: 'OK',
-      data: {
-        accessToken: req.accessToken,
-        acceptedOffer
-      }
-    }
+    resp = success()
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    }
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 });
 
 /* PUT decline offer */
@@ -846,29 +710,18 @@ router.put('/ad/:id_ad/offer/:id_offer/decline', authenticateAgent, async functi
 
   try {
 
-    let declinedOffer = await adModel.updateOne(
+    await adModel.updateOne(
       { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
       { "offers.$.status": 'declined' }
     );
 
-    status = 200;
-    response = {
-      message: 'OK',
-      data: {
-        accessToken: req.accessToken,
-        declinedOffer
-      }
-    }
+    resp = success({})
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    resp = internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 });
 
 /* CANCEL accepted offer */
@@ -876,35 +729,24 @@ router.put('/ad/:id_ad/offer/:id_offer/cancel', authenticateAgent, async functio
 
   try {
 
-    let cancelAcceptedOffer = await adModel.updateOne(
+    await adModel.updateOne(
       { _id: req.params.id_ad, "offers._id": req.params.id_offer  }, 
       { "offers.$.status": 'declined' }
-    );
+    )
 
-    let cancelDeclinedOffer = await adModel.updateMany(
+    await adModel.updateMany(
       { _id: req.params.id_ad, "offers._id": req.params.id_offer },
       { $set: { "offers.$[elem].status" : 'pending' } },
       { arrayFilters: [ { "elem.status": 'declined' } ] }
     )
 
-    status = 200;
-    response = {
-      message: 'OK',
-      data: {
-        accessToken: req.accessToken,
-        cancelAcceptedOffer
-      }
-    }
+    resp = success({})
 
   } catch(e) {
-    status = 500;
-    response = {
-      message: 'Internal error',
-      details: 'Le serveur a rencontré une erreur.'
-    };
+    internalError()
   }
 
-  res.status(status).json(response);
+  res.status(resp.status).json(resp.response)
 });
 
 // POST Upload images from form 

@@ -9,7 +9,7 @@ import UserNavHeader from '../../components/Buyer/UserNavHeader'
 import LoggedOut from '../../components/Buyer/buyerAdDesc/LoggedOut'
 import SidebarBuyer from '../../components/Buyer/buyerAdDesc/SidebarBuyer'
 import Spinner from '../../components/Buyer/buyerAdDesc/Spin'
-import Unauthorized_401 from './Unauthorized_401'
+import Unauthorized401 from './Unauthorized401'
 
 import APIFetch from '../../components/Buyer/APIFetch'
 
@@ -165,7 +165,7 @@ function AdDesc(props) {
   }
 
   if (redirectTo401) {
-    return <Unauthorized_401 />
+    return <Unauthorized401 />
   } else {
 
     return (

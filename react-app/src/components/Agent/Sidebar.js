@@ -26,7 +26,7 @@ function Sidebar(props) {
       }
     })
     
-    props.logout()
+    props.loggedOut()
     setRedirHome(true)
   }
 
@@ -55,16 +55,16 @@ function Sidebar(props) {
             </Menu.Item>
 
             <Menu.Item key="2">
-              <Link to="/pro/offres">
+              <Link to="/pro/offers">
                 <EuroCircleOutlined />
                 <span className="nav-text">Offres</span>
               </Link>
             </Menu.Item>
 
             <Menu.Item key="3">
-              <Link to="/pro/rendezvous">
+              <Link to="/pro/visits">
                 <CalendarOutlined />
-                <span className="nav-text">Rendez-vous</span>
+                <span className="nav-text">Visites</span>
               </Link>
             </Menu.Item>
 
@@ -94,8 +94,8 @@ function Sidebar(props) {
 
 function mapDispatchToProps(dispatch) {
   return {
-      logout: function() {
-          dispatch({ type: 'agent_logout' })
+    loggedOut: function() {
+          dispatch({ type: 'agent_loggedOut' })
       }
   }
 }

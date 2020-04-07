@@ -11,7 +11,7 @@ import {useCookies} from 'react-cookie'
 
 const {Content} = Layout
 
-function Unauthorized_401(props) {
+function Unauthorized401(props) {
 
     const [redirHome, setRedirHome] = useState(false)
     const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
@@ -76,4 +76,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
     null,
     mapDispatchToProps
-)(Unauthorized_401)
+)(Unauthorized401)

@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react'
 import {Redirect} from 'react-router-dom'
 import UserNavHeader from '../../components/Buyer/UserNavHeader'
-import Unauthorized_401 from './Unauthorized_401'
+import Unauthorized401 from './Unauthorized401'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
@@ -223,7 +223,7 @@ function OfferForm3(props) {
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 
     if (redirectTo401) {
-        return <Unauthorized_401 />
+        return <Unauthorized401 />
     } else {
 
         return (

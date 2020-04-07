@@ -13,7 +13,7 @@ import EmailConf from '../screens/Buyer/EmailConf'
 import OfferForm1 from '../screens/Buyer/OfferForm1'
 import OfferForm2 from '../screens/Buyer/OfferForm2'
 import OfferForm3 from '../screens/Buyer/OfferForm3'
-import NotFound_404 from '../screens/Buyer/NotFound_404'
+import NotFound404 from '../screens/Buyer/NotFound404'
 
 function BuyerRoutes(props) {
 
@@ -66,7 +66,7 @@ function BuyerRoutes(props) {
                 <Route component={buyerSign} path='/sign' exact/>
                 <Route component={EmailConf} path='/confirmation/:user_token' exact/>
                 <Route component={AdDesc} path='/ad/:ad_id' exact/>
-                <Route component={NotFound_404} path={new RegExp("^/(?!pro)")} /> {/* Any routes not starting by pro */}
+                <Route component={NotFound404} path={new RegExp("^/(?!pro)")} /> {/* Any routes not starting by pro */}
             </Switch>
         </Router>  
     );
@@ -87,9 +87,6 @@ function mapDispatchToProps(dispatch) {
             dispatch({
                 type: 'user_login_request'
             })
-        },
-        loggedOut: function() {
-            dispatch({ type: 'user_loggedOut' })
         },
         authenticationFailed: function() {
             dispatch({ type: 'user_authenticationFailed' })

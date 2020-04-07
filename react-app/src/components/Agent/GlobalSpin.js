@@ -1,5 +1,5 @@
 import React from 'react'
-import Sidebar from '../../components/Agent/Sidebar'
+import Sidebar from './Sidebar'
 
 import { Layout, Spin} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'

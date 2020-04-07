@@ -1,15 +1,19 @@
-import React, {useState, useEffect} from 'react';
-import { Layout, Row, Button, Col, Modal } from 'antd'
+import React, {useState, useEffect} from 'react'
+import { Layout, Row, Button, Col, Modal, message } from 'antd'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 import Sidebar from '../../components/Agent/Sidebar'
-import {CheckCircleOutlined} from '@ant-design/icons'
+import Unauthorized401 from './Unauthorized401'
+import InternalError500 from './InternalError500'
+import GlobalSpin from '../../components/Agent/GlobalSpin'
 
-const { Content } = Layout;
+import {CheckCircleOutlined, WarningOutlined} from '@ant-design/icons'
 
-function Offres(props) {
+const { Content } = Layout
+
+function Offers() {
 
     const [offersList, setOfferslist] = useState([])
 
@@ -17,12 +21,20 @@ function Offres(props) {
     const [offerStatus, setOfferStatus] = useState(null)
 
     const [offerModalVisible, setOfferModalVisible] = useState(false)
-    
     const [offerModalProperties, setOfferModalProperties] = useState({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
-
     const [adModalProperties, setAdModalProperties] = useState({_id:''})
 
-    const [cookies, setCookie] = useCookies(['name']); // initilizing state cookies
+    const [offerAcceptLoading, setOfferAcceptLoading] = useState(false)
+    const [offerDeclineLoading, setOfferDeclineLoading] = useState(false)
+    const [offerCancelLoading, setOfferCancelLoading] = useState(false)
+    const [offerError, setOfferError] = useState('')
+
+    const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
+
+    const [redirectTo401, setRedirectTo401] = useState(false)
+    const [internalError, setInternalError] = useState(false)
+  
+    const [dbLoading, setDbLoading] = useState(true)
   
     /* Token refresh */
     const renewAccessToken = (token) => {
@@ -31,10 +43,10 @@ function Offres(props) {
         }
     }
 
-    /* Offre Cards */
+    /* Offer Cards */
     useEffect( () => {
         const dbFetch = async () => {
-            const ads = await fetch(`/pro/ads`, {
+            const getAds = await fetch(`/pro/ads`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -42,24 +54,36 @@ function Offres(props) {
                     'Authorization': `Bearer ${cookies.aT}`
                 }
             })
-            const body = await ads.json();
-            renewAccessToken(body.data.accessToken) // Renew token if invalid soon
-            let adsWithOffers = body.data.ads.filter( e => e.offers.length > 0);
-            setOfferslist(adsWithOffers)
+
+            if (getAds.status === 500) {
+                setInternalError(true)
+            
+            } else if (getAds.status === 401) {
+                setRedirectTo401(true)
+          
+            } else if (getAds.status === 200) {
+                const response = await getAds.json()
+                renewAccessToken(response.data.accessToken) // Renew token if invalid soon
+                setOfferslist(response.data.ads.filter( e => e.offers.length > 0))
+                setDbLoading(false)
+            }
         }   
     dbFetch()
-    }, [displayOffers]);
+    }, [displayOffers])
 
     let showModal = () => {
         setOfferModalVisible(true)
-    };
+    }
 
     let hideModal = () => {
+        setOfferError('')
         setOfferModalVisible(false)
-    };
+    }
 
     // Accept offer
     const handleAcceptOffer = async () => {
+
+        setOfferAcceptLoading(true)
         const acceptOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/accept`, {
             method: 'PUT',
             headers: {
@@ -68,14 +92,30 @@ function Offres(props) {
                 'Authorization': `Bearer ${cookies.aT}`
             }
         })
-        const body = await acceptOffer.json();
-        setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
-        setOfferModalVisible(false)
-        setDisplayOffers(!displayOffers)
+
+        if (acceptOffer.status === 500) {
+            setOfferError('Votre créneau n\'a pas pu être modifié, veuillez réessayer.')
+            setOfferAcceptLoading(false)
+        
+        } else if (acceptOffer.status === 401) {
+            setRedirectTo401(true)
+            setOfferAcceptLoading(false)
+            setOfferError('')
+    
+        } else if (acceptOffer.status === 200) {
+            message.success('L\'offre a bien été acceptée', 3) // add a message with email 
+            setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setOfferModalVisible(false)
+            setOfferAcceptLoading(false)
+            setDisplayOffers(!displayOffers)
+            setOfferError('')
+        }
     }
 
     // Decline offer
     const handleDeclineOffer = async () => {
+
+        setOfferDeclineLoading(true)
         const declineOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/decline`, {
             method: 'PUT',
             headers: {
@@ -84,15 +124,30 @@ function Offres(props) {
                 'Authorization': `Bearer ${cookies.aT}`
             }
         })
-        const body = await declineOffer.json();
 
-        setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
-        setOfferModalVisible(false)
-        setDisplayOffers(!displayOffers)
+        if (declineOffer.status === 500) {
+            setOfferError('L\'offre n\'a pas pu être refusée, veuillez réessayer.')
+            setOfferDeclineLoading(false)
+        
+        } else if (declineOffer.status === 401) {
+            setRedirectTo401(true)
+            setOfferDeclineLoading(false)
+            setOfferError('')
+    
+        } else if (declineOffer.status === 200) {
+            message.success('L\'offre a bien été refusée', 3) // add a message with email 
+            setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setOfferModalVisible(false)
+            setDisplayOffers(!displayOffers)
+            setOfferDeclineLoading(false)
+            setOfferError('')
+        }
     }
 
     // Cancel offer acceptation
     const handleCancelOffer = async () => {
+        
+        setOfferCancelLoading(true)
         const cancelOffer = await fetch(`/pro/ad/${adModalProperties._id}/offer/${offerModalProperties._id}/cancel`, {
             method: 'PUT',
             headers: {
@@ -101,26 +156,47 @@ function Offres(props) {
                 'Authorization': `Bearer ${cookies.aT}`
             }
         })
-        const body = await cancelOffer.json();
 
-        setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
-        setOfferModalVisible(false)
-        setDisplayOffers(!displayOffers)
+        if (cancelOffer.status === 500) {
+            setOfferError('L\'offre n\'a pas pu être annulée, veuillez réessayer.')
+            setOfferCancelLoading(false)
+        
+        } else if (cancelOffer.status === 401) {
+            setRedirectTo401(true)
+            setOfferCancelLoading(false)
+            setOfferError('')
+    
+        } else if (cancelOffer.status === 200) {
+            message.success('L\'offre n\'est plus acceptée', 3) // add a message with email 
+            setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setOfferModalVisible(false)
+            setDisplayOffers(!displayOffers)
+            setOfferCancelLoading(false)
+            setOfferError('')
+        }
     }
 
     const modalFooter = 
     <div className="modal-footer">
+        {offerError !=='' &&
+          <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
+            <WarningOutlined style={{marginRight: '2px'}}/>
+            <span style={{marginLeft: '2px'}}>
+                {offerError}
+            </span>
+            </div>
+        }
         {offerStatus === true
         ?
-        <Button className="button-decline" onClick={handleCancelOffer}>
+        <Button className="button-decline" loading={offerCancelLoading} onClick={handleCancelOffer}>
             Annuler l'offre
         </Button>
         :
         <div className="modal-footer-buttons">
-        <Button type="primary" className="button-decline" onClick={handleDeclineOffer}>
+        <Button type="primary" className="button-decline" loading={offerDeclineLoading} onClick={handleDeclineOffer}>
             Refuser l'offre
         </Button>
-        <Button type="primary" className="button-validate" onClick={handleAcceptOffer}>
+        <Button type="primary" className="button-validate" loading={offerAcceptLoading} onClick={handleAcceptOffer}>
             Accepter l'offre
         </Button>
         </div>
@@ -136,33 +212,33 @@ function Offres(props) {
         useGrouping: true
     })
 
-        let sortedOffers = offersList.map((e,i) => {
-            return (
-            <div key={i} id={e._id} className='offer-section'>
-                <h2 className='title'>{e.title}</h2>
-                
-                    <Row gutter={16} className="offer-carrousel">
-                        { e.offers.map( (f,i) => {
-                            let color;
-                            let unclickable;
-                            let picto;
-                            if(f.status === 'accepted') {
-                                color = '#6ce486';
-                            }
-                            if(f.status === 'declined') {
-                                color = '#e86b43';
-                                unclickable='unclickable';
-                            } else if(f.status === 'canceled') {
-                                color = '#e86b43';
-                                unclickable='unclickable';
-                            } 
-                            if(f.amount === e.price) {
-                                picto = <CheckCircleOutlined />;
-                            }
-                            if(f.status === 'pending') {
-                                color = '#116BD9';
-                            }
-                            
+    let sortedOffers = offersList.map((e,i) => {
+        return (
+        <div key={i} id={e._id} className='offer-section'>
+            <h2 className='title'>{e.title}</h2>
+            
+                <Row gutter={16} className="offer-carrousel">
+                    { e.offers.map( (f,i) => {
+                        let color
+                        let unclickable
+                        let picto
+                        if(f.status === 'accepted') {
+                            color = '#6ce486'
+                        }
+                        if(f.status === 'declined') {
+                            color = '#e86b43'
+                            unclickable='unclickable'
+                        } else if(f.status === 'canceled') {
+                            color = '#e86b43'
+                            unclickable='unclickable'
+                        } 
+                        if(f.amount === e.price) {
+                            picto = <CheckCircleOutlined />
+                        }
+                        if(f.status === 'pending') {
+                            color = '#116BD9'
+                        }
+                        
                         return (
                             <Col key = {i} 
                                 onClick={ () => { 
@@ -190,22 +266,29 @@ function Offres(props) {
                                 </div>
                             </Col>
                         )
-                        })
-                        }
-                    </Row>
-            </div>
-            )
-            
-        });
+                    })}
+                </Row>
+        </div>
+        )  
+    })
 
+
+/*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
+    if (redirectTo401) {
+        return <Unauthorized401 />
+    }
+      if (internalError) {
+        return <InternalError500 />
+    }
+    
+    if (dbLoading) {
+        return <GlobalSpin />
+    }
 
     return (
   
         <Layout>
-
-
             <Sidebar/>
-
             <Layout className='main-content'>
                 <Content>
                 <h1 className='pageTitle'>Les offres</h1>
@@ -247,12 +330,8 @@ function Offres(props) {
                     </Modal>
                 </Content>         
             </Layout>
-            
-        
-  
         </Layout>
-
-    );
+    )
   }
 
 function mapStateToProps(state) {
@@ -264,5 +343,4 @@ function mapStateToProps(state) {
 export default connect(
     mapStateToProps,
     null
-)(Offres)
-  
+)(Offers)
