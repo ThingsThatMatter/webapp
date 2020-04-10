@@ -38,7 +38,7 @@ function UserNavHeader(props) {
     const logout = async () => {
         removeCookie('uT', { path: '/' })
 
-        const loginout = await fetch('/user/logout', {
+        await fetch('/user/logout', {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',

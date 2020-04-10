@@ -27,7 +27,7 @@ const properties = {
   infinite: true,
   indicators: true,
   arrows: true
-};
+}
 
 function AdDesc(props) {
 
@@ -45,14 +45,21 @@ function AdDesc(props) {
 
   const [redirectTo401, setRedirectTo401] = useState(false)
 
-  const [cookies] = useCookies(['name']); // initilizing state cookies
+  const [cookies, setCookie] = useCookies(['name']) // initializing state cookies
 
   message.config({
     top: 80
   })
+
+  /* Renew Access Token */
+  const renewAccessToken = (token) => {
+    if (token !== cookies.uT) {
+        setCookie('uT', token, {path:'/'})
+    }
+  }
  
  
-/* -----------------------------------------------LOAD SIDE BLOCK------------------------------------------ */
+/* -----------------------------------------------SAVE USER AD------------------------------------------ */
   useEffect(() => {
     const saveAd = async () => {
       const saveAdUser = await fetch(`/user/ad/${props.match.params.ad_id}`, {
@@ -67,13 +74,11 @@ function AdDesc(props) {
       if (saveAdUser.status === 500) {
         message.warning('Nous rencontrons des difficultés pour sauvegarder cette annonce dans votre liste des biens consultés, veuillez actualiser la page.', 6)
 
-      } else {
-       
+      } else if (saveAdUser.status === 200) {
         const body = await saveAdUser.json()
-        if (saveAdUser.status === 200) {
-          if(body.data.message) {
-            message.success(body.data.message, 5)
-          }
+        // No token refresh, because we also call the sidebar if user is loggedin
+        if(body.data.message) {
+          message.success(body.data.message, 5)
         }
       }
 
@@ -91,13 +96,13 @@ function AdDesc(props) {
     currency: "EUR",
     minimumFractionDigits: 0,
     useGrouping: true
-  });
+  })
 
   /* Photos*/
   const photos = adPhotos.map((e, i) => {
     return (
       <div key={i} className="each-slide">
-        <div style={{ backgroundImage: `url(${e})` }}> </div>
+        <div style={{ backgroundImage: `url(${e.url})` }}> </div>
       </div>
     )
   })
@@ -143,7 +148,9 @@ function AdDesc(props) {
         setRedirectTo401(true)
         message.destroy()
 
-      } else if (newQuestion.status === 201) {      
+      } else if (newQuestion.status === 201) {
+        const body = await newQuestion.json()
+        renewAccessToken(body.accessToken)
         setQuestionLoad(false)
         setQuestionModalVisible(false)
         message.success('Votre question a bien été envoyée. Votre agent y répondra dans les plus brefs délais', 40)
@@ -166,282 +173,237 @@ function AdDesc(props) {
 
   if (redirectTo401) {
     return <Unauthorized401 />
-  } else {
+  }
 
-    return (
+  return (
 
-      <APIFetch
-        fetchUrl={`/user/ad/${props.match.params.ad_id}/public`}
-        fetchOptions={{}}
-        getApiResponse = { response => {
-          if (!dataLoaded) {
-            setAdDetails(response.data.ad)
-            setAdPhotos(response.data.ad.photos)
-            setAdQuestions(response.data.ad.questions.filter(question => question.status === 'answered'))
-          }
-          setDataLoaded(true)
-        }}
-      >
+    <APIFetch
+      fetchUrl={`/user/ad/${props.match.params.ad_id}/public`}
+      fetchOptions={{}}
+      type= 'public'
+      getApiResponse = { response => {
+        if (!dataLoaded) {
+          setAdDetails(response.data.ad)
+          setAdPhotos(response.data.ad.photos)
+          setAdQuestions(response.data.ad.questions.filter(question => question.status === 'answered'))
+        }
+        setDataLoaded(true)
+      }}
+    >
 
-        <Layout className="user-layout">
-          <UserNavHeader current="Biens consultés" />
+      <Layout className="user-layout">
+        <UserNavHeader current="Biens consultés" />
 
-          <Layout className="user-layout main-content">
-            <Content>
-              <Link
-                className="go-back"
-                to={`/`}
-                style={{ margin: "0px 0px 2em 0px" }}
-                onClick={() => message.destroy()}
+        <Layout className="user-layout main-content">
+          <Content>
+            <Link
+              className="go-back"
+              to={`/`}
+              style={{ margin: "0px 0px 2em 0px" }}
+              onClick={() => message.destroy()}
+            >
+              &lt; Retour aux annonces
+            </Link>
+
+            <h4>> {adDetails.city}</h4>
+            <h1>{adDetails.title}</h1>
+
+            <Row gutter={32} className="section-text">
+              <Col
+                xs={{ span: 24 }}
+                md={{ span: 18 }}
+                lg={{ span: 18 }}
+                xl={{ span: 18 }}
               >
-                &lt; Retour aux annonces
-              </Link>
+                <div className="slide-container">
+                  <Slide {...properties}>{photos}</Slide>
+                </div>
 
-              <h4>> {adDetails.city}</h4>
-              <h1>{adDetails.title}</h1>
+                {/* PARTIE DESCRIPTION */}
 
-              <Row gutter={32} className="section-text">
-                <Col
-                  xs={{ span: 24 }}
-                  md={{ span: 18 }}
-                  lg={{ span: 18 }}
-                  xl={{ span: 18 }}
-                >
-                  <div className="slide-container">
-                    <Slide {...properties}>{photos}</Slide>
+                <h2 className="pageSubTitle">Descriptif</h2>
+
+                <div className="section ad-main-details">
+                  <div className="row">
+                    <span>
+                      <img src="../../../expand.svg" width="20px" />
+                      <strong>{adDetails.area}</strong> m<sup>2</sup>
+                    </span>
+                    <span>
+                      <img src="../../../floor-plan.png" width="20px" />
+                      <strong>{adDetails.rooms}</strong> pièces
+                    </span>
+                    <span>
+                      <img src="../../../bed.svg" width="20px" />
+                      <strong>{adDetails.bedrooms}</strong> chambres
+                    </span>
                   </div>
 
-                  {/* PARTIE DESCRIPTION */}
-
-                  <h2 className="pageSubTitle">Descriptif</h2>
-
-                  <div className="section ad-main-details">
+                  <div className="dark-row">
                     <div className="row">
                       <span>
-                        <img src="../../../expand.svg" width="20px" />
-                        <strong>{adDetails.area}</strong> m<sup>2</sup>
+                        <img src="../../../elevator.png" width="20px" /> Ascenseur
                       </span>
                       <span>
-                        <img src="../../../floor-plan.png" width="20px" />
-                        <strong>{adDetails.rooms}</strong> pièces
+                        <img src="../../../balcony.png" width="20px" /> Balcon
                       </span>
                       <span>
-                        <img src="../../../bed.svg" width="20px" />
-                        <strong>{adDetails.bedrooms}</strong> chambres
+                        <img src="../../../floor.png" width="20px" /> Terrasse
                       </span>
-                    </div>
-
-                    <div className="dark-row">
-                      <div className="row">
-                        <span>
-                          <img src="../../../elevator.png" width="20px" /> Ascenseur
-                        </span>
-                        <span>
-                          <img src="../../../balcony.png" width="20px" /> Balcon
-                        </span>
-                        <span>
-                          <img src="../../../floor.png" width="20px" /> Terrasse
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="section-text">
-                      <p style={{ textAlign: "justify" }}>
-                        {adDetails.description}
-                      </p>
                     </div>
                   </div>
 
-                  {/* PARTIE PRIX ET HONNORAIRES */}
+                  <div className="section-text">
+                    <p style={{ textAlign: "justify" }}>
+                      {adDetails.description}
+                    </p>
+                  </div>
+                </div>
 
-                  <Row gutter={30}>
-                    <Col
-                      xs={{ span: 24 }}
-                      md={{ span: 24 }}
-                      lg={{ span: 24 }}
-                      xl={{ span: 24 }}
-                    >
-                      <h2 className="pageSubTitle">Prix & honoraires</h2>
+                {/* PARTIE PRIX ET HONNORAIRES */}
 
-                      <div className="section">
-                        <div className="section-text">
-                          <p>
-                            <span style={{ fontWeight: 700 }}>
-                              {priceFormatter.format(
-                                (adDetails.price * adDetails.fees) / 100 +
-                                  adDetails.price
-                              )}{" "}
-                            </span>{" "}
-                            TTC
-                          </p>
-                          <p>
-                            <span style={{ fontWeight: 700 }}>
-                              {priceFormatter.format(adDetails.price)}
-                            </span>{" "}
-                            hors honoraires
-                          </p>
-                          <p>
-                            <span style={{ fontWeight: 700 }}>
-                              {adDetails.fees}
-                            </span>
-                            % honoraires à la charge de{" "}
-                            <span style={{ fontWeight: 700 }}>l'acquéreur</span>
-                          </p>
-                        </div>
-                      </div>
-                    </Col>
-                  </Row>
-
-                  {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
-                  <Row>
-                    <Col
-                      xs={{ span: 24 }}
-                      md={{ span: 24 }}
-                      lg={{ span: 24 }}
-                      xl={{ span: 24 }}
-                    >
-                      <h2 className="pageSubTitle">Diagnostique électrique</h2>
-
-                      <div className="section">
-                        <div className="section-text">
-                          <p>
-                            <span style={{ fontWeight: 700 }}>{adDetails.dpe}</span>{" "}
-                            kWhEP/m² /an
-                          </p>
-                          <p>
-                            <span style={{ fontWeight: 700 }}>{adDetails.ges}</span>{" "}
-                            kgeqCO2/m² /an
-                          </p>
-                        </div>
-                      </div>
-                    </Col>
-                  </Row>
-
-                  {/* QUESTIONS FREQUENTES */}
-                  <Row>
-                    <Col
-                      xs={{ span: 24 }}
-                      md={{ span: 24 }}
-                      lg={{ span: 24 }}
-                      xl={{ span: 24 }}
-                    >
-                      <h2 className="pageSubTitle">Questions fréquentes</h2>
-
-                      <Collapse
-                        style={{ marginBottom: 20 }}
-                        bordered={false}
-                        defaultActiveKey={["1"]}
-                      >
-                        
-                        {questions}
-                        
-                      </Collapse>
-                    </Col>
-                  </Row>
-                  
-                  <Button type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
-
-                  <Modal
-                    className="new-question-modal"
-                    title= {<p className="newoffer-modal-title">Ma question</p>}
-                    visible={questionModalVisible}
-                    centered
-                    footer={
-                      <div style={{display: 'flex', alignItems: 'center'}}>
-                        <Button
-                          type="primary"
-                          onClick={ () => sendQuestion()}
-                        >
-                            Envoyer
-                        </Button>
-                        {questionLoad &&
-                          <Spin
-                              size="large"
-                              indicator={logo}
-                          />
-                        }
-                        {questionErrorMsg &&
-                          <p style={{marginLeft: '6px', color:'#f67280'}}>{questionErrorMsg}</p>
-                        }
-                      </div>
-                    }
-                    destroyOnClose= {true}
-                    width= "80%"
-                    closable={true}
-                    mask={true}
-                    maskClosable={true}
-                    onCancel={() => {
-                      setQuestionModalVisible(false)
-                      setQuestionErrorMsg()
-                    }}
+                <Row gutter={30}>
+                  <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 24 }}
+                    lg={{ span: 24 }}
+                    xl={{ span: 24 }}
                   >
-                    <label>
-                      <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
-                    </label>         
-                  </Modal>
+                    <h2 className="pageSubTitle">Prix & honoraires</h2>
 
-                </Col>
+                    <div className="section">
+                      <div className="section-text">
+                        <p>
+                          <span style={{ fontWeight: 700 }}>
+                            {priceFormatter.format(
+                              (adDetails.price * adDetails.fees) / 100 +
+                                adDetails.price
+                            )}{" "}
+                          </span>{" "}
+                          TTC
+                        </p>
+                        <p>
+                          <span style={{ fontWeight: 700 }}>
+                            {priceFormatter.format(adDetails.price)}
+                          </span>{" "}
+                          hors honoraires
+                        </p>
+                        <p>
+                          <span style={{ fontWeight: 700 }}>
+                            {adDetails.fees}
+                          </span>
+                          % honoraires à la charge de{" "}
+                          <span style={{ fontWeight: 700 }}>l'acquéreur</span>
+                        </p>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
 
-                <Col
-                  xs={{ span: 24 }}
-                  md={{ span: 6 }}
-                  lg={{ span: 6 }}
-                  xl={{ span: 6 }}
-                >
-                  <h2 className="pageSubTitle">Questions fréquentes</h2>
-
-                  <Collapse
-                    style={{ marginBottom: 20 }}
-                    bordered={false}
-                    defaultActiveKey={["1"]}
+                {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
+                <Row>
+                  <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 24 }}
+                    lg={{ span: 24 }}
+                    xl={{ span: 24 }}
                   >
-                    
-                    {questions}
-                    
-                  </Collapse>
+                    <h2 className="pageSubTitle">Diagnostique électrique</h2>
 
-                <Button className="question-button" type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
-                  {sidebar}
-                </Col>
+                    <div className="section">
+                      <div className="section-text">
+                        <p>
+                          <span style={{ fontWeight: 700 }}>{adDetails.dpe}</span>{" "}
+                          kWhEP/m² /an
+                        </p>
+                        <p>
+                          <span style={{ fontWeight: 700 }}>{adDetails.ges}</span>{" "}
+                          kgeqCO2/m² /an
+                        </p>
+                      </div>
+                    </div>
+                  </Col>
+                </Row>
 
+                {/* QUESTIONS FREQUENTES */}
+                <Row>
+                  <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 24 }}
+                    lg={{ span: 24 }}
+                    xl={{ span: 24 }}
+                  >
+                    <h2 className="pageSubTitle">Questions fréquentes</h2>
 
-              <Modal
+                    <Collapse
+                      style={{ marginBottom: 20 }}
+                      bordered={false}
+                      defaultActiveKey={["1"]}
+                    >
+                      
+                      {questions}
+                      
+                    </Collapse>
+                  </Col>
+                </Row>
+                
+                <Button type="primary" onClick={ () => setQuestionModalVisible(true)}>Poser une question</Button>
+
+                <Modal
                   className="new-question-modal"
                   title= {<p className="newoffer-modal-title">Ma question</p>}
                   visible={questionModalVisible}
                   centered
-                  footer={<Button type="primary" onClick={ () => sendQuestion()}>Envoyer</Button>}
+                  footer={
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                      <Button
+                        type="primary"
+                        onClick={ () => sendQuestion()}
+                      >
+                          Envoyer
+                      </Button>
+                      {questionLoad &&
+                        <Spin
+                            size="large"
+                            indicator={logo}
+                        />
+                      }
+                      {questionErrorMsg &&
+                        <p style={{marginLeft: '6px', color:'#f67280'}}>{questionErrorMsg}</p>
+                      }
+                    </div>
+                  }
                   destroyOnClose= {true}
-                  width= "50%"
+                  width= "80%"
                   closable={true}
                   mask={true}
                   maskClosable={true}
-                  onCancel={() => setQuestionModalVisible(false)}
+                  onCancel={() => {
+                    setQuestionModalVisible(false)
+                    setQuestionErrorMsg()
+                  }}
+                >
+                  <label>
+                    <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
+                  </label>         
+                </Modal>
+
+              </Col>
+
+              <Col
+                xs={{ span: 24 }}
+                md={{ span: 6 }}
+                lg={{ span: 6 }}
+                xl={{ span: 6 }}
               >
-              <label>
-              <Input className="question-content" onChange={ e => setQuestion(e.target.value)} value={question} placeholder="Pourquoi vos biens sont-ils toujours si beaux ?" />
-              </label>
-                    
-              </Modal>
-
-            <Col
-              xs={{ span: 24 }}
-              md={{ span: 6 }}
-              lg={{ span: 6 }}
-              xl={{ span: 6 }}
-            >
-
-              {sidebar}
-          
-            </Col>
-          </Row>
-        </Content>
+                {sidebar}
+              </Col>
+            </Row>
+          </Content>
+        </Layout>
       </Layout>
-    </Layout>
-  );
-      </APIFetch>
-    )
-  }
+    </APIFetch>
+  )
 }
 
 function mapStateToProps(state) {

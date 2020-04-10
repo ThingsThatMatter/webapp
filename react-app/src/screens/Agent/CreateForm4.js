@@ -4,8 +4,8 @@ import { Layout, Steps, Button, Radio, InputNumber} from 'antd'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
-const { Step } = Steps;
-const {Content} = Layout;
+const { Step } = Steps
+const {Content} = Layout
 
 
 function CreateFormFour(props) {
@@ -29,16 +29,16 @@ function CreateFormFour(props) {
             setPrice(props.formData.price)
             setFees(props.formData.fees)        
         }
-      },[]);
+    }, [])
 
      
     const handleClick = () => {
 
         if(feesPayer !== "" && price !== 0 && fees !== 0) {
-            props.nextStep();
+            props.nextStep()
             props.saveFormData(feesPayer, price, fees)
             if(props.edit === true) {
-                props.nextStep();
+                props.nextStep()
                 setSkipRedir(true)
             } else {
                 setRedir(true)
@@ -61,15 +61,11 @@ function CreateFormFour(props) {
         return <Redirect to="/pro/createform/step3"/> // When butti-on "retour" is clicked
     }
 
-
     return (
 
         <Layout>
-
             <Sidebar/>
-
             <Layout className='main-content'>
-
                 <Content style={{ margin: '2em 3em' }}>
 
                     <Steps progressDot current={currentPage}>
@@ -81,107 +77,114 @@ function CreateFormFour(props) {
                             <Step title="Récap" />
                     </Steps>
 
-                        <form>
-                            
-                            <p className='formLabel'>Les honoraires sont à la charge de</p>
-                            <label>
-                                <Radio.Group 
+                    <form>
+                        
+                        <p className='formLabel'>Les honoraires sont à la charge de</p>
+                        <label>
+                            <Radio.Group 
                                 value={feesPayer} 
                                 onChange={(e) => setFeesPayer(e.target.value)} 
-                                >
+                            >
                                 <Radio 
-                                value="buyer" 
-                                style={{paddingTop : "1%"}}>
-                                l'acquéreur</Radio>
+                                    value="buyer" 
+                                    style={{paddingTop : "1%"}}>
+                                    l'acquéreur
+                                </Radio>
                                 <br/>
                                 <Radio 
-                                value="seller" 
-                                style={{paddingTop : "1%"}}>
-                                    le vendeur</Radio>
-                                </Radio.Group>
-                            </label>
+                                    value="seller" 
+                                    style={{paddingTop : "1%"}}
+                                >
+                                    le vendeur
+                                </Radio>
+                            </Radio.Group>
+                        </label>
 
-                            <p className='formLabel'>Prix du bien hors honoraires</p>
-                            <label >
-                                <InputNumber 
+                        <p className='formLabel'>Prix du bien hors honoraires</p>
+                        <label >
+                            <InputNumber 
                                 min={0} 
                                 onChange={(e) => setPrice(e)} 
                                 value={price} 
-                                placeholder="700000"/>
-                            </label>
-                            <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
+                                placeholder="700000"
+                            />
+                        </label>
+                        <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
 
-                            <p className='formLabel'>Honoraires TTC en % du prix du bien</p>
-                            <label >
-                                <InputNumber 
+                        <p className='formLabel'>Honoraires TTC en % du prix du bien</p>
+                        <label >
+                            <InputNumber 
                                 min={0} 
                                 onChange={(e) => setFees(e)} 
                                 value={fees} 
-                                placeholder="8"/>
-                            </label>
-                            <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
+                                placeholder="8"
+                            />
+                        </label>
+                        <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
 
-                            <p className='formLabel'>Prix du bien incluant les honoraires</p>
-                            <label >
-                                <InputNumber 
+                        <p className='formLabel'>Prix du bien incluant les honoraires</p>
+                        <label >
+                            <InputNumber 
                                 value={price*fees/100+price} 
-                                placeholder="75"/>
-                            </label>
-                            <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
-                            
-                        </form>
-                        {formError}
+                                placeholder="75"
+                            />
+                        </label>
+                        <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
+                        
+                    </form>
+                    {formError}
 
-                        <div className="form-buttons">
+                    <div className="form-buttons">
 
-                            <Button type="primary" className="button-back"
+                        <Button type="primary" className="button-back"
                             onClick={() => {
-                                setBackRedir(true);
-                                props.previousStep();
+                                setBackRedir(true)
+                                props.previousStep()
                             }}
-                            >
-                            Précédent</Button>  
+                        >
+                            Précédent
+                        </Button>  
 
-                            <Button type="primary" className="button-validate" onClick={() => handleClick()}>Suivant</Button>
-                        </div>
-                                                   
+                        <Button type="primary" className="button-validate"
+                            onClick={() => handleClick()}
+                        >
+                            Suivant
+                        </Button>
+                    </div>                                
                 </Content>  
+            </Layout>
+        </Layout>
+    )
+}
 
-         </Layout>
-            
-    
-    </Layout>
-
-    );
-  }
-
-  function mapStateToProps(state) {
+function mapStateToProps(state) {
     return { 
         step : state.step,
         formData: state.formData,
         edit: state.edit
     }
-  }
+}
 
-  function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch) {
     return {
-      nextStep : function() { 
-          dispatch( {type: 'agent_newOfferNextStep'} ) 
-      },
-      previousStep : function() {
-          dispatch( {type: 'agent_newOfferPrevStep'} )
-      },
-      saveFormData : function(feesPayer, price, fees) { 
-        dispatch( {
-            type: 'agent_newOfferSaveFormData4',
-            feesPayer : feesPayer,
-            price: price,
-            fees: fees
-        } ) } 
+        nextStep : function() { 
+            dispatch( {type: 'agent_newOfferNextStep'} ) 
+        },
+        previousStep : function() {
+            dispatch( {type: 'agent_newOfferPrevStep'} )
+        },
+        saveFormData : function(feesPayer, price, fees) { 
+            dispatch({
+                type: 'agent_newOfferSaveFormData4',
+                feesPayer : feesPayer,
+                price: price,
+                fees: fees
+            })
+        } 
     }
-  }
+}
     
-  export default connect(
+export default connect(
     mapStateToProps, 
     mapDispatchToProps
-  )(CreateFormFour);
+)(CreateFormFour)

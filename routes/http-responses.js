@@ -1,31 +1,23 @@
-const success = data => {
+const success = (token, data) => {
     return {
         status: 200,
         response: {
             message: 'Success',
             details: 'Request successfully fulfilled',
+            accessToken: token,
             data
         }
     }
 }
 
-const created = data => {
+const created = (token, data) => {
     return {
         status: 201,
         response: {
             message: 'Success',
             details: 'Request successfully fulfilled',
+            accessToken: token,
             data
-        }
-    }
-}
-
-const deleted = () => {
-    return {
-        status: 204,
-        response: {
-            message: 'Success',
-            details: 'Request successfully fulfilled'
         }
     }
 }
@@ -80,4 +72,4 @@ const internalError = () => {
     }
 }
 
-module.exports = {success, created, deleted, badRequest, forbidden, unauthorized, notFound, internalError}
+module.exports = {success, created, badRequest, forbidden, unauthorized, notFound, internalError}

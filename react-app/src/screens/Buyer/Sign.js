@@ -57,7 +57,7 @@ function Sign(props) {
             
             } else if (postNewUser.status === 201) {
                 const {lastname, firstname, email, id} = body.data.userInfo
-                setCookie('uT', body.data.accessToken, {path:'/'})
+                setCookie('uT', body.accessToken, {path:'/'})
                 props.loggedIn()
                 props.saveUserInfo({lastname, firstname, email, id})
                 setToRedirect(true)
@@ -88,7 +88,7 @@ function Sign(props) {
             
             } else if (checkUser.status === 200) {
                 const {lastname, firstname, email, id} = body.data.userInfo
-                setCookie('uT', body.data.accessToken, {path:'/'})
+                setCookie('uT', body.accessToken, {path:'/'})
                 props.loggedIn()
                 props.saveUserInfo({lastname, firstname, email, id})
                 setToRedirect(true)
@@ -98,135 +98,82 @@ function Sign(props) {
 
     if (toRedirect) { // if login OK (from form) redirect to home
         if (props.redirectToAdId !== '') {
-            return <Redirect to={{pathname: `/ad/${props.redirectToAdId}`}} />
+            return <Redirect to= {`/ad/${props.redirectToAdId}`} />
         } else {
             return <Redirect to='/' /> 
         }
+    }
 
+    if (props.userLoginStatus.login_failed && !props.userLoginStatus.logout) {
+        return <Unauthorized401 />
+        
     } else {
-        if (props.userLoginStatus.login_failed && !props.userLoginStatus.logout) {
-            return <Unauthorized401 />
+        if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_request) {
+            return <Spinner />
             
-        } else {
-            if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_request) {
-                return <Spinner />
-                
-            } else if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_success) { 
-                return <Redirect to='/' /> 
-
+        } else if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_success) { 
+            if (props.redirectToAdId !== '') {
+                return <Redirect to= {`/ad/${props.redirectToAdId}`} />
+            
             } else {
+                return <Redirect to='/' /> 
+            }
 
-                return (
-                    <div className="user-sign-layout">
+        } else {
 
-                        <div className="nav-header-logo" style={{margin:"30px 0"}}><Link to="/"><img src="http://localhost:3001/logo-ttm.png"/></Link></div>
+            return (
+                <div className="user-sign-layout">
 
-                        <Row gutter={32}>
-                            <Col
-                            xs={{ span: 24 }}
-                            md={{ span: 12 }}
-                            lg={{ span: 12 }}
-                            xl={{ span: 12 }}
-                            >
-                                <div className="pro-sign-box">
-                                    <div className="pro-sign-box-title">
-                                        Inscription
-                                    </div>
-                                    <Form layout="vertical" >
+                    <div className="nav-header-logo" style={{margin:"30px 0"}} >
+                        <Link to="/">
+                            <img src="http://localhost:3001/logo-ttm.png" alt='ttm-logo'/>
+                        </Link>
+                    </div>
 
-                                        <Form.Item
-                                            label="Nom"
-                                            required={true}
-                                        >
-                                            <Input
-                                                value={signupLastname}
-                                                onChange={e => setSignupLastname(e.target.value)}
-                                                className="sign-input-field"
-                                                placeholder="Nom"
-                                            />
-                                        </Form.Item>
-
-                                        <Form.Item
-                                            label="Prénom"
-                                            required={true}
-                                        >
-                                            <Input
-                                                value={signupFirstname}
-                                                onChange={e => setSignupFirstname(e.target.value)}
-                                                className="sign-input-field"
-                                                placeholder="Prénom"
-                                            />
-                                        </Form.Item>
-
-                                        <Form.Item
-                                            label="Email"
-                                            required={true}
-                                        >
-                                            <Input
-                                                value={signupEmail}
-                                                onChange={e => setSignupEmail(e.target.value)}
-                                                className="sign-input-field"
-                                                placeholder="Email"
-                                            />
-                                        </Form.Item>
-
-                                        <Form.Item
-                                            label="Mot de passe"
-                                            required= {true}
-                                        >
-                                            <Input.Password
-                                                value={signupPassword}
-                                                onChange={e => setSignupPassword(e.target.value)}
-                                                className="sign-input-field"
-                                                placeholder="Saisissez votre mot de passe"
-                                                onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
-                                            />
-                                        </Form.Item>
-                                        
-                                        <p className="sign-error-text">{msgErrorSignup}</p>
-
-                                        <Form.Item >
-                                            <div className='local-loader-block'>
-                                                <Button
-                                                    type="primary"
-                                                    onClick={handleSubmitSignup}
-                                                >
-                                                    Inscription
-                                                </Button>
-                                                {signupLoad &&
-                                                <Spin
-                                                    size="large"
-                                                    indicator={logo}
-                                                />
-                                            }
-                                            </div>
-                                        </Form.Item>
-                                    </Form>
-                                </div>
-                            </Col>
-
-
-
-                            <Col
-                            xs={{ span: 24 }}
-                            md={{ span: 12 }}
-                            lg={{ span: 12 }}
-                            xl={{ span: 12 }}
-                            >
-                                <div className="pro-sign-box">
+                    <Row gutter={32}>
+                        <Col
+                        xs={{ span: 24 }}
+                        md={{ span: 12 }}
+                        lg={{ span: 12 }}
+                        xl={{ span: 12 }}
+                        >
+                            <div className="pro-sign-box">
                                 <div className="pro-sign-box-title">
-                                    Se Connecter
+                                    Inscription
                                 </div>
-                                <Form
-                                    layout="vertical"
-                                >
+                                <Form layout="vertical" >
+
+                                    <Form.Item
+                                        label="Nom"
+                                        required={true}
+                                    >
+                                        <Input
+                                            value={signupLastname}
+                                            onChange={e => setSignupLastname(e.target.value)}
+                                            className="sign-input-field"
+                                            placeholder="Nom"
+                                        />
+                                    </Form.Item>
+
+                                    <Form.Item
+                                        label="Prénom"
+                                        required={true}
+                                    >
+                                        <Input
+                                            value={signupFirstname}
+                                            onChange={e => setSignupFirstname(e.target.value)}
+                                            className="sign-input-field"
+                                            placeholder="Prénom"
+                                        />
+                                    </Form.Item>
+
                                     <Form.Item
                                         label="Email"
                                         required={true}
                                     >
                                         <Input
-                                            value={signinEmail}
-                                            onChange={e => setSigninEmail(e.target.value)}
+                                            value={signupEmail}
+                                            onChange={e => setSignupEmail(e.target.value)}
                                             className="sign-input-field"
                                             placeholder="Email"
                                         />
@@ -237,54 +184,115 @@ function Sign(props) {
                                         required= {true}
                                     >
                                         <Input.Password
-                                            value={signinPassword}
-                                            onChange={e => setSigninPassword(e.target.value)}
+                                            value={signupPassword}
+                                            onChange={e => setSignupPassword(e.target.value)}
                                             className="sign-input-field"
-                                            placeholder="Mot de passe"
-                                            onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignin() : ""}
+                                            placeholder="Saisissez votre mot de passe"
+                                            onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
                                         />
                                     </Form.Item>
-
-                                    <Form.Item>
-                                        <Checkbox
-                                            className="stay-logged-in"
-                                            onChange={ e => {
-                                                setStayLoggedIn(e.target.checked)
-                                            }}
-                                        >
-                                            Rester connecté(e)
-                                        </Checkbox>
-                                    </Form.Item>
-
-                                    <p className="sign-error-text">{msgErrorSignin}</p>
+                                    
+                                    <p className="sign-error-text">{msgErrorSignup}</p>
 
                                     <Form.Item >
                                         <div className='local-loader-block'>
-                                            <Button 
+                                            <Button
                                                 type="primary"
-                                                onClick={() => handleSubmitSignin()}
+                                                onClick={handleSubmitSignup}
                                             >
-                                                Connexion
+                                                Inscription
                                             </Button>
-                                            {signinLoad &&
-                                                <Spin
-                                                    size="large"
-                                                    indicator={logo}
-                                                />
-                                            }
+                                            {signupLoad &&
+                                            <Spin
+                                                size="large"
+                                                indicator={logo}
+                                            />
+                                        }
                                         </div>
                                     </Form.Item>
                                 </Form>
-                                <a
-                                    className="forgotten-password"
-                                    href="#">Mot de passe oublié ?
-                                </a>
                             </div>
                         </Col>
-                        </Row>
-                    </div>
-                )
-            }
+
+
+
+                        <Col
+                        xs={{ span: 24 }}
+                        md={{ span: 12 }}
+                        lg={{ span: 12 }}
+                        xl={{ span: 12 }}
+                        >
+                            <div className="pro-sign-box">
+                            <div className="pro-sign-box-title">
+                                Se Connecter
+                            </div>
+                            <Form
+                                layout="vertical"
+                            >
+                                <Form.Item
+                                    label="Email"
+                                    required={true}
+                                >
+                                    <Input
+                                        value={signinEmail}
+                                        onChange={e => setSigninEmail(e.target.value)}
+                                        className="sign-input-field"
+                                        placeholder="Email"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="Mot de passe"
+                                    required= {true}
+                                >
+                                    <Input.Password
+                                        value={signinPassword}
+                                        onChange={e => setSigninPassword(e.target.value)}
+                                        className="sign-input-field"
+                                        placeholder="Mot de passe"
+                                        onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignin() : ""}
+                                    />
+                                </Form.Item>
+
+                                <Form.Item>
+                                    <Checkbox
+                                        className="stay-logged-in"
+                                        onChange={ e => {
+                                            setStayLoggedIn(e.target.checked)
+                                        }}
+                                    >
+                                        Rester connecté(e)
+                                    </Checkbox>
+                                </Form.Item>
+
+                                <p className="sign-error-text">{msgErrorSignin}</p>
+
+                                <Form.Item >
+                                    <div className='local-loader-block'>
+                                        <Button 
+                                            type="primary"
+                                            onClick={() => handleSubmitSignin()}
+                                        >
+                                            Connexion
+                                        </Button>
+                                        {signinLoad &&
+                                            <Spin
+                                                size="large"
+                                                indicator={logo}
+                                            />
+                                        }
+                                    </div>
+                                </Form.Item>
+                            </Form>
+                            <a
+                                className="forgotten-password"
+                                href="#">Mot de passe oublié ?
+                            </a>
+                        </div>
+                    </Col>
+                    </Row>
+                </div>
+            )
         }
     }
 }

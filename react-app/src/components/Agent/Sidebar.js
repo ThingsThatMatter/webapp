@@ -17,7 +17,7 @@ function Sidebar(props) {
   const logout = async () => {
     removeCookie('aT', { path: '/pro' })
 
-    const loginout = await fetch('/pro/logout', {
+    await fetch('/pro/logout', {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ function Sidebar(props) {
             <Menu.Item key="4">
               <Link to="/pro/questions">
                 <MailOutlined />
-                <span className="nav-text">Messages</span>
+                <span className="nav-text">Questions</span>
               </Link>
             </Menu.Item>
 

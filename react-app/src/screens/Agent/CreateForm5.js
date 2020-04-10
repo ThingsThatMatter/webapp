@@ -45,13 +45,6 @@ function CreateFormFive(props) {
 
   var calendar = useRef(null)
 
-  /* Token refresh */
-  const renewAccessToken = (token) => {
-    if (token !== cookies.aT) {
-        setCookie('aT', token, {path:'/pro'})
-    }
-  }
-
   useEffect( () => {
 
     if(adsListFromDb) {
@@ -360,7 +353,6 @@ function CreateFormFive(props) {
         }}
         getApiResponse = { response => {
             if (!dataLoaded) {
-              renewAccessToken(response.data.accessToken)
               setAdsListFromDb(response.data.ads)
             }
             setDataLoaded(true)

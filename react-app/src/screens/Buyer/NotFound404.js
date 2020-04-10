@@ -11,28 +11,26 @@ function NotFound404() {
 
     if (redirHome) {
         return <Redirect to='/'/>
-    } else {
-
-        return (
-    
-            <Layout className="user-layout">
-                <UserNavHeader/> 
-                <Layout className='user-layout main-content'>
-                    <Content style={{ margin: '24px 16px 0' }}>
-                        <h1>La page demandée n'existe pas</h1>
-                        <Button
-                           onClick={() => setRedirHome(true)}
-                            type="primary"
-                            className="button-validate"
-                        >
-                            Retour à la page d'accueil
-                        </Button>
-                    </Content>
-            </Layout>
-        </Layout>
-
-        )
     }
+
+    return (
+
+        <Layout className="user-layout">
+            <UserNavHeader/> 
+            <Layout className='user-layout main-content'>
+                <Content style={{ margin: '24px 16px 0' }}>
+                    <h1>La page demandée n'existe pas</h1>
+                    <Button
+                        onClick={() => setRedirHome(true)}
+                        type="primary"
+                        className="button-validate"
+                    >
+                        Retour à la page d'accueil
+                    </Button>
+                </Content>
+        </Layout>
+    </Layout>
+    )
   }
 
   export default NotFound404

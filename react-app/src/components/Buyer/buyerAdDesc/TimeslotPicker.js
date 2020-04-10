@@ -6,33 +6,40 @@ import Unauthorized401 from '../../../screens/Buyer/Unauthorized401'
 
 export default function TimeslotPicker(props) {
 
-    const [slotsDisplay, setSlotsDisplay] = useState([]);
-    const [cookies] = useCookies(['name']) // initilizing state cookies
+    const [slotsDisplay, setSlotsDisplay] = useState([])
+    const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
 
     const [redirectTo401, setRedirectTo401] = useState(false)
 
-    var weekday = new Array(7);
-    weekday[0] = "dim";
-    weekday[1] = "lun";
-    weekday[2] = "mar";
-    weekday[3] = "mer";
-    weekday[4] = "jeu";
-    weekday[5] = "ven";
-    weekday[6] = "sam";
+    /* Renew Access Token */
+    const renewAccessToken = (token) => {
+        if (token !== cookies.uT) {
+            setCookie('uT', token, {path:'/'})
+        }
+    }
 
-    var month = new Array();
-    month[0] = "janv";
-    month[1] = "fev";
-    month[2] = "mar";
-    month[3] = "avr";
-    month[4] = "mai";
-    month[5] = "juin";
-    month[6] = "juil";
-    month[7] = "août";
-    month[8] = "sept";
-    month[9] = "oct";
-    month[10] = "nov";
-    month[11] = "dec";
+    let weekday = new Array(7)
+    weekday[0] = "dim"
+    weekday[1] = "lun"
+    weekday[2] = "mar"
+    weekday[3] = "mer"
+    weekday[4] = "jeu"
+    weekday[5] = "ven"
+    weekday[6] = "sam"
+
+    let month = new Array()
+    month[0] = "janv"
+    month[1] = "fev"
+    month[2] = "mar"
+    month[3] = "avr"
+    month[4] = "mai"
+    month[5] = "juin"
+    month[6] = "juil"
+    month[7] = "août"
+    month[8] = "sept"
+    month[9] = "oct"
+    month[10] = "nov"
+    month[11] = "dec"
 
 
     useEffect(() => {
@@ -49,6 +56,8 @@ export default function TimeslotPicker(props) {
             })
         
             let body = await response.json()
+            // No token refresh, because we already called the sidebar if user is loggedin
+
             let timeslots = body.data.timeslots
 
             timeslots = timeslots.filter((e)=> {
@@ -125,6 +134,8 @@ export default function TimeslotPicker(props) {
                     setRedirectTo401(true)
               
                 } else if (postVisit.status === 200) {
+                    const body = await postVisit.json()
+                    renewAccessToken(body.accessToken)
                     message.success('Votre visite a bien été enregistrée', 2)
                     props.goToVisitParent()
                 }
@@ -161,9 +172,9 @@ export default function TimeslotPicker(props) {
                     ))}
                 </Col>
             })
-            setSlotsDisplay(mapSlots);
-        };
-        getTimeslots();
+            setSlotsDisplay(mapSlots)
+        }
+        getTimeslots()
     }, [])
 
   /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/

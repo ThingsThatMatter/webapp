@@ -14,7 +14,7 @@ const {Content} = Layout
 function Unauthorized401(props) {
 
     const [redirHome, setRedirHome] = useState(false)
-    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+    const [cookies, setCookie, removeCookie] = useCookies(['name']) // initializing state cookies
 
     const logo = <LoadingOutlined style={{ fontSize: 50, color: "#355c7d" }} spin/>
 
@@ -40,29 +40,28 @@ function Unauthorized401(props) {
 
     if (redirHome) {
         return <Redirect to='/'/>
-    } else {
+    }
 
-        return (
-    
-            <Layout className="user-layout">
-                <UserNavHeader/> 
-                <Layout className='user-layout main-content'>
-                    <Content style={{ margin: '24px 16px 0' }}>
-                        <h1>Vous avez été déconnecté(e) après une période trop longue d'inactivité.</h1>
-                        <p style={{textAlign:'center', marginTop: '4em', fontSize: '20px'}}>Redirection vers la page de connexion...</p>
-                        <div className="spinner" style={{ margin: '24px 16px 0' }}>
-                            <Spin
-                                size="large"
-                                indicator={logo}
-                            />
-                        </div>
-                        
-                    </Content>
+    return (
+
+        <Layout className="user-layout">
+            <UserNavHeader/> 
+            <Layout className='user-layout main-content'>
+                
+                <Content style={{ margin: '24px 16px 0' }}>
+                    <h1>Vous avez été déconnecté(e) après une période d'inactivité.</h1>
+                    <p style={{textAlign:'center', marginTop: '4em', fontSize: '20px'}}>Redirection vers la page de connexion...</p>
+                    <div className="spinner" style={{ margin: '24px 16px 0' }}>
+                        <Spin
+                            size="large"
+                            indicator={logo}
+                        />
+                    </div>
+                    
+                </Content>
             </Layout>
         </Layout>
-
-        )
-    }
+    )
 }
 
 function mapDispatchToProps(dispatch) {

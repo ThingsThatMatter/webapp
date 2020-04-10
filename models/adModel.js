@@ -1,23 +1,23 @@
-var mongoose = require('./bdd');
+const mongoose = require('./bdd')
 
-var timeSlotSchema = mongoose.Schema({
+const timeSlotSchema = mongoose.Schema({
     booked: Boolean,
     private: Boolean,
     agent: {type: mongoose.Schema.Types.ObjectId, ref: 'agents'},
     user: [{type: mongoose.Schema.Types.ObjectId, ref: 'users'}],
     start: Date,
     end: Date
-});
+})
 
-var questionSchema = mongoose.Schema({
+const questionSchema = mongoose.Schema({
     creationDate: Date,
     status: String,
     question: String,
     response: String,
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'}
-});
+})
 
-var offerSchema = mongoose.Schema({
+const offerSchema = mongoose.Schema({
     creationDate: Date,
     user: {type: mongoose.Schema.Types.ObjectId, ref: 'users'},
     singleBuyer: Boolean,
@@ -41,9 +41,17 @@ var offerSchema = mongoose.Schema({
     location: String,
     comments: String,
     status: String /* pending, acceped, rejected, expired*/ 
-});
+})
 
-var adSchema = mongoose.Schema({
+const fileSchema = mongoose.Schema({
+    externalId: String,
+    name: String,
+    extension: String,
+    url: String
+})
+
+
+const adSchema = mongoose.Schema({
     creationDate: Date,
     onlineDate: Date,
     color: String,
@@ -60,7 +68,7 @@ var adSchema = mongoose.Schema({
     address: String,
     postcode: Number,
     city: String,
-    photos: [String],
+    photos: [fileSchema],
     video: String,
     area: Number,
     rooms: Number,
@@ -69,12 +77,12 @@ var adSchema = mongoose.Schema({
     options: [String],
     dpe: String,
     ges: String,
-    files: [String],
+    files: [fileSchema],
     questions: [questionSchema],
     timeSlots: [timeSlotSchema],
     offers: [offerSchema]
-});
+})
 
-var adModel = mongoose.model('ads', adSchema);
+const adModel = mongoose.model('ads', adSchema)
 
-module.exports = adModel;
+module.exports = adModel

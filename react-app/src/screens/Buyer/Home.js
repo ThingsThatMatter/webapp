@@ -6,8 +6,8 @@ import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Buyer/APIFetch'
 
-import { Layout, Col, Row} from 'antd';
-const {Content} = Layout;
+import { Layout, Col, Row} from 'antd'
+const {Content} = Layout
 
 
 function Home() {
@@ -15,7 +15,7 @@ function Home() {
     const [dataLoaded, setDataLoaded] = useState(false)
 
     const [adsListFromDb, setAdsListFromDb] = useState([])
-    const [cookies] = useCookies(['name']); // initilizing state cookies
+    const [cookies] = useCookies(['name']) // initilizing state cookies
 
 /* Price formatting */
     const priceFormatter = new Intl.NumberFormat('fr', {
@@ -43,7 +43,7 @@ function Home() {
     })
     //rend
 
-    let adsOffers = [];
+    let adsOffers = []
 
         adsOffers = adsCopy.filter( e => e.offers.length > 0)
 
@@ -57,21 +57,21 @@ function Home() {
             }
             const statusTranslate = (state) => statusInFrench[state]
 
-            let offerMessage;
-            let offerStatusMess;
+            let offerMessage
+            let offerStatusMess
             const offerDate = dateCreate(e.offers[0].creationDate)
             const offerStatus = statusTranslate(e.offers[0].status)
             offerMessage = 
                 <p className="annonce-messages-buyer">
                     Offre déposée le {offerDate.toLocaleDateString('fr-FR')} à {offerDate.toLocaleTimeString('fr-FR')} 
                 </p>
-            offerStatusMess = <span className={`annonce-messages-buyer-offer-${e.offers[0].status}`}>{offerStatus}</span>;
+            offerStatusMess = <span className={`annonce-messages-buyer-offer-${e.offers[0].status}`}>{offerStatus}</span>
 
             return (
                 <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
                     <Link className="annonce-element" to={`/ad/${e._id}`}>
                         {offerStatusMess}
-                        <img className="annonce-image" src={e.photos[0]} />
+                        <img className="annonce-image" src={e.photos[0].url} alt={e.photos[0].name} />
                         <div className="annonce-text-buyer">
                             <div className="annonce-price-container">
                                 <span className="annonce-price">{priceFormatter.format(e.price)}</span>
@@ -92,7 +92,7 @@ function Home() {
             )
         })
 
-    let adsVisits = [];
+    let adsVisits = []
 
         adsVisits = adsCopy.filter( e => e.timeSlots.length > 0)
 
@@ -116,7 +116,7 @@ function Home() {
             return (
                 <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
                     <Link className="annonce-element" to={`/ad/${e._id}`}>
-                        <img className="annonce-image" src={e.photos[0]} />
+                        <img className="annonce-image" src={e.photos[0].url} alt={e.photos[0].name} />
                         <div className="annonce-text-buyer">
                             <div className="annonce-price-container">
                                 <span className="annonce-price">{priceFormatter.format(e.price)}</span>
@@ -138,28 +138,26 @@ function Home() {
 
         })
 
-    let adsAll = adsCopy.map( (e,i) => {
+    let adsAll = adsCopy.map( (e,i) => 
 
-        return (
-            <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
-                <Link className="annonce-element" to={`/ad/${e._id}`}>
-                    <img className="annonce-image" src={e.photos[0]} />
-                    <div className="annonce-text-buyer">
-                        <div className="annonce-price-container">
-                            <span className="annonce-price">{priceFormatter.format(e.price)}</span>
-                        </div>
-                        <p className="annonce-address-title">{e.address}</p>
-                        <p className="annonce-address-sub">{e.postcode} {e.city}</p>
+        <Col key = {i} xs={{span:24}} md={{span:12}} lg={{span:8}} xl={{span:6}}>
+            <Link className="annonce-element" to={`/ad/${e._id}`}>
+                <img className="annonce-image" src={e.photos[0].url} alt={e.photos[0].name} />
+                <div className="annonce-text-buyer">
+                    <div className="annonce-price-container">
+                        <span className="annonce-price">{priceFormatter.format(e.price)}</span>
                     </div>
-                    <div className="annonce-infos-buyer">
-                        <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
-                        <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
-                        <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
-                    </div>
-                </Link>
-            </Col>
-        )
-    })
+                    <p className="annonce-address-title">{e.address}</p>
+                    <p className="annonce-address-sub">{e.postcode} {e.city}</p>
+                </div>
+                <div className="annonce-infos-buyer">
+                    <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
+                    <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
+                    <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+                </div>
+            </Link>
+        </Col> 
+    )
 
     return (
         

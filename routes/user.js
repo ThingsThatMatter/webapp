@@ -5,7 +5,7 @@ var mongoose = require('../models/bdd')
 const userModel = require('../models/userModel.js')
 const adModel = require('../models/adModel.js')
 
-const {success, created, deleted, badRequest, unauthorized, forbidden, notFound, internalError} = require('./http-responses')
+const {success, created, badRequest, unauthorized, forbidden, notFound, internalError} = require('./http-responses')
 
 const mailjet = require ('node-mailjet')
   .connect('6e4a0426294486d548136359fc341ef6', 'bd0d46e4638b9c6ce22a79f46717b440')
@@ -17,7 +17,7 @@ const bcrypt = require('bcryptjs')
 const saltRounds = 12
 
 let resp
-let login_duration = 30 //30 minutes
+let login_duration = 60 //30 minutes
 
 /* --------------------------------------------------TOKEN GENERATION & CHECK--------------------------------------------------------- */
 const generateUserAccessToken = (userInfo, minutes) => { 
@@ -45,7 +45,7 @@ const authenticateUser = (req, res, next) => {
         const currentTime = Math.round((new Date()).getTime() / 1000)
         const tokenExpiresIn = userInfo.exp - currentTime
         
-        if (tokenExpiresIn < 300) { // if token expires in less than 5minutes, try to update it
+        if (tokenExpiresIn < 900) { // if token expires in less than 15 minutes, try to update it
           const findUser = await userModel.findOne({ token:req.cookies.uRT })
           if (!findUser) { // if refresh token is not valid
             resp = unauthorized()
@@ -62,10 +62,7 @@ const authenticateUser = (req, res, next) => {
           }
         }
 
-        resp = success({
-          accessToken,
-          userInfo
-        })
+        resp = success(accessToken, {userInfo})
         req.accessToken = accessToken
         req.userInfo = userInfo
         next()
@@ -94,7 +91,7 @@ router.get('/logout', async function(req,res) {
       { $unset: { token: null } }
     )
 
-    resp = deleted()
+    resp = success('', {})
     res.clearCookie('uRT', {path:'/'})
 
   } catch(e) {
@@ -144,10 +141,10 @@ router.post('/sign-in', async function(req, res, next) {
           }
 
           refreshCookie = refreshToken
-          resp = success({
-            accessToken: generateUserAccessToken(userInfo, login_duration),
-            userInfo
-          })
+          resp = success(
+            generateUserAccessToken(userInfo, login_duration),
+            {userInfo}
+          )
         }   
       }
     }
@@ -223,10 +220,10 @@ router.post('/sign-up', async function(req, res, next) {
           id: saveUser._id
         }
         refreshCookie = refreshToken
-        resp = created({
-          accessToken: generateUserAccessToken(userInfo, login_duration),
-            userInfo
-        })
+        resp = created(
+          generateUserAccessToken(userInfo, login_duration),
+          {userInfo}
+        )
       }
     }
 
@@ -255,9 +252,7 @@ router.get('/ad/:ad_id/public', async function(req, res, next) {
       } else {
         adFromDb.timeSlots = []
         adFromDb.offers = []
-        resp = success({
-          ad: adFromDb
-        })
+        resp = success('', {ad: adFromDb})
       }
     }
     
@@ -280,10 +275,10 @@ router.put('/ad/:ad_id', authenticateUser, async function(req, res) {
         { _id : req.userInfo.id },
         { $push : { 'ads' : req.params.ad_id } }
       )
-      resp = success({message: 'Cette annonce a été sauvegardée dans vos biens consultés'})
+      resp = success(req.accessToken, {message: 'Cette annonce a été sauvegardée dans vos biens consultés'})
 
     } else {
-      resp = success({})
+      resp = success(req.accessToken, {})
     }
 
   } catch(e) {
@@ -325,9 +320,7 @@ router.get('/ad/:ad_id/private', authenticateUser, async function(req, res) {
     })
     ad.offers = offers
     
-    resp = success({
-      ad
-    })
+    resp = success(req.accessToken, {ad})
 
   } catch(e) {
     resp = internalError()
@@ -372,9 +365,7 @@ router.get('/ads', authenticateUser, async function(req, res) {
 
     })
 
-    resp = success({
-      ads: adsFromUser.ads
-    })
+    resp = success(req.accessToken, {ads: adsFromUser.ads})
 
   } catch(e) {
     resp = internalError()
@@ -435,9 +426,7 @@ router.post('/ad/:ad_id/offer', authenticateUser, async function(req, res) {
         { $push: { offers: offer } }
     )
 
-    resp = created({
-      offer: newOffer
-    })
+    resp = created(req.accessToken, {offer: newOffer})
   
   } catch(e) {
     resp = internalError()
@@ -459,9 +448,7 @@ router.get('/ad/:ad_id/timeslots', authenticateUser, async function(req,res) {
       resp = notFound()
 
     } else {
-      resp = success({
-        timeslots: adFromDb.timeSlots
-      })
+      resp = success(req.accessToken, {timeslots: adFromDb.timeSlots})
     }
 
    } catch(e) {
@@ -481,7 +468,7 @@ router.put('/ad/:ad_id/timeslots/:timeslot_id', authenticateUser, async function
       { _id: req.params.ad_id, "timeSlots._id": req.params.timeslot_id }, 
       { $set: { 'timeSlots.$.booked' : true }, $push: { 'timeSlots.$.user' : req.userInfo.id } }
     )
-    resp = success({})
+    resp = success(req.accessToken, {})
 
   } catch(e) {
     resp = internalError()
@@ -510,12 +497,12 @@ router.delete('/ad/:ad_id/timeslots/:timeslot_id', authenticateUser, async funct
     }
 
     //DB update
-    const timeslotUpdate = await adModel.updateOne(
+    await adModel.updateOne(
       { _id: req.params.ad_id, "timeSlots._id": req.params.timeslot_id }, 
       { $set: { 'timeSlots.$.booked' : bookingStatus, 'timeSlots.$.user' : newUsers } }
     )
 
-    resp = deleted()
+    resp = success(req.accessToken, {})
 
   } catch(e) {
     resp = internalError()
@@ -542,7 +529,7 @@ router.post('/ad/:ad_id/question', authenticateUser, async function(req, res) {
         { $push: { questions: question } }
     )
 
-    resp = created({})
+    resp = created(req.accessToken, {})
   
   } catch(e) {
     resp = internalError()

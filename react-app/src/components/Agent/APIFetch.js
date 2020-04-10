@@ -1,5 +1,7 @@
 import React, {useState, useEffect} from 'react'
 
+import {useCookies} from 'react-cookie'
+
 import NotFound404Ad from '../../screens/Agent/NotFound404Ad'
 import Unauthorized401 from '../../screens/Agent/Unauthorized401'
 import GlobalSpin from './GlobalSpin'
@@ -9,6 +11,7 @@ function APIFetch(props) {
 
     const [statusCode, setStatusCode] = useState()
     const [apiResponse, setApiResponse] = useState()
+    const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
 
     useEffect( () => {
         const dbFetch = async () => {
@@ -17,6 +20,9 @@ function APIFetch(props) {
                 const body = await response.json()
                 setApiResponse(body)
                 setStatusCode(response.status)
+                if (body.accessToken !== cookies.aT) {
+                    setCookie('aT', body.accessToken, {path:'/pro'})
+                }
 
             } catch(e) {
                 setStatusCode(500)
@@ -26,7 +32,7 @@ function APIFetch(props) {
     }, [props.fetchUrl])
 
     switch(statusCode) {
-        default: 
+        default:
             return <GlobalSpin />
             
         case 200:

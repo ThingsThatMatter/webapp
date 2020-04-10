@@ -49,12 +49,13 @@ function AdDesc(props) {
     toggleStyle = { fontWeight: 500, color: "#6F6E6E", fontSize: "18px" }
   }
 
-  /* Token refresh */
+  /* Renew Access Token */
   const renewAccessToken = (token) => {
     if (token !== cookies.aT) {
         setCookie('aT', token, {path:'/pro'})
     }
   }
+
 
   /* ----------------------------------------------PREPARE COMPONENT----------------------------------------------- */
   
@@ -108,25 +109,22 @@ function AdDesc(props) {
       minimumFractionDigits: 0,
       useGrouping: true
     })
+    
 
     /* Photos, documents and questions */
-    let photos = adPhotos.map((e, i) => {
-      return (
-        <div key={i} className="each-slide">
-          <div style={{ backgroundImage: `url(${e})` }}> </div>
-        </div>
-      )
-    })
+    let photos = adPhotos.map((e, i) => 
+      <div key={i} className="each-slide">
+        <div style={{ backgroundImage: `url(${e.url})` }}> </div>
+      </div>
+    )
   
-    let documents = adDocuments.map((e, i) => {
-      return (
-        <div key={i}>
-          <a href={e} target="_blank">
-            {e.slice(77, 999)}
-          </a>
-        </div>
-      )
-    })
+    let documents = adDocuments.map(e => 
+      <div key={e.id}>
+        <a href={e.url} target="_blank">
+          {e.name}
+        </a>
+      </div>
+    )
   
     let questions = adQuestions.map((e, i) => {
       return (
@@ -170,7 +168,9 @@ function AdDesc(props) {
     } else if (deleteAd.status === 401) {
       setRedirectTo401(true)
 
-    } else if (deleteAd.status === 204) {
+    } else if (deleteAd.status === 200) {
+      const body = await deleteAd.json()
+      renewAccessToken(body.accessToken)
       message.success({
         content: 'L\'annonce a été supprimée',
         key: messageKey,
@@ -217,7 +217,6 @@ function AdDesc(props) {
       }}
       getApiResponse = { response => {
           if (!dataLoaded) {
-            renewAccessToken(response.data.accessToken) // Renew token if invalid soon
             setAdDetails(response.data.ad)
           }
           setDataLoaded(true)
@@ -441,4 +440,7 @@ function mapStateToProps(state) {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AdDesc)
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AdDesc)

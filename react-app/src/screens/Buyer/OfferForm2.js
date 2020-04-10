@@ -48,7 +48,7 @@ function OfferForm2(props) {
 
     const ad = 
         <div className="annonce-element offer-form">
-            <img className="annonce-image" width="100%" src={props.newOfferAd.photos[0]} />
+            <img className="annonce-image" width="100%" src={props.newOfferAd.photos[0].url} />
             <div className="annonce-text-buyer">
                 <div className="annonce-price-container">
                     <span className="annonce-price">{priceFormatter.format(props.newOfferAd.price)}</span>
@@ -71,10 +71,10 @@ function OfferForm2(props) {
     const stepDots = step => {
         let spans = []
         for (let i=0 ; i<step ; i++) {
-            spans.push(<span key={i} className="newoffer-step-dots filled-dots"> </span>);
+            spans.push(<span key={i} className="newoffer-step-dots filled-dots"> </span>)
         }
         for (let i=0 ; i<3-step ; i++) {
-            spans.push(<span key={step+i} className="newoffer-step-dots empty-dots"> </span>);
+            spans.push(<span key={step+i} className="newoffer-step-dots empty-dots"> </span>)
         }
         return spans
     }
@@ -98,9 +98,9 @@ function OfferForm2(props) {
     const handleClick = () => {
         if(offerAmount !== "" && loanAmount !== "" && contributionAmount !== "") {
             const salaryOk = salary !=='' ? salary : 0
-            props.offerSaveFormData(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk);
-            props.modifyStep(3);
-            setOfferRedir(true);
+            props.offerSaveFormData(offerAmount, loanAmount, disableLoan, contributionAmount, salaryOk)
+            props.modifyStep(3)
+            setOfferRedir(true)
 
         } else {
             setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
@@ -218,12 +218,10 @@ function OfferForm2(props) {
                             {ad}
                         </Col>
                    </Row >
-
                 </Content>  
             </Layout>
         </Layout>
-
-    );
+    )
 }
 
 function mapStateToProps(state) {

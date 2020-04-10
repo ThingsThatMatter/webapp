@@ -76,8 +76,7 @@ function Visits() {
       } else if (getAds.status === 200) {
         
         const response = await getAds.json()
-
-        renewAccessToken(response.data.accessToken)
+        renewAccessToken(response.accessToken)
 
         let adsWithTimeslots = response.data.ads.filter( e => e.timeSlots.length > 0) //filter on ads that have timeslots
         let timeslots = adsWithTimeslots.map( e => { //create a table of timeslots with their title and color

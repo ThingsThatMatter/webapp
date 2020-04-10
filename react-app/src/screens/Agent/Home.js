@@ -24,16 +24,9 @@ function Home() {
   const [offerStatus, setOfferStatus] = useState("All")
   const [adsToShow, setAdsToShow] = useState([])
 
-  const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
+  const [cookies] = useCookies(['name']) // initilizing state cookies
 
   const [urlAd, setUrlAd] = useState(null)
-
-  /* Token refresh */
-  const renewAccessToken = (token) => {
-    if (token !== cookies.aT) {
-        setCookie('aT', token, {path:'/pro'})
-    }
-  }
 
 
   /* Filters */
@@ -94,7 +87,7 @@ function Home() {
                 setUrlAd(`/pro/ad/${e._id}`)
                 setNavToAdDetail(true) 
               }}>
-          <img className="annonce-image" src={e.photos[0]} alt=''/>
+          <img className="annonce-image" src={e.photos[0].url} alt={e.photos[0].name}/>
           <div className="annonce-text">
               <div className="annonce-price-container">
                   <span className="annonce-price">{priceFormatter.format(e.price)}</span>
@@ -136,7 +129,6 @@ function Home() {
       }}
       getApiResponse = { response => {
           if (!dataLoaded) {
-            renewAccessToken(response.data.accessToken) // Renew token if invalid soon
             setAdsListFromDb(response.data.ads)
           }
           setDataLoaded(true)

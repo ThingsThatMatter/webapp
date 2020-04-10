@@ -35,13 +35,20 @@ function Visits() {
 
   const [redirectTo401, setRedirectTo401] = useState(false)
 
-  const [cookies] = useCookies(['name']); // initilizing state cookies
+  const [cookies, setCookie] = useCookies(['name']) // initializing state cookies
 
   const calendar = useRef(null)
 
   message.config({
     top: 80
   })
+
+  /* Renew Access Token */
+  const renewAccessToken = (token) => {
+    if (token !== cookies.uT) {
+        setCookie('uT', token, {path:'/'})
+    }
+  }
 
   
   /* -----------------------------------------------LOAD VISITS FROM DB------------------------------------------ */
@@ -196,7 +203,9 @@ function Visits() {
     } else if (deleteTimeslots.status === 401) {
       setRedirectTo401(true)
 
-    } else if (deleteTimeslots.status === 204) {
+    } else if (deleteTimeslots.status === 200) {
+      const body = await deleteTimeslots.json()
+      renewAccessToken(body.accessToken)
       setCancelVisitLoad(false)
       message.success('Votre visite a bien été annulée', 4)
       setMyEvents(myEvents.filter(e => e.extendedProps.adId !== appointmentModalEventPropertyId)) // delete visit on calendat
@@ -249,153 +258,152 @@ function Visits() {
 
   if (redirectTo401) {
     return <Unauthorized401 />
-  } else {
-
-    return (
-
-      <APIFetch
-        fetchUrl= '/user/ads'
-        fetchOptions={{
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Accept: 'application/json',
-            'Authorization': `Bearer ${cookies.uT}`
-          }
-        }}
-        getApiResponse = { response => {
-            if (!dataLoaded) {
-              setAdsListFromDb(response.data.ads)
-            }
-            setDataLoaded(true)
-        }}
-      >
-        <Layout className="user-layout">
-            <UserNavHeader current="Biens consultés"/>
-                <Layout className='user-layout main-content'>
-                <Content>
-                <h1 className='pageTitle'>Mon calendrier</h1>
-
-                <div className="calendar-header">
-                    <div className="calendar-headerNavLeft">
-                    <LeftOutlined
-                        className="calendar-headerNavLeft-chevronIcon"
-                        onClick={ () => {
-                        const calendarApi = calendar.current.getApi()
-                        calendarApi.prev()
-                        setTitle(calendar.current.calendar.view.title)
-                        }}
-                    />
-
-                    <div className="calendar-headerNavLeft-dateTitle">
-                        {title}
-                    </div>
-
-                    <RightOutlined
-                        className="calendar-headerNavLeft-chevronIcon"
-                        onClick={ () => {
-                        const calendarApi = calendar.current.getApi()
-                        calendarApi.next()
-                        setTitle(calendar.current.calendar.view.title)
-                        }}
-                    />
-                    </div>
-
-                    <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
-                        <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                            {view} <DownOutlined />
-                        </a>
-                    </Dropdown>
-                </div>
-
-                <FullCalendar
-                    /* Global Settings */
-                    ref={calendar}
-                    plugins={[ dayGridPlugin, timeGrid, interaction ]}
-                    defaultView="timeGridWeek"
-                    locale= 'fr'
-                    header={{
-                    left: '',
-                    center: '',
-                    right: ''
-                    }}
-                    contentHeight= "auto"
-
-                    /* Events */
-                    events={myEvents}
-
-                    /* Time Settings */
-                    timeZone='UTC'
-                    firstDay= {1}
-                    hiddenDays={[0]}
-                    allDaySlot={false}
-                    minTime={'08:00'}
-                    maxTime={'20:00'}
-                    defaultTimedEventDuration={'00:30'}
-
-                    /* Column headers */
-                    columnHeaderHtml={ (date) => {
-                        if (view==='Semaine') {
-                            return (
-                            `<div class="calendar-week-column-header" >
-                                <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
-                                <div class="calendar-week-column-header-number">${date.getDate()}</div>
-                            </div>`
-                            )
-                        }
-                        else if (view==='Mois') {
-                            return (
-                                `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                            )
-                        }
-                        else if (view==='Jour') {
-                            return (
-                                `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                            )
-                        }
-                    }}
-                    
-                    /*Manage clicks on elements*/
-                    selectable= {true}
-                    navLinks= {true}
-                    navLinkDayClick="timeGridDay"
-                    eventClick= { (info) => {
-                      setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
-                      setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
-                      setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
-                      setAppointmentModalEventProperty(info.event.title)
-                      setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
-                      setAppointmentModalEventId(info.event.id)
-                      setAppointmentModalVisible(true)
-                    }}    
-                />
-
-                <Modal
-                    title={appointmentModalEventProperty}
-                    visible={appointmentModalVisible}
-                    footer= {modalFooter}
-                    destroyOnClose= {true}
-                    width= "50%"
-                    closable={true}
-                    mask={true}
-                    maskClosable={true}
-                    onCancel={handleCancel}
-                >
-                    <div className='input-modal'>
-                        <p className="input-modal-label">Date de la visite : {appointmentModalEventDate}</p>
-                    </div>
-
-                    <div className='input-modal'>
-                        <p className="input-modal-label">Horaires de la visite : de {appointmentModalEventHour1} à {appointmentModalEventHour2}</p>
-                    </div>
-
-                </Modal>
-              </Content>  
-            </Layout>
-        </Layout>
-      </APIFetch>
-    )
   }
+
+  return (
+
+    <APIFetch
+      fetchUrl= '/user/ads'
+      fetchOptions={{
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          'Authorization': `Bearer ${cookies.uT}`
+        }
+      }}
+      getApiResponse = { response => {
+          if (!dataLoaded) {
+            setAdsListFromDb(response.data.ads)
+          }
+          setDataLoaded(true)
+      }}
+    >
+      <Layout className="user-layout">
+          <UserNavHeader current="Biens consultés"/>
+              <Layout className='user-layout main-content'>
+              <Content>
+              <h1 className='pageTitle'>Mon calendrier</h1>
+
+              <div className="calendar-header">
+                  <div className="calendar-headerNavLeft">
+                  <LeftOutlined
+                      className="calendar-headerNavLeft-chevronIcon"
+                      onClick={ () => {
+                      const calendarApi = calendar.current.getApi()
+                      calendarApi.prev()
+                      setTitle(calendar.current.calendar.view.title)
+                      }}
+                  />
+
+                  <div className="calendar-headerNavLeft-dateTitle">
+                      {title}
+                  </div>
+
+                  <RightOutlined
+                      className="calendar-headerNavLeft-chevronIcon"
+                      onClick={ () => {
+                      const calendarApi = calendar.current.getApi()
+                      calendarApi.next()
+                      setTitle(calendar.current.calendar.view.title)
+                      }}
+                  />
+                  </div>
+
+                  <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
+                      <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                          {view} <DownOutlined />
+                      </a>
+                  </Dropdown>
+              </div>
+
+              <FullCalendar
+                  /* Global Settings */
+                  ref={calendar}
+                  plugins={[ dayGridPlugin, timeGrid, interaction ]}
+                  defaultView="timeGridWeek"
+                  locale= 'fr'
+                  header={{
+                  left: '',
+                  center: '',
+                  right: ''
+                  }}
+                  contentHeight= "auto"
+
+                  /* Events */
+                  events={myEvents}
+
+                  /* Time Settings */
+                  timeZone='UTC'
+                  firstDay= {1}
+                  hiddenDays={[0]}
+                  allDaySlot={false}
+                  minTime={'08:00'}
+                  maxTime={'20:00'}
+                  defaultTimedEventDuration={'00:30'}
+
+                  /* Column headers */
+                  columnHeaderHtml={ (date) => {
+                      if (view==='Semaine') {
+                          return (
+                          `<div class="calendar-week-column-header" >
+                              <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
+                              <div class="calendar-week-column-header-number">${date.getDate()}</div>
+                          </div>`
+                          )
+                      }
+                      else if (view==='Mois') {
+                          return (
+                              `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                          )
+                      }
+                      else if (view==='Jour') {
+                          return (
+                              `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                          )
+                      }
+                  }}
+                  
+                  /*Manage clicks on elements*/
+                  selectable= {true}
+                  navLinks= {true}
+                  navLinkDayClick="timeGridDay"
+                  eventClick= { (info) => {
+                    setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
+                    setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
+                    setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
+                    setAppointmentModalEventProperty(info.event.title)
+                    setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
+                    setAppointmentModalEventId(info.event.id)
+                    setAppointmentModalVisible(true)
+                  }}    
+              />
+
+              <Modal
+                  title={appointmentModalEventProperty}
+                  visible={appointmentModalVisible}
+                  footer= {modalFooter}
+                  destroyOnClose= {true}
+                  width= "50%"
+                  closable={true}
+                  mask={true}
+                  maskClosable={true}
+                  onCancel={handleCancel}
+              >
+                  <div className='input-modal'>
+                      <p className="input-modal-label">Date de la visite : {appointmentModalEventDate}</p>
+                  </div>
+
+                  <div className='input-modal'>
+                      <p className="input-modal-label">Horaires de la visite : de {appointmentModalEventHour1} à {appointmentModalEventHour2}</p>
+                  </div>
+
+              </Modal>
+            </Content>  
+          </Layout>
+      </Layout>
+    </APIFetch>
+  )
 }
 
 function mapStateToProps(state) {

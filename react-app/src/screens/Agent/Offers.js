@@ -63,7 +63,7 @@ function Offers() {
           
             } else if (getAds.status === 200) {
                 const response = await getAds.json()
-                renewAccessToken(response.data.accessToken) // Renew token if invalid soon
+                renewAccessToken(response.accessToken) // Renew token if invalid soon
                 setOfferslist(response.data.ads.filter( e => e.offers.length > 0))
                 setDbLoading(false)
             }
@@ -103,6 +103,8 @@ function Offers() {
             setOfferError('')
     
         } else if (acceptOffer.status === 200) {
+            const body = await acceptOffer.json()
+            renewAccessToken(body.accessToken)
             message.success('L\'offre a bien été acceptée', 3) // add a message with email 
             setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setOfferModalVisible(false)
@@ -135,6 +137,8 @@ function Offers() {
             setOfferError('')
     
         } else if (declineOffer.status === 200) {
+            const body = await declineOffer.json()
+            renewAccessToken(body.accessToken)
             message.success('L\'offre a bien été refusée', 3) // add a message with email 
             setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setOfferModalVisible(false)
@@ -167,6 +171,8 @@ function Offers() {
             setOfferError('')
     
         } else if (cancelOffer.status === 200) {
+            const body = await cancelOffer.json()
+            renewAccessToken(body.accessToken)
             message.success('L\'offre n\'est plus acceptée', 3) // add a message with email 
             setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setOfferModalVisible(false)

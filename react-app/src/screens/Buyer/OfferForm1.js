@@ -51,7 +51,7 @@ function OfferForm1(props) {
 
     const ad = 
         <div className="annonce-element offer-form">
-            <img className="annonce-image" width="100%" src={props.newOfferAd.photos[0]} />
+            <img className="annonce-image" width="100%" src={props.newOfferAd.photos[0].url} />
             <div className="annonce-text-buyer">
                 <div className="annonce-price-container">
                     <span className="annonce-price">{priceFormatter.format(props.newOfferAd.price)}</span>
@@ -74,10 +74,10 @@ function OfferForm1(props) {
     const stepDots = step => {
         let spans = []
         for (let i=0 ; i<step ; i++) {
-            spans.push(<span key={i} className="newoffer-step-dots filled-dots"> </span>);
+            spans.push(<span key={i} className="newoffer-step-dots filled-dots"> </span>)
         }
         for (let i=0 ; i<3-step ; i++) {
-            spans.push(<span key={step+i} className="newoffer-step-dots empty-dots"> </span>);
+            spans.push(<span key={step+i} className="newoffer-step-dots empty-dots"> </span>)
         }
         return spans
     }
@@ -101,9 +101,9 @@ useEffect(() => {
 
 const handleClick = () => {
     if(firstName1 !== "" && lastName1 !== "" && address !== "" && postal !== "" && city !== "") {
-        props.offerSaveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city);
-        props.modifyStep(2);
-        setOfferRedir(true);
+        props.offerSaveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city)
+        props.modifyStep(2)
+        setOfferRedir(true)
 
     } else {
         setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
@@ -195,12 +195,10 @@ if(offerRedir === true) {
                         </Col>
 
                    </Row >
-
-                   </Content>
+                </Content>
             </Layout>
-    </Layout>
-
-    );
+        </Layout>
+    )
 }
 
 function mapStateToProps(state) {
@@ -230,4 +228,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
     mapStateToProps, 
     mapDispatchToProps
-)(OfferForm1);
+)(OfferForm1)

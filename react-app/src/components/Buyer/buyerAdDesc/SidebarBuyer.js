@@ -12,9 +12,16 @@ function SidebarBuyer(props) {
     const [redirectNewOffer, setRedirectNewOffer] = useState(false);
     const [component, setComponent] = useState('');
     const [refreshDb, setRefreshDb] = useState(false);
-    const [cookies] = useCookies(['name']); // initilizing state cookies
+    const [cookies, setCookie] = useCookies(['name']); // initializing state cookies
 
-/* ------------------------------------------------FORMATTING FUNCTIONS----------------------------------------------------------- */
+    /* Renew Access Token */
+    const renewAccessToken = (token) => {
+        if (token !== cookies.uT) {
+            setCookie('uT', token, {path:'/'})
+        }
+    }
+
+/* ------------------------------------------------FORMATING FUNCTIONS----------------------------------------------------------- */
 
     const dateCreate = (date) => {
         var year = date.slice(0,4)
@@ -59,6 +66,7 @@ function SidebarBuyer(props) {
             
             } else { // no need to handle 401 because user had to be logged-in to see this part
                 const body = await userAds.json()
+                renewAccessToken(body.accessToken)
                 const ad = body.data.ad
             
                 if (ad.timeSlots.length === 0) {
@@ -79,15 +87,13 @@ function SidebarBuyer(props) {
 
                         let documents = []
                         if (ad.files.length > 0) {
-                            documents = ad.files.map((e, i) => {
-                                return (
-                                <div key={i} className="sidebar-offer-documents">
+                            documents = ad.files.map( e => 
+                                <div key={e.id} className="sidebar-offer-documents">
                                     <a href={e} target="_blank">
-                                    {e.slice(77, 999)}
+                                    {e.name}
                                     </a>
                                 </div>
-                                );
-                            });
+                            )
                         }
 
                         if (ad.offers.length === 0) {

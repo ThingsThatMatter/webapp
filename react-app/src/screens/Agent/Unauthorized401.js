@@ -39,14 +39,14 @@ function Unauthorized401(props) {
 
     if (redirHome) {
         return <Redirect to='/pro'/>
-    } else {
+    }
 
-        return (
-            <Layout>
-                <Sidebar/>
-                <Layout className='main-content'>
-                    <Content style={{ margin: '24px 16px 0' }}>
-                    <h1>Vous avez été déconnecté(e) après une période trop longue d'inactivité.</h1>
+    return (
+        <Layout>
+            <Sidebar/>
+            <Layout className='main-content'>
+                <Content style={{ margin: '24px 16px 0' }}>
+                    <h1>Vous avez été déconnecté(e) après une période d'inactivité.</h1>
                     <p style={{textAlign:'center', marginTop: '4em', fontSize: '20px'}}>Redirection vers la page de connexion...</p>
                     <div className="spinner" style={{ margin: '24px 16px 0' }}>
                         <Spin
@@ -54,11 +54,10 @@ function Unauthorized401(props) {
                             indicator={logo}
                         />
                     </div>                
-                    </Content>  
-                </Layout>
+                </Content>  
             </Layout>
-        )
-    }
+        </Layout>
+    )
 }
 
 function mapDispatchToProps(dispatch) {
