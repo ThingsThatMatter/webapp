@@ -294,7 +294,7 @@ function Offers() {
     return (
   
         <Layout>
-            <Sidebar/>
+            <Sidebar menuKey='2'/>
             <Layout className='main-content'>
                 <Content>
                 <h1 className='pageTitle'>Les offres</h1>

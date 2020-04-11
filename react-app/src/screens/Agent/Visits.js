@@ -464,7 +464,7 @@ function Visits() {
   return (
 
     <Layout>
-      <Sidebar/>
+      <Sidebar menuKey='3'/>
       <Layout className='main-content'>
         <Content>
           <h1 className='pageTitle'>Visites</h1>

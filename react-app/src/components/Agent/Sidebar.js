@@ -45,7 +45,11 @@ function Sidebar(props) {
           <div className="logo">
             <img width="100%" src='http://localhost:3001/logo.jpg'/>
           </div>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+          <Menu
+            theme = "dark"
+            mode = "inline"
+            selectedKeys = {props.menuKey} 
+          >
 
             <Menu.Item key="1">
               <Link to="/pro">

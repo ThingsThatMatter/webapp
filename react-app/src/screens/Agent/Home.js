@@ -135,7 +135,7 @@ function Home() {
       }}
   >
       <Layout>
-        <Sidebar/>
+        <Sidebar menuKey='1'/>
         <Layout className='main-content'>
           <Content style={{ margin: '2em 3em' }}>
             <div className="ads-list-title">

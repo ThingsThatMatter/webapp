@@ -280,7 +280,7 @@ function Visits() {
       }}
     >
       <Layout className="user-layout">
-          <UserNavHeader current="Biens consultés"/>
+          <UserNavHeader current="Mes Visites"/>
               <Layout className='user-layout main-content'>
               <Content>
               <h1 className='pageTitle'>Mon calendrier</h1>

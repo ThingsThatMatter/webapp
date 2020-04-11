@@ -23,7 +23,7 @@ function UserNavHeader(props) {
                 case 'Biens consultés':
                     setPropertiesClass('nav-header-link-main')
                     break;
-                case 'Visites':
+                case 'Mes Visites':
                     setVisitsClass('nav-header-link-main')
                     break;
                 case 'Compte':
