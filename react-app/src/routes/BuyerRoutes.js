@@ -66,10 +66,10 @@ function BuyerRoutes(props) {
                 <Route component={buyerSign} path='/sign' exact/>
                 <Route component={EmailConf} path='/confirmation/:user_token' exact/>
                 <Route component={AdDesc} path='/ad/:ad_id' exact/>
-                <Route component={NotFound404} path={new RegExp("^/(?!pro)")} /> {/* Any routes not starting by pro */}
+                {/* <Route component={NotFound404} path={new RegExp("^/(?!pro)")} /> Any routes not starting by pro */}
             </Switch>
         </Router>  
-    );
+    )
 }
 
 function mapStateToProps(state) {

@@ -18,6 +18,7 @@ import CreateFormSix from '../screens/Agent/CreateForm6'
 import agentSignIn from '../screens/Agent/SignIn'
 import agentSignUp from '../screens/Agent/SignUp'
 import NotFound404 from '../screens/Agent/NotFound404'
+import Sidebar from '../components/Agent/Sidebar'
 
 
 function AgentRoutes(props) {
@@ -59,6 +60,8 @@ function AgentRoutes(props) {
     )
     
     return (
+        <div>
+            <h1>TOTO</h1>
 
         <Router>
             <Switch>
@@ -79,8 +82,10 @@ function AgentRoutes(props) {
                 <Route component = {NotFound404} path='/pro' />
             </Switch>
         </Router>
+
+        </div>
           
-    );
+    )
 }
 
 function mapStateToProps(state) {

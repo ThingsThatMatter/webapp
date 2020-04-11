@@ -2,6 +2,8 @@ import React from 'react'
 import 'antd/dist/antd.css'
 import './App.css'
 import {Provider} from 'react-redux'
+import {BrowserRouter as Router, Switch, Route} from 'react-router-dom'
+
 import {createStore, combineReducers}  from 'redux'
 
 import AgentRoutes from './routes/AgentRoutes'
@@ -29,6 +31,13 @@ function App() {
   return (
 
     <Provider store={store}>
+      <Router>
+        <Switch>
+          <Route component={BuyerRoutes} path='/' />
+          <Route component={AgentRoutes} path ='/pro' />
+        </Switch>
+      </Router>
+
       <AgentRoutes/>
       <BuyerRoutes/>
     </Provider>
