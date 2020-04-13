@@ -1,8 +1,6 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom'
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
-import { Layout, Button} from 'antd'
-const {Content} = Layout
+import {Button} from 'antd'
 
 
 function NotFound404() {
@@ -15,22 +13,17 @@ function NotFound404() {
 
     return (
 
-        <Layout className="user-layout">
-            <UserNavHeader/> 
-            <Layout className='user-layout main-content'>
-                <Content style={{ margin: '24px 16px 0' }}>
-                    <h1>La page demandée n'existe pas</h1>
-                    <Button
-                        onClick={() => setRedirHome(true)}
-                        type="primary"
-                        className="button-validate"
-                    >
-                        Retour à la page d'accueil
-                    </Button>
-                </Content>
-        </Layout>
-    </Layout>
+        <div>
+            <h1>La page demandée n'existe pas</h1>
+            <Button
+                onClick={() => setRedirHome(true)}
+                type="primary"
+                className="button-validate"
+            >
+                Retour à la page d'accueil
+            </Button>
+        </div>
     )
-  }
+}
 
-  export default NotFound404
+export default NotFound404

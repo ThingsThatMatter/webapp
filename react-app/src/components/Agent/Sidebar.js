@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import {Link, Redirect} from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import {Redirect, useLocation, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import { Layout, Menu } from 'antd'
 import {HomeOutlined, EuroCircleOutlined, CalendarOutlined, MailOutlined} from '@ant-design/icons'
@@ -8,11 +8,12 @@ import {useCookies} from 'react-cookie'
 
 const {Sider } = Layout
 
-
 function Sidebar(props) {
 
-  const [redirHome, setRedirHome] = useState(false)
-  const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+  const [redirSignIn, setRedirSignIn] = useState(false)
+  const [locationPathName, setLocationPathName] = useState()
+  const [cookies, setCookie, removeCookie] = useCookies(['name']) // initializing state cookies
+  const location = useLocation()
 
   const logout = async () => {
     removeCookie('aT', { path: '/pro' })
@@ -27,11 +28,15 @@ function Sidebar(props) {
     })
     
     props.loggedOut()
-    setRedirHome(true)
+    setRedirSignIn(true)
   }
 
-  if (redirHome) {
-    return <Redirect to="/pro/signin" />
+  useEffect( () => {
+    setLocationPathName(location.pathname.startsWith('/pro/ad') ? '/pro' : location.pathname)
+  }, [location])
+
+  if (redirSignIn) {
+    return <Redirect to="/pro/auth/signin" />
   }
 
   return (
@@ -48,32 +53,32 @@ function Sidebar(props) {
           <Menu
             theme = "dark"
             mode = "inline"
-            selectedKeys = {props.menuKey} 
+            selectedKeys={[locationPathName]}
           >
 
-            <Menu.Item key="1">
-              <Link to="/pro">
+            <Menu.Item key="/pro">
+              <Link to='/pro'>
                 <HomeOutlined />
                 <span className="nav-text">Biens</span>
               </Link>
             </Menu.Item>
 
-            <Menu.Item key="2">
-              <Link to="/pro/offers">
+            <Menu.Item key="/pro/offers">
+              <Link to='/pro/offers' >
                 <EuroCircleOutlined />
                 <span className="nav-text">Offres</span>
               </Link>
             </Menu.Item>
 
-            <Menu.Item key="3">
-              <Link to="/pro/visits">
+            <Menu.Item key="/pro/visits">
+              <Link to= '/pro/visits' >
                 <CalendarOutlined />
                 <span className="nav-text">Visites</span>
               </Link>
             </Menu.Item>
 
-            <Menu.Item key="4">
-              <Link to="/pro/questions">
+            <Menu.Item key="/pro/questions">
+              <Link to='/pro/questions' >
                 <MailOutlined />
                 <span className="nav-text">Questions</span>
               </Link>
@@ -88,7 +93,7 @@ function Sidebar(props) {
           >
             Déconnexion
           </div>
-          <div className="logo-ttm"><Link to="/pro"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
+          <div className="logo-ttm"><div to="/pro"><img src="http://localhost:3001/logo-ttm-white.png"/></div></div>
         </div>
       </Sider>
     

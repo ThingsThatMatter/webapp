@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react'
-import { Layout, Steps, Button, message, Row, Col } from 'antd'
+import { Steps, Button, message, Row, Col } from 'antd'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 
 import {Redirect} from 'react-router-dom'
@@ -11,7 +10,6 @@ import {useCookies} from 'react-cookie'
 import { Slide } from 'react-slideshow-image'
 
 const { Step } = Steps
-const {Content} = Layout
 
 const properties = {  // carroussel properties
     duration: 5000,
@@ -221,10 +219,10 @@ function CreateFormSix(props) {
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
     if(redir === true) {
-        return <Redirect to="/pro"/> // Triggered by button-add handleClick
+        return <Redirect push to="/pro"/> // Triggered by button-add handleClick
     }
     if(backRedir === true) {
-        return <Redirect to="/pro/createform/step5"/> // Triggered by button-back handleClick
+        return <Redirect push to="/pro/ad/new/step5"/> // Triggered by button-back handleClick
     }
 
     if (redirectTo401) {
@@ -233,151 +231,145 @@ function CreateFormSix(props) {
 
     return (
 
-        <Layout>
-            <Sidebar/>
-            <Layout className='main-content'>
-                <Content style={{ margin: '2em 3em' }}>
+        <div>
+            <Steps progressDot current={currentPage}> 
+                <Step title="Localisation" />
+                <Step title="Description" />
+                <Step title="Documents" />
+                <Step title="Prix/honoraires" />
+                <Step title="Créneaux" />
+                <Step title="Récap" />
+            </Steps>
 
-                    <Steps progressDot current={currentPage}> 
-                        <Step title="Localisation" />
-                        <Step title="Description" />
-                        <Step title="Documents" />
-                        <Step title="Prix/honoraires" />
-                        <Step title="Créneaux" />
-                        <Step title="Récap" />
-                    </Steps>
+            <div style={{margin : "3em 0"}}>
+                <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
+            </div>
 
-                    <div style={{margin : "3em 0"}}>
-                        <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
-                    </div>
+            <h2 className="pageSubTitle">Descriptif</h2>
 
-                    <h2 className="pageSubTitle">Descriptif</h2>
-
-                    <div className="section ad-main-details">
+            <div className="section ad-main-details">
+                <div className="row">
+                    <span>
+                        <img src="../../../expand.svg" width="20px" />
+                        <strong>{props.formData.area}</strong> m<sup>2</sup>
+                    </span>
+                    <span>
+                        <img src="../../../floor-plan.png" width="20px" />
+                        <strong>{props.formData.rooms}</strong> pièces
+                    </span>
+                    <span>
+                        <img src="../../../bed.svg" width="20px" />
+                        <strong>{props.formData.bedrooms}</strong> chambres
+                    </span>
+                </div>
+                
+                {avantages.length > 0 &&
+                    <div className="dark-row">
                         <div className="row">
-                            <span>
-                                <img src="../../../expand.svg" width="20px" />
-                                <strong>{props.formData.area}</strong> m<sup>2</sup>
-                            </span>
-                            <span>
-                                <img src="../../../floor-plan.png" width="20px" />
-                                <strong>{props.formData.rooms}</strong> pièces
-                            </span>
-                            <span>
-                                <img src="../../../bed.svg" width="20px" />
-                                <strong>{props.formData.bedrooms}</strong> chambres
-                            </span>
+                            {avantages}
                         </div>
-                        
-                        {avantages.length > 0 &&
-                            <div className="dark-row">
-                                <div className="row">
-                                    {avantages}
-                                </div>
-                            </div>
-                        }
-
-                        <Row gutter={16} className="section-text">
-                            <Col
-                                xs={{ span: 24 }}
-                                md={{ span: 12 }}
-                                lg={{ span: 12 }}
-                                xl={{ span: 12 }}
-                            >
-                                <div className="slide-container">
-                                    <Slide {...properties}>{allPhotos}</Slide>
-                                </div>
-                            </Col>
-                            <Col
-                                xs={{ span: 24 }}
-                                md={{ span: 12 }}
-                                lg={{ span: 12 }}
-                                xl={{ span: 12 }}
-                            >
-                                <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{props.formData.description}</p>
-                            </Col>
-                        </Row>
                     </div>
+                }
 
-                    {/* PARTIE PRIX ET HONNORAIRES */}
+                <Row gutter={16} className="section-text">
+                    <Col
+                        xs={{ span: 24 }}
+                        md={{ span: 12 }}
+                        lg={{ span: 12 }}
+                        xl={{ span: 12 }}
+                    >
+                        <div className="slide-container">
+                            <Slide {...properties}>{allPhotos}</Slide>
+                        </div>
+                    </Col>
+                    <Col
+                        xs={{ span: 24 }}
+                        md={{ span: 12 }}
+                        lg={{ span: 12 }}
+                        xl={{ span: 12 }}
+                    >
+                        <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{props.formData.description}</p>
+                    </Col>
+                </Row>
+            </div>
 
-                    <Row gutter={30}>
-                        <Col
-                            xs={{ span: 24 }}
-                            md={{ span: 24 }}
-                            lg={{ span: 8 }}
-                            xl={{ span: 8 }}
-                        >
-                            <h2 className='pageSubTitle'>Prix & honoraires</h2>  
+            {/* PARTIE PRIX ET HONNORAIRES */}
 
-                            <div className="section">
-                                <div className="section-text">
-                                    <p><span style={{fontWeight: 700}}>{props.formData.price+props.formData.price*props.formData.fees/100}</span>€ TTC</p>
-                                    <p><span style={{fontWeight: 700}}>{props.formData.price}</span>€ hors honoraires</p>
-                                    <p><span style={{fontWeight: 700}}>{props.formData.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
+            <Row gutter={30}>
+                <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 24 }}
+                    lg={{ span: 8 }}
+                    xl={{ span: 8 }}
+                >
+                    <h2 className='pageSubTitle'>Prix & honoraires</h2>  
+
+                    <div className="section">
+                        <div className="section-text">
+                            <p><span style={{fontWeight: 700}}>{props.formData.price+props.formData.price*props.formData.fees/100}</span>€ TTC</p>
+                            <p><span style={{fontWeight: 700}}>{props.formData.price}</span>€ hors honoraires</p>
+                            <p><span style={{fontWeight: 700}}>{props.formData.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
+                        </div>
+                    </div>
+                </Col>
+
+                {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
+                <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 24 }}
+                    lg={{ span: 8 }}
+                    xl={{ span: 8 }}
+                >
+                    <h2 className='pageSubTitle'>Diagnostique électrique</h2>  
+
+                    <div className="section">
+                        <div className="section-text">
+                            <p><span style={{fontWeight: 700}}>{props.formData.dpe}</span> kWhEP/m².an</p>
+                            <p><span style={{fontWeight: 700}}>{props.formData.ges}</span> kgeqCO2/m².an</p>
+                        </div>
+                    </div>
+                </Col>
+
+            {/* PARTIE DOCUMENTS */}
+
+                <Col
+                    xs={{ span: 24 }}
+                    md={{ span: 24 }}
+                    lg={{ span: 8 }}
+                    xl={{ span: 8 }}
+                >
+                    <h2 className='pageSubTitle'>Documents</h2> 
+
+                    <div className="section">
+                        <div className="section-text">
+                            {props.formData.files.map((e, i) => 
+                                <div>
+                                    <a key={i} href={`http://localhost:3000/pro/ad/${props.formData.adID}/file/${e.id}${e.extension}/temp`} target="_blank">{e.name}</a>
                                 </div>
-                            </div>
-                        </Col>
+                            )}                       
+                        </div>
+                    </div>
+                </Col>
+            </Row>
 
-                        {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
-                        <Col
-                            xs={{ span: 24 }}
-                            md={{ span: 24 }}
-                            lg={{ span: 8 }}
-                            xl={{ span: 8 }}
-                        >
-                            <h2 className='pageSubTitle'>Diagnostique électrique</h2>  
+            <div className="form-buttons">
+                <Button type="primary" className="button-back"
+                    onClick={() => {
+                        setBackRedir(true)
+                        props.previousStep()
+                    }}
+                >
+                    Précédent
+                </Button>  
 
-                            <div className="section">
-                                <div className="section-text">
-                                    <p><span style={{fontWeight: 700}}>{props.formData.dpe}</span> kWhEP/m².an</p>
-                                    <p><span style={{fontWeight: 700}}>{props.formData.ges}</span> kgeqCO2/m².an</p>
-                                </div>
-                            </div>
-                        </Col>
+                <Button type="primary" className="button-validate" 
+                    onClick={async() => props.edit ? updateAd() : postNewAd()}
+                >
+                    {props.edit ? 'Editer l\'annonce' : 'Créer et diffuser l\'annonce'}
+                </Button>
 
-                    {/* PARTIE DOCUMENTS */}
-
-                        <Col
-                            xs={{ span: 24 }}
-                            md={{ span: 24 }}
-                            lg={{ span: 8 }}
-                            xl={{ span: 8 }}
-                        >
-                            <h2 className='pageSubTitle'>Documents</h2> 
-
-                            <div className="section">
-                                <div className="section-text">
-                                    {props.formData.files.map((e, i) => 
-                                        <div>
-                                            <a key={i} href={`http://localhost:3000/pro/ad/${props.formData.adID}/file/${e.id}${e.extension}/temp`} target="_blank">{e.name}</a>
-                                        </div>
-                                    )}                       
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-
-                    <div className="form-buttons">
-                        <Button type="primary" className="button-back"
-                            onClick={() => {
-                                setBackRedir(true)
-                                props.previousStep()
-                            }}
-                        >
-                            Précédent
-                        </Button>  
- 
-                        <Button type="primary" className="button-validate" 
-                            onClick={async() => props.edit ? updateAd() : postNewAd()}
-                        >
-                            {props.edit ? 'Editer l\'annonce' : 'Créer et diffuser l\'annonce'}
-                        </Button>
-
-                    </div>   
-                </Content>  
-            </Layout>
-        </Layout>
+            </div>   
+        </div>
     )
 }
 

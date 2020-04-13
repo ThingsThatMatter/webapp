@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from 'react'
-import Sidebar from '../../components/Agent/Sidebar'
-import { Layout, Steps, Button, Radio, InputNumber} from 'antd'
+import { Steps, Button, Radio, InputNumber} from 'antd'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 const { Step } = Steps
-const {Content} = Layout
 
 
 function CreateFormFour(props) {
@@ -50,110 +48,104 @@ function CreateFormFour(props) {
     }
 
     if(redir === true) {
-        return <Redirect to="/pro/createform/step5"/> // When button "suivant" is clicked
+        return <Redirect push to="/pro/ad/new/step5"/> // When button "suivant" is clicked
     }
     if(skipRedir === true) {
 
-        return <Redirect to="/pro/createform/step6"/> // If in edit mode, skip to step 6 (recap)
+        return <Redirect push to="/pro/ad/new/step6"/> // If in edit mode, skip to step 6 (recap)
     }
 
     if(backRedir === true) {
-        return <Redirect to="/pro/createform/step3"/> // When butti-on "retour" is clicked
+        return <Redirect push to="/pro/ad/new/step3"/> // When butti-on "retour" is clicked
     }
 
     return (
 
-        <Layout>
-            <Sidebar/>
-            <Layout className='main-content'>
-                <Content style={{ margin: '2em 3em' }}>
+        <div>
+            <Steps progressDot current={currentPage}>
+                <Step title="Localisation" />
+                <Step title="Description" />
+                <Step title="Documents" />
+                <Step title="Prix/honoraires" />
+                <Step title="Créneaux" />
+                <Step title="Récap" />
+            </Steps>
 
-                    <Steps progressDot current={currentPage}>
-                            <Step title="Localisation" />
-                            <Step title="Description" />
-                            <Step title="Documents" />
-                            <Step title="Prix/honoraires" />
-                            <Step title="Créneaux" />
-                            <Step title="Récap" />
-                    </Steps>
-
-                    <form>
-                        
-                        <p className='formLabel'>Les honoraires sont à la charge de</p>
-                        <label>
-                            <Radio.Group 
-                                value={feesPayer} 
-                                onChange={(e) => setFeesPayer(e.target.value)} 
-                            >
-                                <Radio 
-                                    value="buyer" 
-                                    style={{paddingTop : "1%"}}>
-                                    l'acquéreur
-                                </Radio>
-                                <br/>
-                                <Radio 
-                                    value="seller" 
-                                    style={{paddingTop : "1%"}}
-                                >
-                                    le vendeur
-                                </Radio>
-                            </Radio.Group>
-                        </label>
-
-                        <p className='formLabel'>Prix du bien hors honoraires</p>
-                        <label >
-                            <InputNumber 
-                                min={0} 
-                                onChange={(e) => setPrice(e)} 
-                                value={price} 
-                                placeholder="700000"
-                            />
-                        </label>
-                        <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
-
-                        <p className='formLabel'>Honoraires TTC en % du prix du bien</p>
-                        <label >
-                            <InputNumber 
-                                min={0} 
-                                onChange={(e) => setFees(e)} 
-                                value={fees} 
-                                placeholder="8"
-                            />
-                        </label>
-                        <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
-
-                        <p className='formLabel'>Prix du bien incluant les honoraires</p>
-                        <label >
-                            <InputNumber 
-                                value={price*fees/100+price} 
-                                placeholder="75"
-                            />
-                        </label>
-                        <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
-                        
-                    </form>
-                    {formError}
-
-                    <div className="form-buttons">
-
-                        <Button type="primary" className="button-back"
-                            onClick={() => {
-                                setBackRedir(true)
-                                props.previousStep()
-                            }}
+            <form>
+                
+                <p className='formLabel'>Les honoraires sont à la charge de</p>
+                <label>
+                    <Radio.Group 
+                        value={feesPayer} 
+                        onChange={(e) => setFeesPayer(e.target.value)} 
+                    >
+                        <Radio 
+                            value="buyer" 
+                            style={{paddingTop : "1%"}}>
+                            l'acquéreur
+                        </Radio>
+                        <br/>
+                        <Radio 
+                            value="seller" 
+                            style={{paddingTop : "1%"}}
                         >
-                            Précédent
-                        </Button>  
+                            le vendeur
+                        </Radio>
+                    </Radio.Group>
+                </label>
 
-                        <Button type="primary" className="button-validate"
-                            onClick={() => handleClick()}
-                        >
-                            Suivant
-                        </Button>
-                    </div>                                
-                </Content>  
-            </Layout>
-        </Layout>
+                <p className='formLabel'>Prix du bien hors honoraires</p>
+                <label >
+                    <InputNumber 
+                        min={0} 
+                        onChange={(e) => setPrice(e)} 
+                        value={price} 
+                        placeholder="700000"
+                    />
+                </label>
+                <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
+
+                <p className='formLabel'>Honoraires TTC en % du prix du bien</p>
+                <label >
+                    <InputNumber 
+                        min={0} 
+                        onChange={(e) => setFees(e)} 
+                        value={fees} 
+                        placeholder="8"
+                    />
+                </label>
+                <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
+
+                <p className='formLabel'>Prix du bien incluant les honoraires</p>
+                <label >
+                    <InputNumber 
+                        value={price*fees/100+price} 
+                        placeholder="75"
+                    />
+                </label>
+                <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
+                
+            </form>
+            {formError}
+
+            <div className="form-buttons">
+
+                <Button type="primary" className="button-back"
+                    onClick={() => {
+                        setBackRedir(true)
+                        props.previousStep()
+                    }}
+                >
+                    Précédent
+                </Button>  
+
+                <Button type="primary" className="button-validate"
+                    onClick={() => handleClick()}
+                >
+                    Suivant
+                </Button>
+            </div>                                
+        </div>
     )
 }
 

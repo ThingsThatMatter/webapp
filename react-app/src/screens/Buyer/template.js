@@ -14,8 +14,8 @@ function Template() {
                 <Content style={{ margin: '24px 16px 0' }}>
                    
                 </Content>  
-         </Layout>
-    </Layout>
+            </Layout>
+        </Layout>
     )
 }
 

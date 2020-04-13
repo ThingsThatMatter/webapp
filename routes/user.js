@@ -269,16 +269,21 @@ router.put('/ad/:ad_id', authenticateUser, async function(req, res) {
 
   try {
 
-    let findAd = await userModel.findOne({ _id : req.userInfo.id, 'ads': req.params.ad_id })
-    if(!findAd) { 
-      await userModel.updateOne(
-        { _id : req.userInfo.id },
-        { $push : { 'ads' : req.params.ad_id } }
-      )
-      resp = success(req.accessToken, {message: 'Cette annonce a été sauvegardée dans vos biens consultés'})
+    let adExist = await adModel.findById(req.params.ad_id)
+    if (adExist) {
+      let findAd = await userModel.findOne({ _id : req.userInfo.id, 'ads': req.params.ad_id })
+      if(!findAd) { 
+        await userModel.updateOne(
+          { _id : req.userInfo.id },
+          { $push : { 'ads' : req.params.ad_id } }
+        )
+        resp = success(req.accessToken, {message: 'Cette annonce a été sauvegardée dans vos biens consultés'})
 
+      } else {
+        resp = success(req.accessToken, {})
+      }
     } else {
-      resp = success(req.accessToken, {})
+      resp = notFound()
     }
 
   } catch(e) {

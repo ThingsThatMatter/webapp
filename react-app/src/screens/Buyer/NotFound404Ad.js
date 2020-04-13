@@ -15,21 +15,16 @@ function NotFound404Ad() {
 
     return (
 
-        <Layout className="user-layout">
-            <UserNavHeader/> 
-            <Layout className='user-layout main-content'>
-                <Content style={{ margin: '24px 16px 0' }}>
-                    <h1>L'annonce que vous souhaitez consulter n'existe plus</h1>
-                    <Button
-                        onClick={() => setRedirHome(true)}
-                        type="primary"
-                        className="button-validate"
-                    >
-                        Retour à la page d'accueil
-                    </Button>
-                </Content>
-        </Layout>
-    </Layout>
+        <div>
+            <h1>L'annonce que vous souhaitez consulter n'existe plus</h1>
+            <Button
+                onClick={() => setRedirHome(true)}
+                type="primary"
+                className="button-validate"
+            >
+                Retour à la page d'accueil
+            </Button>
+    </div>
     )
 }
 

@@ -23,10 +23,6 @@ a {
   word-wrap: break-word;
 }
 
-a:hover, a:focus, a:active { 
-  color: #000;
-}
-
 h1, h2, h3, h4, h5, h6 {
   position:relative;
   display:inline-block;
@@ -818,9 +814,15 @@ p.offre-buyer-name {
 
 /* Spinner */
 .spinner {
+  height: 80vh;
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: center
+}
+.spinner-top {
+  display: flex;
+  justify-content: center;
+  align-items: center
 }
 
 

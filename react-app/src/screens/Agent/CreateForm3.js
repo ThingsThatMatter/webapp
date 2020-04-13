@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react'
 
-import { Layout, Steps, Button, Upload, message } from 'antd'
+import { Steps, Button, Upload, message } from 'antd'
 import { InboxOutlined, DeleteOutlined } from '@ant-design/icons'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 
 import {Redirect} from 'react-router-dom'
@@ -11,7 +10,6 @@ import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 const { Step } = Steps
-const {Content} = Layout
 const { Dragger } = Upload
 
 function CreateFormThree(props) {
@@ -160,10 +158,10 @@ function CreateFormThree(props) {
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
     if(redir === true) {
-        return <Redirect to="/pro/createform/step4"/> // Triggered by button-validate handleClick
+        return <Redirect push to="/pro/ad/new/step4"/> // Triggered by button-validate handleClick
     }
     if(backRedir === true) {
-        return <Redirect to="/pro/createform/step2"/> // Triggered by button-back handleClick
+        return <Redirect push to="/pro/ad/new/step2"/> // Triggered by button-back handleClick
     }
 
     if (redirectTo401) {
@@ -172,65 +170,59 @@ function CreateFormThree(props) {
     
     return (
 
-        <Layout>
-            <Sidebar/>
-            <Layout className='main-content'>
-                <Content style={{ margin: '2em 3em' }}>
+        <div>
+            <Steps progressDot current={currentPage}>
+                <Step title="Localisation" />
+                <Step title="Description" />
+                <Step title="Documents" />
+                <Step title="Prix/honoraires" />
+                <Step title="Créneaux" />
+                <Step title="Récap" />
+            </Steps>
 
-                    <Steps progressDot current={currentPage}>
-                        <Step title="Localisation" />
-                        <Step title="Description" />
-                        <Step title="Documents" />
-                        <Step title="Prix/honoraires" />
-                        <Step title="Créneaux" />
-                        <Step title="Récap" />
-                    </Steps>
+            <form>
+                <p className='formLabel'>Documents (Optionnel)</p>
 
-                    <form>
-                        <p className='formLabel'>Documents (Optionnel)</p>
+                <Dragger
+                    name= 'file'
+                    accept= ".png,.jpeg,.pdf"
+                    multiple= {true}
+                    showUploadList= {false}
+                    beforeUpload={ file => checkUploadFormat(file)}
+                    action= {`/pro/ad/${props.formData.adID}/file`}
+                    method= 'post'
+                    headers= {{
+                        'Authorization': `Bearer ${cookies.aT}`
+                    }}
+                    onChange={ info => docUpload(info)}
+                    className="short"
+                >
+                    <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">Cliquez ou déposez des images pour les charger (10 max)</p>
+                    <p className="ant-upload-hint">
+                    Format acceptés : pdf, png et jpeg
+                    </p>
+                </Dragger>
 
-                        <Dragger
-                            name= 'file'
-                            accept= ".png,.jpeg,.pdf"
-                            multiple= {true}
-                            showUploadList= {false}
-                            beforeUpload={ file => checkUploadFormat(file)}
-                            action= {`/pro/ad/${props.formData.adID}/file`}
-                            method= 'post'
-                            headers= {{
-                                'Authorization': `Bearer ${cookies.aT}`
-                            }}
-                            onChange={ info => docUpload(info)}
-                            className="short"
-                        >
-                            <p className="ant-upload-drag-icon">
-                            <InboxOutlined />
-                            </p>
-                            <p className="ant-upload-text">Cliquez ou déposez des images pour les charger (10 max)</p>
-                            <p className="ant-upload-hint">
-                            Format acceptés : pdf, png et jpeg
-                            </p>
-                        </Dragger>
+                {filesUploaded}
+                {filesFromDB}
+            </form>
 
-                        {filesUploaded}
-                        {filesFromDB}
-                    </form>
+            <div className="form-buttons">
+                <Button type="primary" className="button-back"
+                    onClick={() => {
+                        setBackRedir(true)
+                        props.previousStep()
+                    }}
+                >
+                    Précédent
+                </Button> 
 
-                    <div className="form-buttons">
-                        <Button type="primary" className="button-back"
-                            onClick={() => {
-                                setBackRedir(true)
-                                props.previousStep()
-                            }}
-                        >
-                            Précédent
-                        </Button> 
-
-                        <Button type="primary" className="button-validate" onClick={() => goToNextStep()}>Suivant</Button>
-                    </div>
-                </Content>  
-            </Layout>
-        </Layout>
+                <Button type="primary" className="button-validate" onClick={() => goToNextStep()}>Suivant</Button>
+            </div>
+        </div>
     )
 }
 

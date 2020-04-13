@@ -1,16 +1,14 @@
 import React, {useState, useEffect} from 'react'
-import { Layout, Row, Button, Col, Collapse, Radio } from 'antd'
+import { Row, Button, Col, Collapse, Radio } from 'antd'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Agent/APIFetch'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import {PlusCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse
 
-const { Content } = Layout
 
 function Home() {
 
@@ -108,10 +106,10 @@ function Home() {
   
   /*  Navigation */ 
   if(navToCreateAd === true) {
-    return <Redirect to="/pro/createform/step1"/>
+    return <Redirect push to="/pro/ad/new/step1"/>
   }
   if(navToAdDetail === true) {
-    return <Redirect to={urlAd} />
+    return <Redirect push to={urlAd} />
   }
 
 /* ----------------------------------------------RENDER COMPONENT----------------------------------------------- */
@@ -133,91 +131,84 @@ function Home() {
           }
           setDataLoaded(true)
       }}
-  >
-      <Layout>
-        <Sidebar menuKey='1'/>
-        <Layout className='main-content'>
-          <Content style={{ margin: '2em 3em' }}>
-            <div className="ads-list-title">
-              <h1 className='pageTitle'>Mes biens</h1>
-              <Button
-                onClick={() => setNavToCreateAd(true)}
-                type="secondary"
-              >
-                Ajouter un bien
-                <PlusCircleOutlined />
-              </Button>
+    >
+      <div className="ads-list-title">
+        <h1 className='pageTitle'>Mes biens</h1>
+        <Button
+          onClick={() => setNavToCreateAd(true)}
+          type="secondary"
+        >
+          Ajouter un bien
+          <PlusCircleOutlined />
+        </Button>
+      </div>
+
+      <Collapse className="filter-header" bordered={false}>
+        <Panel className="filter-bar" header="Filtres">
+          <div className="filter-group">
+            <div>
+              <p className='filter-label'>En Ligne</p>
+                <Radio.Group
+                  onChange={e => {
+                    setOnlineStatus(e.target.value)
+                  }}
+                  value={onlineStatus}
+                >
+                <Radio className="filter-radio-button-main" value="All">
+                  Voir tout
+                </Radio>
+                <Radio className="filter-radio-button" value="Y">
+                  Oui
+                </Radio>
+                <Radio className="filter-radio-button" value="N">
+                  Non
+                </Radio>
+                </Radio.Group>
             </div>
 
-            <Collapse className="filter-header" bordered={false}>
-              <Panel className="filter-bar" header="Filtres">
-                <div className="filter-group">
-                  <div>
-                    <p className='filter-label'>En Ligne</p>
-                      <Radio.Group
-                        onChange={e => {
-                          setOnlineStatus(e.target.value)
-                        }}
-                        value={onlineStatus}
-                      >
-                      <Radio className="filter-radio-button-main" value="All">
-                        Voir tout
-                      </Radio>
-                      <Radio className="filter-radio-button" value="Y">
-                        Oui
-                      </Radio>
-                      <Radio className="filter-radio-button" value="N">
-                        Non
-                      </Radio>
-                      </Radio.Group>
-                  </div>
+            <div>
+              <p className='filter-label'>Ouvert aux visites</p>
+                <Radio.Group
+                  onChange={e => setVisitStatus(e.target.value)}
+                  value={visitStatus}
+                >
+                <Radio className="filter-radio-button-main" value="All">
+                  Voir tout
+                </Radio>
+                <Radio className="filter-radio-button" value="Y">
+                  Oui
+                </Radio>
+                <Radio className="filter-radio-button" value="N">
+                  Non
+                </Radio>
+                </Radio.Group>
+            </div>
 
-                  <div>
-                    <p className='filter-label'>Ouvert aux visites</p>
-                      <Radio.Group
-                        onChange={e => setVisitStatus(e.target.value)}
-                        value={visitStatus}
-                      >
-                      <Radio className="filter-radio-button-main" value="All">
-                        Voir tout
-                      </Radio>
-                      <Radio className="filter-radio-button" value="Y">
-                        Oui
-                      </Radio>
-                      <Radio className="filter-radio-button" value="N">
-                        Non
-                      </Radio>
-                      </Radio.Group>
-                  </div>
+            <div>
+              <p className='filter-label'>Ouvert aux offres</p>
+                <Radio.Group
+                  onChange={e => setOfferStatus(e.target.value)}
+                  value={offerStatus}
+                >
+                <Radio className="filter-radio-button-main" value="All">
+                  Voir tout
+                </Radio>
+                <Radio className="filter-radio-button" value="Y">
+                  Oui
+                </Radio>
+                <Radio className="filter-radio-button" value="N">
+                  Non
+                </Radio>
+                </Radio.Group>
+            </div>
+          </div>
+        </Panel>
+      </Collapse>
 
-                  <div>
-                    <p className='filter-label'>Ouvert aux offres</p>
-                      <Radio.Group
-                        onChange={e => setOfferStatus(e.target.value)}
-                        value={offerStatus}
-                      >
-                      <Radio className="filter-radio-button-main" value="All">
-                        Voir tout
-                      </Radio>
-                      <Radio className="filter-radio-button" value="Y">
-                        Oui
-                      </Radio>
-                      <Radio className="filter-radio-button" value="N">
-                        Non
-                      </Radio>
-                      </Radio.Group>
-                  </div>
-                </div>
-              </Panel>
-            </Collapse>
+      <Row gutter={16}>
+          {adsCopy}
+      </Row>
 
-            <Row gutter={16}>
-                {adsCopy}
-            </Row>
-
-          </Content>
-        </Layout>
-      </Layout>
     </APIFetch>
   )
 }

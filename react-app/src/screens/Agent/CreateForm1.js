@@ -1,14 +1,10 @@
 import React, {useState, useEffect} from 'react'
-import Sidebar from '../../components/Agent/Sidebar'
-import { Layout} from 'antd'
 import { Steps, Button, Input, Radio, InputNumber } from 'antd'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 
 const { Step } = Steps
-const {Content} = Layout
-
 
 function CreateFormOne(props) {
 
@@ -46,64 +42,55 @@ function CreateFormOne(props) {
     }
 
     if(redir === true) {
-        return <Redirect to="/pro/createform/step2"/> // Triggered by button handleClick
+        return <Redirect push to="/pro/ad/new/step2"/> // Triggered by button handleClick
     }
 
     return (
 
-        <Layout>
+        <div>
+            <Steps progressDot current={0}>
+                <Step title="Localisation" />
+                <Step title="Description" />
+                <Step title="Documents" />
+                <Step title="Prix/honoraires" />
+                <Step title="Créneaux" />
+                <Step title="Récap" />
+            </Steps>
 
-            <Sidebar/>
+            <form>
+                
+                <p className='formLabel'>Numéro et rue</p>
+                <label >
+                    <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance" className="short"/>
+                </label>
 
-            <Layout className='main-content'>
+                <p className='formLabel'>Code postal</p>
+                <label>
+                    <InputNumber onChange={(e) => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
+                </label>
 
-                <Content style={{ margin: '2em 3em' }}>
+                <p className='formLabel'>Ville</p>
+                <label >
+                    <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris" className="short"/>
+                </label>
 
-                    <Steps progressDot current={0}>
-                            <Step title="Localisation" />
-                            <Step title="Description" />
-                            <Step title="Documents" />
-                            <Step title="Prix/honoraires" />
-                            <Step title="Créneaux" />
-                            <Step title="Récap" />
-                    </Steps>
+                <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
+                <label>
+                    <Radio.Group value={pref} onChange={(e) => setPref(e.target.value)}>
+                    <Radio value={true} style={{paddingTop : "1%"}}>Lieu exact</Radio>
+                    <br/>
+                    <Radio value={false} style={{paddingTop : "1%"}}>Quartier</Radio>
+                    </Radio.Group>
+                </label>
+                
+            </form>
+            
+            {formError} 
 
-                    <form>
-                        
-                        <p className='formLabel'>Numéro et rue</p>
-                        <label >
-                            <Input onChange={(e) => setStreet(e.target.value)} value={street} placeholder="8 rue constance" className="short"/>
-                        </label>
-
-                        <p className='formLabel'>Code postal</p>
-                        <label>
-                            <InputNumber onChange={(e) => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
-                        </label>
-
-                        <p className='formLabel'>Ville</p>
-                        <label >
-                            <Input onChange={(e) => setCity(e.target.value)} value={city} placeholder="Paris" className="short"/>
-                        </label>
-
-                        <p className='formLabel'>Comment souhaitez-vous afficher votre bien sur les cartes des sites d'annonces ?</p>
-                        <label>
-                            <Radio.Group value={pref} onChange={(e) => setPref(e.target.value)}>
-                            <Radio value={true} style={{paddingTop : "1%"}}>Lieu exact</Radio>
-                            <br/>
-                            <Radio value={false} style={{paddingTop : "1%"}}>Quartier</Radio>
-                            </Radio.Group>
-                        </label>
-                        
-                    </form>
-                    {formError} 
-
-                    <div className="form-buttons">
-                        <Button onClick={()=> handleClick()} type="primary" className="button-primary">Suivant</Button>
-                    </div>
-
-                </Content>  
-         </Layout>
-    </Layout>
+            <div className="form-buttons">
+                <Button onClick={()=> handleClick()} type="primary" className="button-primary">Suivant</Button>
+            </div>
+        </div>
     )
 }
 

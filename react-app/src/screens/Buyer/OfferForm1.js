@@ -1,12 +1,9 @@
 import React, {useState, useEffect} from 'react'
 import {Redirect} from 'react-router-dom'
 
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
-
 import {connect} from 'react-redux'
 
-import { Layout, Row, Col, Input, InputNumber, Button, Checkbox} from 'antd'
-const {Content} = Layout
+import {Row, Col, Input, InputNumber, Button, Checkbox} from 'antd'
 
 function OfferForm1(props) {
 
@@ -111,93 +108,86 @@ const handleClick = () => {
 }
 
 if(offerRedir === true) {
-    return <Redirect to="/newoffer/step2"/> // Triggered by button handleClick
+    return <Redirect push to="/offer/new/step2"/> // Triggered by button handleClick
 }
 
     return (
   
-        <Layout className="user-layout">
-            <UserNavHeader />
+        <div>               
+            <Row className="newoffer-stepbar">
+                <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations personnelles </h1>
+                <div> {stepDots(props.newOfferStep)} </div>
+            </Row>
 
-            <Layout className="user-layout main-content">
-                <Content>
-                   
-                   <Row className="newoffer-stepbar">
-                       <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations personnelles </h1>
-                       <div> {stepDots(props.newOfferStep)} </div>
-                   </Row>
+            <Row className="newoffer-form-body" gutter={16}>
+                <Col xs={24} md={12}>
+                    <form>
+                        
+                        <p className='formLabel-offer'>Prénom de l'acheteur</p>
+                        <label >
+                            <Input onChange={(e) => setFirstName1(e.target.value)} value={firstName1}/>
+                        </label>
 
-                   <Row className="newoffer-form-body" gutter={16}>
-                        <Col xs={24} md={12}>
-                            <form>
-                                
-                                <p className='formLabel-offer'>Prénom de l'acheteur</p>
+                        <p className='formLabel-offer'>Nom de l'acheteur</p>
+                        <label>
+                            <Input className="last-name-1-offer" onChange={ e => setLastName1(e.target.value)} value={lastName1} />
+                        </label>
+
+                        <label>
+                            <Checkbox
+                                className="second-buyer"
+                                onChange={ e => {
+                                    setShowSecondBuyer(e.target.checked)
+                                    setFirstName2('')
+                                    setLastName2('')
+                                }}
+                                checked={showSecondBuyer} >
+                                J'ajoute un second acheteur
+                            </Checkbox>
+                        </label>
+
+                        {showSecondBuyer &&
+                            <div>
+                                <p className='formLabel-offer second-buyer-firstname'>Prénom du second acheteur</p>
                                 <label >
-                                    <Input onChange={(e) => setFirstName1(e.target.value)} value={firstName1}/>
+                                    <Input onChange={ e => setFirstName2(e.target.value)} value={firstName2}/>
                                 </label>
 
-                                <p className='formLabel-offer'>Nom de l'acheteur</p>
+                                <p className='formLabel-offer'>Nom du second acheteur</p>
                                 <label>
-                                    <Input className="last-name-1-offer" onChange={ e => setLastName1(e.target.value)} value={lastName1} />
+                                    <Input className="last-name-1-offer" onChange={ e => setLastName2(e.target.value)} value={lastName2} />
                                 </label>
-
-                                <label>
-                                    <Checkbox
-                                        className="second-buyer"
-                                        onChange={ e => {
-                                            setShowSecondBuyer(e.target.checked)
-                                            setFirstName2('')
-                                            setLastName2('')
-                                        }}
-                                        checked={showSecondBuyer} >
-                                        J'ajoute un second acheteur
-                                    </Checkbox>
-                                </label>
-
-                                {showSecondBuyer &&
-                                    <div>
-                                        <p className='formLabel-offer second-buyer-firstname'>Prénom du second acheteur</p>
-                                        <label >
-                                            <Input onChange={ e => setFirstName2(e.target.value)} value={firstName2}/>
-                                        </label>
-        
-                                        <p className='formLabel-offer'>Nom du second acheteur</p>
-                                        <label>
-                                            <Input className="last-name-1-offer" onChange={ e => setLastName2(e.target.value)} value={lastName2} />
-                                        </label>
-                                    </div>
-                                }
-
-                                <p className='formLabel-offer'>Numéro et rue</p>
-                                <label >
-                                    <Input onChange={ e => setAddress(e.target.value)} value={address} placeholder="3 rue Constance"/>
-                                </label>
-
-                                <p className='formLabel-offer'>Code postal</p>
-                                <label>
-                                    <InputNumber onChange={ e => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
-                                </label>
-
-                                <p className='formLabel-offer'>Ville</p>
-                                <label>
-                                    <Input onChange={ e => setCity(e.target.value)} value={city} placeholder="Paris"/>
-                                </label>
-                                
-                            </form>
-                            {offerFormError}
-                            <div className="form-buttons">
-                                <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
                             </div>
-                        </Col>
+                        }
 
-                        <Col className="newoffer-ad-card"xs={0} md={12}>
-                            {ad}
-                        </Col>
+                        <p className='formLabel-offer'>Numéro et rue</p>
+                        <label >
+                            <Input onChange={ e => setAddress(e.target.value)} value={address} placeholder="3 rue Constance"/>
+                        </label>
 
-                   </Row >
-                </Content>
-            </Layout>
-        </Layout>
+                        <p className='formLabel-offer'>Code postal</p>
+                        <label>
+                            <InputNumber onChange={ e => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
+                        </label>
+
+                        <p className='formLabel-offer'>Ville</p>
+                        <label>
+                            <Input onChange={ e => setCity(e.target.value)} value={city} placeholder="Paris"/>
+                        </label>
+                        
+                    </form>
+                    {offerFormError}
+                    <div className="form-buttons">
+                        <Button onClick={()=> handleClick()} type="primary" className="button-validate">Suivant</Button>
+                    </div>
+                </Col>
+
+                <Col className="newoffer-ad-card"xs={0} md={12}>
+                    {ad}
+                </Col>
+
+            </Row >
+        </div>
     )
 }
 

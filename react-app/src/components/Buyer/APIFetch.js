@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 
 import NotFound404Ad from '../../screens/Buyer/NotFound404Ad'
 import Unauthorized401 from '../../screens/Buyer/Unauthorized401'
-import GlobalSpin from './GlobalSpin'
+import GlobalSpin from '../../screens/Buyer/GlobalSpin'
 import InternalError500 from '../../screens/Buyer/InternalError500'
 
 import {useCookies} from 'react-cookie'

@@ -1,9 +1,8 @@
 import React, {useState, useEffect} from 'react'
 
-import { Layout, Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd'
+import { Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd'
 import { InboxOutlined, DeleteOutlined } from '@ant-design/icons'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 
 import {Redirect} from 'react-router-dom'
@@ -11,7 +10,6 @@ import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 const { Step } = Steps
-const {Content} = Layout
 const { TextArea } = Input
 const { Dragger } = Upload
 
@@ -201,10 +199,10 @@ function CreateFormTwo(props) {
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
     if(redir === true) {
-        return <Redirect to="/pro/createform/step3"/> // Triggered by button-add goToNextStep
+        return <Redirect push to="/pro/ad/new/step3"/> // Triggered by button-add goToNextStep
     }
     if(backRedir === true) {
-        return <Redirect to="/pro/createform/step1"/> // Triggered by button-back goToNextStep
+        return <Redirect push to="/pro/ad/new/step1"/> // Triggered by button-back goToNextStep
     }
 
     if (redirectTo401) {
@@ -213,172 +211,166 @@ function CreateFormTwo(props) {
 
     return (
 
-        <Layout>
-            <Sidebar/>
-            <Layout className='main-content'>
-                <Content style={{ margin: '2em 3em' }}>
+        <div>
+            <Steps progressDot current={currentPage}>
+                <Step title="Localisation" />
+                <Step title="Description" />
+                <Step title="Documents" />
+                <Step title="Prix/honoraires" />
+                <Step title="Créneaux" />
+                <Step title="Récap" />
+            </Steps>
 
-                    <Steps progressDot current={currentPage}>
-                            <Step title="Localisation" />
-                            <Step title="Description" />
-                            <Step title="Documents" />
-                            <Step title="Prix/honoraires" />
-                            <Step title="Créneaux" />
-                            <Step title="Récap" />
-                    </Steps>
+            <form>
+    
+                <p className='formLabel'>Type de bien </p>
+                <label>
+                    <Radio.Group 
+                        value={type} 
+                        onChange={(e) => setType(e.target.value)} 
+                    >
+                        <Radio 
+                            value="appartement" 
+                            style={{paddingTop : "1%"}}>
+                            Appartement
+                        </Radio>
+                        <br/>
+                        <Radio 
+                            value="maison" 
+                            style={{paddingTop : "1%"}}
+                        >
+                            Maison
+                        </Radio>
+                    </Radio.Group>
+                </label>
 
-                    <form>
+                <p className='formLabel'>Surface</p>
+                <label >
+                    <InputNumber 
+                        min={0} 
+                        onChange={(e) => setArea(e)} 
+                        value={area} 
+                        placeholder="75 m2"
+                    />
+                </label>
+                <span style={{marginLeft: "1%", fontWeight: 700}}>m2</span>
+
+                <p className='formLabel'>Nombre de pièces</p>
+                <label>
+                    <InputNumber 
+                        min={0} 
+                        onChange={(e) => setRooms(e)} 
+                        value={rooms} 
+                        placeholder="75018"
+                    />
+                </label>
+                
+                <p className='formLabel'>Nombre de chambres</p>
+                <label>
+                    <InputNumber
+                        min={0} 
+                        onChange={(e) => setBedrooms(e)} 
+                        value={bedrooms} 
+                        placeholder="75018"
+                    />
+                </label>
+
+                <p className='formLabel'>Avantages</p>
+                    <label>
+                    <Checkbox.Group 
+                        options={options} 
+                        onChange={(values) => setAvantages(values)}
+                        value={avantages}
+                    />
+                    </label>
+
+                <p className='formLabel'>Texte de l'annonce</p>
+                <label >
+                    <TextArea 
+                        rows={4}
+                        onChange={(e) => setDesc(e.target.value)} 
+                        value={desc}
+                        placeholder="En plein coeur du 18ème arrondissement de Paris..."
+                        className="short"
+                    />
+                </label>
+
+                <p className='formLabel'>Photos (10 max)</p>
+                <Dragger
+                    name= 'file'
+                    accept= ".png,.jpeg,.pdf"
+                    multiple= {true}
+                    showUploadList= {false}
+                    beforeUpload={ file => checkUploadFormat(file)}
+                    action= {`/pro/ad/${props.formData.adID}/file`}
+                    method= 'POST'
+                    headers= {{
+                        'Authorization': `Bearer ${cookies.aT}`
+                    }}
+                    onChange={ info => photoUpload(info)}
+                    className="short"
+                >
+                    <p className="ant-upload-drag-icon">
+                        <InboxOutlined />
+                    </p>
+                    <p className="ant-upload-text">Cliquez ou déposez des images pour les charger (10 max)</p>
+                    <p className="ant-upload-hint">
+                        Format acceptés : png et jpeg
+                    </p>
+                </Dragger>
+
+                {photosUploaded}
+                {photosFromDB}
+
+                <p className='formLabel'>Lien vers vidéo (optionnel)</p>
+                <label >
+                    <Input 
+                        onChange={(e) => setVideo(e.target.value)} 
+                        value={video} 
+                        placeholder="http://"
+                        className="short"
+                    />
+                </label>
+
+                <p className='formLabel'>Emission de gaz à effet de serre (optionnel)</p>
+                <label >
+                    <InputNumber
+                        min={0} 
+                        onChange={(e) => setEmission(e)} 
+                        value={emission} 
+                        placeholder="23"
+                    />
+                </label>
+                <span style={{marginLeft: "1%", fontWeight: 700}}>kgeq/m2/an</span>
+
+                <p className='formLabel'>Consommation énergétique (optionnel)</p>
+                <label >
+                    <InputNumber
+                        min={0}
+                        onChange={(e) => setConso(e)} 
+                        value={conso} 
+                        placeholder="438"
+                    />
+                </label>
+                <span style={{marginLeft: "1%", fontWeight: 700}}>kWhEP/m2/an</span>     
+                
+            </form>
             
-                        <p className='formLabel'>Type de bien </p>
-                        <label>
-                            <Radio.Group 
-                                value={type} 
-                                onChange={(e) => setType(e.target.value)} 
-                            >
-                                <Radio 
-                                    value="appartement" 
-                                    style={{paddingTop : "1%"}}>
-                                    Appartement
-                                </Radio>
-                                <br/>
-                                <Radio 
-                                    value="maison" 
-                                    style={{paddingTop : "1%"}}
-                                >
-                                    Maison
-                                </Radio>
-                            </Radio.Group>
-                        </label>
+            {formError}
 
-                        <p className='formLabel'>Surface</p>
-                        <label >
-                            <InputNumber 
-                                min={0} 
-                                onChange={(e) => setArea(e)} 
-                                value={area} 
-                                placeholder="75 m2"
-                            />
-                        </label>
-                        <span style={{marginLeft: "1%", fontWeight: 700}}>m2</span>
+            <div className="form-buttons">
+                <Button type="primary" className="button-back"
+                    onClick={() => {
+                        setBackRedir(true)
+                        props.previousStep()
+                    }}
+                >
+                    Précédent
+                </Button>  
 
-                        <p className='formLabel'>Nombre de pièces</p>
-                        <label>
-                            <InputNumber 
-                                min={0} 
-                                onChange={(e) => setRooms(e)} 
-                                value={rooms} 
-                                placeholder="75018"
-                            />
-                        </label>
-                        
-                        <p className='formLabel'>Nombre de chambres</p>
-                        <label>
-                            <InputNumber
-                                min={0} 
-                                onChange={(e) => setBedrooms(e)} 
-                                value={bedrooms} 
-                                placeholder="75018"
-                            />
-                        </label>
-
-                        <p className='formLabel'>Avantages</p>
-                            <label>
-                            <Checkbox.Group 
-                                options={options} 
-                                onChange={(values) => setAvantages(values)}
-                                value={avantages}
-                            />
-                            </label>
-
-                        <p className='formLabel'>Texte de l'annonce</p>
-                        <label >
-                            <TextArea 
-                                rows={4}
-                                onChange={(e) => setDesc(e.target.value)} 
-                                value={desc}
-                                placeholder="En plein coeur du 18ème arrondissement de Paris..."
-                                className="short"
-                            />
-                        </label>
-
-                        <p className='formLabel'>Photos (10 max)</p>
-                        <Dragger
-                            name= 'file'
-                            accept= ".png,.jpeg,.pdf"
-                            multiple= {true}
-                            showUploadList= {false}
-                            beforeUpload={ file => checkUploadFormat(file)}
-                            action= {`/pro/ad/${props.formData.adID}/file`}
-                            method= 'POST'
-                            headers= {{
-                                'Authorization': `Bearer ${cookies.aT}`
-                            }}
-                            onChange={ info => photoUpload(info)}
-                            className="short"
-                        >
-                            <p className="ant-upload-drag-icon">
-                                <InboxOutlined />
-                            </p>
-                            <p className="ant-upload-text">Cliquez ou déposez des images pour les charger (10 max)</p>
-                            <p className="ant-upload-hint">
-                                Format acceptés : png et jpeg
-                            </p>
-                        </Dragger>
-
-                        {photosUploaded}
-                        {photosFromDB}
-
-                        <p className='formLabel'>Lien vers vidéo (optionnel)</p>
-                        <label >
-                            <Input 
-                                onChange={(e) => setVideo(e.target.value)} 
-                                value={video} 
-                                placeholder="http://"
-                                className="short"
-                            />
-                        </label>
-
-                        <p className='formLabel'>Emission de gaz à effet de serre (optionnel)</p>
-                        <label >
-                            <InputNumber
-                                min={0} 
-                                onChange={(e) => setEmission(e)} 
-                                value={emission} 
-                                placeholder="23"
-                            />
-                        </label>
-                        <span style={{marginLeft: "1%", fontWeight: 700}}>kgeq/m2/an</span>
-
-                        <p className='formLabel'>Consommation énergétique (optionnel)</p>
-                        <label >
-                            <InputNumber
-                                min={0}
-                                onChange={(e) => setConso(e)} 
-                                value={conso} 
-                                placeholder="438"
-                            />
-                        </label>
-                        <span style={{marginLeft: "1%", fontWeight: 700}}>kWhEP/m2/an</span>     
-                        
-                    </form>
-                    
-                    {formError}
-
-                    <div className="form-buttons">
-                        <Button type="primary" className="button-back"
-                            onClick={() => {
-                                setBackRedir(true)
-                                props.previousStep()
-                            }}
-                        >
-                            Précédent
-                        </Button>  
-
-                        <Button type="primary" onClick={() => goToNextStep()}>Suivant</Button>
-                    </div>       
-                </Content>      
-            </Layout>
-        </Layout>
+                <Button type="primary" onClick={() => goToNextStep()}>Suivant</Button>
+            </div>       
+        </div>
     )
 }
 

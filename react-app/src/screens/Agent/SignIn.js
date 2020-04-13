@@ -6,7 +6,7 @@ import {LoadingOutlined} from '@ant-design/icons'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import Spinner from '../../components/Agent/GlobalSpin'
+import Spinner from './GlobalSpin'
 import Unauthorized401 from './Unauthorized401'
 
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginTop: '8px' }} spin/>
@@ -67,7 +67,7 @@ function SignIn(props) {
             return <Spinner />
 
         } else if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_success) {  //if landing on signin and has a valid token
-            return <Redirect to='/pro' />
+            return <Redirect to={props.agentPageToRedirect} />
         }
         else {
 
@@ -159,7 +159,8 @@ function SignIn(props) {
 
 function mapStateToProps(state) {
     return { 
-        agentLoginStatus : state.agentLoginStatus
+        agentLoginStatus : state.agentLoginStatus,
+        agentPageToRedirect: state.agentPageToRedirect
     }
 }
 
