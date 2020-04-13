@@ -131,15 +131,15 @@ function OfferForm3(props) {
 
     if(offerRedirHome === true) {
         props.modifyStep(1)
-        return <Redirect to="/"/> // Triggered by button handleClick
+        return <Redirect push to="/"/> // Triggered by button handleClick
     }
     if(offerRedirStep1 === true) {
         props.modifyStep(1)
-        return <Redirect to="/newoffer/step1"/> // Triggered by button handleClick
+        return <Redirect push to="/offer/new/step1"/> // Triggered by button handleClick
     }
     if(offerBackRedir === true) {
         props.modifyStep(2)
-        return <Redirect to="/newoffer/step2"/> // Triggered by button-back handleClick
+        return <Redirect push to="/offer/new/step2"/> // Triggered by button-back handleClick
     }
 
 /* ------------------------------------------OFFER CREATION IN DB------------------------------------------ */
@@ -237,227 +237,222 @@ function OfferForm3(props) {
 
     return (
 
-        <Layout className="user-layout">
-            <UserNavHeader/> 
-            <Layout className='user-layout main-content'>
-                <Content>
+        <div>
                 
-                    <Row className="newoffer-stepbar">
-                        <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations complémentaires </h1>
-                        <div> {stepDots(props.newOfferStep)} </div>
-                    </Row>
+            <Row className="newoffer-stepbar">
+                <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations complémentaires </h1>
+                <div> {stepDots(props.newOfferStep)} </div>
+            </Row>
 
-                    <Row className="newoffer-form-body" gutter={16}>
-                            <Col xs={24} md={12}>
-                                <form>
-                                    
-                                    <h2 className="newoffer-subsection-title-first"> Notaire </h2>
-                                    <label>
-                                        <Checkbox
-                                            className="second-buyer"
-                                            onChange={ e => {
-                                                setDisableNotary(e.target.checked)
-                                                setNotaryName('')
-                                                setNotaryAddress('')
-                                                setNotaryEmail('')
-                                            }}
-                                        >
-                                            Je fournirai ces informations plus tard
-                                        </Checkbox>
-                                    </label>
+            <Row className="newoffer-form-body" gutter={16}>
+                    <Col xs={24} md={12}>
+                        <form>
+                            
+                            <h2 className="newoffer-subsection-title-first"> Notaire </h2>
+                            <label>
+                                <Checkbox
+                                    className="second-buyer"
+                                    onChange={ e => {
+                                        setDisableNotary(e.target.checked)
+                                        setNotaryName('')
+                                        setNotaryAddress('')
+                                        setNotaryEmail('')
+                                    }}
+                                >
+                                    Je fournirai ces informations plus tard
+                                </Checkbox>
+                            </label>
 
-                                    <p className='formLabel-offer'>Nom du notaire</p>
-                                    <label >
-                                        <Input onChange={(e) => setNotaryName(e.target.value)} value={notaryName} disabled={disableNotary}/>
-                                    </label>
+                            <p className='formLabel-offer'>Nom du notaire</p>
+                            <label >
+                                <Input onChange={(e) => setNotaryName(e.target.value)} value={notaryName} disabled={disableNotary}/>
+                            </label>
 
-                                    <p className='formLabel-offer'>Adresse email du notaire</p>
-                                    <label>
-                                        <Input className="last-name-1-offer" onChange={ e => setNotaryEmail(e.target.value)} value={notaryEmail} disabled={disableNotary} />
-                                    </label>
+                            <p className='formLabel-offer'>Adresse email du notaire</p>
+                            <label>
+                                <Input className="last-name-1-offer" onChange={ e => setNotaryEmail(e.target.value)} value={notaryEmail} disabled={disableNotary} />
+                            </label>
 
-                                    <p className='formLabel-offer'>Adresse postale du notaire</p>
-                                    <label >
-                                        <Input onChange={ e => setNotaryAddress(e.target.value)} value={notaryAddress} disabled={disableNotary} />
-                                    </label>
+                            <p className='formLabel-offer'>Adresse postale du notaire</p>
+                            <label >
+                                <Input onChange={ e => setNotaryAddress(e.target.value)} value={notaryAddress} disabled={disableNotary} />
+                            </label>
 
-                                    <h2 className="newoffer-subsection-title"> Conditions </h2>
-                                    <p className='formLabel-offer'>Durée de validité de l'offre (jours)</p>
-                                    <label >
-                                        <InputNumber onChange={ e => setValidityPeriod(e)} value={validityPeriod}/>
-                                    </label>
+                            <h2 className="newoffer-subsection-title"> Conditions </h2>
+                            <p className='formLabel-offer'>Durée de validité de l'offre (jours)</p>
+                            <label >
+                                <InputNumber onChange={ e => setValidityPeriod(e)} value={validityPeriod}/>
+                            </label>
 
-                                    <p className='formLabel-offer'>Offre faite à</p>
-                                    <label>
-                                        <Input onChange={ e => setOfferLocation(e.target.value)} value={offerLocation} />
-                                    </label>
-                                    
-                                    <h2 className="newoffer-subsection-title"> Commentaires </h2>
-                                    <label>
-                                        <TextArea onChange={ e => setComments(e.target.value)} value={comments} />
-                                    </label>
-                                    
-                                </form>
-                                {offerFormError} 
+                            <p className='formLabel-offer'>Offre faite à</p>
+                            <label>
+                                <Input onChange={ e => setOfferLocation(e.target.value)} value={offerLocation} />
+                            </label>
+                            
+                            <h2 className="newoffer-subsection-title"> Commentaires </h2>
+                            <label>
+                                <TextArea onChange={ e => setComments(e.target.value)} value={comments} />
+                            </label>
+                            
+                        </form>
+                        {offerFormError} 
 
-                                <div className="form-buttons">
-                                    <Button
-                                        type="primary"
-                                        className="button-back"
-                                        onClick={() => {
-                                            setOfferBackRedir(true)
-                                            props.modifyStep(2)
-                                        }}
-                                    >
-                                        Précédent
-                                    </Button> 
-                                    <Button
-                                        onClick={()=> handleClick()}
-                                        type="primary"
-                                        className="button-validate"
-                                    >
-                                        Valider - Voir récapitulatif
-                                    </Button>
-                                </div>
-                            </Col>
-                            <Col className="newoffer-ad-card"xs={0} md={12}>
-                            {ad}
-                            </Col>
-                    </Row >
-
-
-                    <Modal
-                        className="new-offer-modal"
-                        title= {<p className="newoffer-modal-title">RÉCAPITULATIF DE VOTRE OFFRE</p>}
-                        visible={modalVisible}
-                        centered
-                        footer= {modalFooter}
-                        destroyOnClose= {true}
-                        width= "80%"
-                        closable={true}
-                        mask={true}
-                        maskClosable={true}
-                        onCancel={() => setModalVisible(false)}
-                    >
-                        <div className="newoffer-modal">
-                            <div className="newoffer-modal-section">
-                                <div className="newoffer-modal-section-title">
-                                    <p>Informations personnelles</p>
-                                    <EditOutlined
-                                        className="newoffer-modal-section-title-icon"
-                                        onClick={() => setOfferRedirStep1(true)}
-                                    />
-                                </div>
-                                <div className="newoffer-modal-section-content">
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Acheteur : </span>
-                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.firstName1} ${props.offerFormData.lastName1}`}</span>
-                                    </div>
-                                    {props.offerFormData.showSecondBuyer &&
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Acheteur 2 : </span>
-                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.firstName2} ${props.offerFormData.lastName2}`}</span>
-                                    </div>
-                                    }
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Adresse : </span>
-                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.address} - ${props.offerFormData.postCode} ${props.offerFormData.city}`}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="newoffer-modal-section">
-                                <div className="newoffer-modal-section-title">
-                                    <p>Offre</p>
-                                    <EditOutlined
-                                        className="newoffer-modal-section-title-icon"
-                                        onClick={() => setOfferBackRedir(true)}
-                                    />
-                                </div>
-                                <div className="newoffer-modal-section-content">
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Montant : </span>
-                                        <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.offerAmount)}</span>
-                                    </div>
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span className="newoffer-modal-section-content-minor">Dont apport : </span>
-                                        <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.contributionAmount)}</span>
-                                    </div>
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span className="newoffer-modal-section-content-minor">Dont emprunt : </span>
-                                        <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.loanAmount)}</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="newoffer-modal-section">
-                                <div className="newoffer-modal-section-title">
-                                    <p>Notaire</p>
-                                    <EditOutlined
-                                        className="newoffer-modal-section-title-icon"
-                                        onClick={() => setModalVisible(false)}
-                                    />
-                                </div>
-                                {props.offerFormData.notaryName ?
-                                <div className="newoffer-modal-section-content">
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Nom : </span>
-                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryName}</span>
-                                    </div>
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Adresse email : </span>
-                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryEmail}</span>
-                                    </div>
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Adresse postale : </span>
-                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryAddress}</span>
-                                    </div>
-                                </div>
-                                :
-                                <div>Ces informations seront communiquées ultérieurement</div>
-                                }
-                            </div>
-
-                            <div className="newoffer-modal-section">
-                                <div className="newoffer-modal-section-title">
-                                    <p>Commentaires</p>
-                                    <EditOutlined
-                                        className="newoffer-modal-section-title-icon"
-                                        onClick={() => setModalVisible(false)}
-                                    />
-                                </div>
-                                <div className="newoffer-modal-section-content">
-                                    <div className="newoffer-modal-section-content-block">
-                                    {props.offerFormData.comments}
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div className="newoffer-modal-section">
-                                <div className="newoffer-modal-section-title">
-                                    <p>Conditions</p>
-                                    <EditOutlined
-                                        className="newoffer-modal-section-title-icon"
-                                        onClick={() => setModalVisible(false)}
-                                    />
-                                </div>
-                                <div className="newoffer-modal-section-content">
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Durée de validité de l'offre : </span>
-                                        <span className="newoffer-modal-section-content-data">{`${props.offerFormData.validityPeriod} jours`}</span>
-                                    </div>
-                                    <div className="newoffer-modal-section-content-block">
-                                        <span>Offre faite à : </span>
-                                        <span className="newoffer-modal-section-content-data">{props.offerFormData.offerLocation}</span>
-                                    </div>
-                                </div>
-                            </div>
-
+                        <div className="form-buttons">
+                            <Button
+                                type="primary"
+                                className="button-back"
+                                onClick={() => {
+                                    setOfferBackRedir(true)
+                                    props.modifyStep(2)
+                                }}
+                            >
+                                Précédent
+                            </Button> 
+                            <Button
+                                onClick={()=> handleClick()}
+                                type="primary"
+                                className="button-validate"
+                            >
+                                Valider - Voir récapitulatif
+                            </Button>
                         </div>
-                    </Modal>
-                </Content>  
-            </Layout>
-        </Layout>
+                    </Col>
+                    <Col className="newoffer-ad-card"xs={0} md={12}>
+                    {ad}
+                    </Col>
+            </Row >
+
+
+            <Modal
+                className="new-offer-modal"
+                title= {<p className="newoffer-modal-title">RÉCAPITULATIF DE VOTRE OFFRE</p>}
+                visible={modalVisible}
+                centered
+                footer= {modalFooter}
+                destroyOnClose= {true}
+                width= "80%"
+                closable={true}
+                mask={true}
+                maskClosable={true}
+                onCancel={() => setModalVisible(false)}
+            >
+                <div className="newoffer-modal">
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Informations personnelles</p>
+                            <EditOutlined
+                                className="newoffer-modal-section-title-icon"
+                                onClick={() => setOfferRedirStep1(true)}
+                            />
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Acheteur : </span>
+                                <span className="newoffer-modal-section-content-data">{`${props.offerFormData.firstName1} ${props.offerFormData.lastName1}`}</span>
+                            </div>
+                            {props.offerFormData.showSecondBuyer &&
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Acheteur 2 : </span>
+                                <span className="newoffer-modal-section-content-data">{`${props.offerFormData.firstName2} ${props.offerFormData.lastName2}`}</span>
+                            </div>
+                            }
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Adresse : </span>
+                                <span className="newoffer-modal-section-content-data">{`${props.offerFormData.address} - ${props.offerFormData.postCode} ${props.offerFormData.city}`}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Offre</p>
+                            <EditOutlined
+                                className="newoffer-modal-section-title-icon"
+                                onClick={() => setOfferBackRedir(true)}
+                            />
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Montant : </span>
+                                <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.offerAmount)}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span className="newoffer-modal-section-content-minor">Dont apport : </span>
+                                <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.contributionAmount)}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span className="newoffer-modal-section-content-minor">Dont emprunt : </span>
+                                <span className="newoffer-modal-section-content-data">{priceFormatter.format(props.offerFormData.loanAmount)}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Notaire</p>
+                            <EditOutlined
+                                className="newoffer-modal-section-title-icon"
+                                onClick={() => setModalVisible(false)}
+                            />
+                        </div>
+                        {props.offerFormData.notaryName ?
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Nom : </span>
+                                <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryName}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Adresse email : </span>
+                                <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryEmail}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Adresse postale : </span>
+                                <span className="newoffer-modal-section-content-data">{props.offerFormData.notaryAddress}</span>
+                            </div>
+                        </div>
+                        :
+                        <div>Ces informations seront communiquées ultérieurement</div>
+                        }
+                    </div>
+
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Commentaires</p>
+                            <EditOutlined
+                                className="newoffer-modal-section-title-icon"
+                                onClick={() => setModalVisible(false)}
+                            />
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                            {props.offerFormData.comments}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Conditions</p>
+                            <EditOutlined
+                                className="newoffer-modal-section-title-icon"
+                                onClick={() => setModalVisible(false)}
+                            />
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Durée de validité de l'offre : </span>
+                                <span className="newoffer-modal-section-content-data">{`${props.offerFormData.validityPeriod} jours`}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Offre faite à : </span>
+                                <span className="newoffer-modal-section-content-data">{props.offerFormData.offerLocation}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </Modal>
+        </div>
     )
 }
 

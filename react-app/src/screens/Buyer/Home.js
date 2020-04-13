@@ -177,45 +177,36 @@ function Home() {
                 }
                 setDataLoaded(true)
             }}
-        >
-            <Layout className="user-layout">
-                <UserNavHeader current="Biens consultés"/>
-                <Layout className='user-layout main-content'>
-                <Content>
-                        
-                        {adsOffers.length > 0 &&
-                            <div>
-                                <h1 className='userTitle'>Mes offres</h1>
-                                <Row gutter={16} className="offers-row">
-                                    {adsOffers}
-                                </Row>
-                            </div>
-                        }
+        >                        
+            {adsOffers.length > 0 &&
+                <div>
+                    <h1 className='userTitle'>Mes offres</h1>
+                    <Row gutter={16} className="offers-row">
+                        {adsOffers}
+                    </Row>
+                </div>
+            }
 
-                        {adsVisits.length > 0 &&
-                            <div>       
-                                <h1 className='userTitle'>Mes visites</h1>
-                                <Row gutter={16} className="visit-row">
-                                    {adsVisits}
-                                </Row>
-                            </div>
-                        }
+            {adsVisits.length > 0 &&
+                <div>       
+                    <h1 className='userTitle'>Mes visites</h1>
+                    <Row gutter={16} className="visit-row">
+                        {adsVisits}
+                    </Row>
+                </div>
+            }
 
-                        {adsCopy.length > 0 &&
-                            <div>
-                                <h1 className='userTitle'>Mes biens consultés</h1>
-                                <Row gutter={16} className="ads-row">
-                                    {adsAll}
-                                </Row>
-                            </div>
-                        }
-                    
-                    </Content>  
-                </Layout>
-            </Layout>
+            {adsCopy.length > 0 &&
+                <div>
+                    <h1 className='userTitle'>Mes biens consultés</h1>
+                    <Row gutter={16} className="ads-row">
+                        {adsAll}
+                    </Row>
+                </div>
+            }
         </APIFetch>
     )
-  }
+}
 
 
 function mapStateToProps(state) {

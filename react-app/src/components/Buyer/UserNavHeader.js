@@ -1,8 +1,8 @@
 import React, {useState, useEffect} from 'react'
-import { Button } from 'antd';
-import {Link, Redirect} from 'react-router-dom'
+import { Button } from 'antd'
+import {Link, Redirect, useLocation} from 'react-router-dom'
 import {StopOutlined} from '@ant-design/icons'
-import { Affix } from 'antd';
+import { Affix } from 'antd'
 import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
@@ -13,26 +13,36 @@ function UserNavHeader(props) {
     const [propertiesClass, setPropertiesClass] = useState(null)
     const [visitsClass, setVisitsClass] = useState(null)
     const [accountClass, setAccountClass] = useState(null)
-    const [redirHome, setRedirHome] = useState(false)
 
-    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+    const [redirSignIn, setRedirSignIn] = useState(false)
+
+    const [cookies, setCookie, removeCookie] = useCookies(['name']) // initializing state cookies
+    const location = useLocation()
+
 
     useEffect( () => {
-        const addClass = () => {
-            switch (props.current) {
-                case 'Biens consultés':
-                    setPropertiesClass('nav-header-link-main')
-                    break;
-                case 'Visites':
-                    setVisitsClass('nav-header-link-main')
-                    break;
-                case 'Compte':
-                    setAccountClass('nav-header-link-main')
-                    break;
-            }
+        switch (location.pathname) {
+            default:
+                setPropertiesClass('nav-header-link-main')
+                setVisitsClass('')
+                setAccountClass('')
+            case '/':
+                setPropertiesClass('nav-header-link-main')
+                setVisitsClass('')
+                setAccountClass('')
+                break;
+            case '/visits':
+                setVisitsClass('nav-header-link-main')
+                setPropertiesClass('')
+                setAccountClass('')
+                break;
+            case '/offers':
+                setAccountClass('nav-header-link-main')
+                setPropertiesClass('')
+                setVisitsClass('')
+                break;
         }
-        addClass()
-    }, [])
+    }, [location])
 
 
     const logout = async () => {
@@ -48,10 +58,10 @@ function UserNavHeader(props) {
           })
 
         props.loggedOut()
-        setRedirHome(true)
+        setRedirSignIn(true)
     }
 
-    if (redirHome) {
+    if (redirSignIn) {
         return <Redirect to="/sign"/>
     }
 

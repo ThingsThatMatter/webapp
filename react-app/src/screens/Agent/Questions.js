@@ -1,20 +1,18 @@
 import React, {useState, useEffect} from 'react'
-import { Layout, Row, Button, Col, Collapse, Modal, Input, Radio, message } from 'antd'
+import { Row, Button, Col, Collapse, Modal, Input, Radio, message } from 'antd'
 
 import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 import InternalError500 from './InternalError500'
-import GlobalSpin from '../../components/Agent/GlobalSpin'
+import GlobalSpin from './GlobalSpin'
 
 import {WarningOutlined} from '@ant-design/icons'
 
 const { Panel } = Collapse
 const {TextArea} = Input
-const { Content } = Layout
 
 
 function Questions() {
@@ -242,108 +240,103 @@ function Questions() {
 
     return (
   
-        <Layout>
-            <Sidebar/>
-            <Layout className='main-content'>
-                <Content>
-                    <h1 className='pageTitle'>Les messages</h1>
+        <div>
+            <h1 className='pageTitle'>Les messages</h1>
 
-                    {sortedQuestions}
-                    
-                    <Modal
-                        title={questionModalProperties.question}
-                        visible={answerModalVisible}
-                        footer= {
-                            <div>
-                                {answerQuestionError !=='' &&
-                                <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
-                                    <WarningOutlined style={{marginRight: '2px'}}/>
-                                    <span style={{marginLeft: '2px'}}>
-                                        {answerQuestionError}
-                                    </span>
-                                    </div>
-                                }
-
-                                <Button
-                                    type="primary" loading={answerQuestionLoading} className="button-validate"
-                                    style= {{marginRight: '0px', marginLeft: 'auto'}}
-                                    onClick={ () => handleAnswerQuestion()}
-                                >
-                                Publier la réponse
-                                </Button>
+            {sortedQuestions}
+            
+            <Modal
+                title={questionModalProperties.question}
+                visible={answerModalVisible}
+                footer= {
+                    <div>
+                        {answerQuestionError !=='' &&
+                        <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
+                            <WarningOutlined style={{marginRight: '2px'}}/>
+                            <span style={{marginLeft: '2px'}}>
+                                {answerQuestionError}
+                            </span>
                             </div>
                         }
-                        destroyOnClose= {true}
-                        width= "50%"
-                        closable={true}
-                        mask={true}
-                        maskClosable={true}
-                        onCancel={hideModal}
-                    >
-                        <div className="question-modal">
-                            <p>{response}</p>
-                        </div>
-                    </Modal>
 
-                    <Modal
-                        title='Raison de la suppression'
-                        visible={declineModalVisible}
-                        footer= {
-                            <div>
-                                {declineQuestionError !=='' &&
-                                <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
-                                    <WarningOutlined style={{marginRight: '2px'}}/>
-                                    <span style={{marginLeft: '2px'}}>
-                                        {declineQuestionError}
-                                    </span>
-                                    </div>
-                                }
+                        <Button
+                            type="primary" loading={answerQuestionLoading} className="button-validate"
+                            style= {{marginRight: '0px', marginLeft: 'auto'}}
+                            onClick={ () => handleAnswerQuestion()}
+                        >
+                        Publier la réponse
+                        </Button>
+                    </div>
+                }
+                destroyOnClose= {true}
+                width= "50%"
+                closable={true}
+                mask={true}
+                maskClosable={true}
+                onCancel={hideModal}
+            >
+                <div className="question-modal">
+                    <p>{response}</p>
+                </div>
+            </Modal>
 
-                                <Button type="primary" loading={declineQuestionLoading} className="button-decline"
-                                    style= {{marginRight: '0px', marginLeft: 'auto'}}
-                                    onClick={ () => handleDeclineQuestion()}
-                                >
-                                    Décliner la question
-                                </Button>
+            <Modal
+                title='Raison de la suppression'
+                visible={declineModalVisible}
+                footer= {
+                    <div>
+                        {declineQuestionError !=='' &&
+                        <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
+                            <WarningOutlined style={{marginRight: '2px'}}/>
+                            <span style={{marginLeft: '2px'}}>
+                                {declineQuestionError}
+                            </span>
                             </div>
                         }
-                        destroyOnClose= {true}
-                        width= "50%"
-                        closable={true}
-                        mask={true}
-                        maskClosable={true}
-                        onCancel={hideModal}
+
+                        <Button type="primary" loading={declineQuestionLoading} className="button-decline"
+                            style= {{marginRight: '0px', marginLeft: 'auto'}}
+                            onClick={ () => handleDeclineQuestion()}
+                        >
+                            Décliner la question
+                        </Button>
+                    </div>
+                }
+                destroyOnClose= {true}
+                width= "50%"
+                closable={true}
+                mask={true}
+                maskClosable={true}
+                onCancel={hideModal}
+            >
+                <div className="question-modal">
+                    <Radio.Group 
+                        onChange={ 
+                            e => setDeclineReason(e.target.value)
+                        }
+                        value={declineReason}
                     >
-                        <div className="question-modal">
-                            <Radio.Group 
-                                onChange={ 
-                                    e => setDeclineReason(e.target.value)
-                                }
-                                value={declineReason}
-                            >
-                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'J’ai déjà répondu à cette question'}>
-                                J’ai déjà répondu à cette question
-                                </Radio>
-                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'L’information demandée est disponible sur l’annonce'}>
-                                L’information demandée est disponible sur l’annonce
-                                </Radio>
-                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'Je ne comprends pas la question'}>
-                                Je ne comprends pas la question
-                                </Radio>
-                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'La question comprend des propos injurieux'}>
-                                La question comprend des propos injurieux
-                                </Radio>
-                                <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={`Autre: ${otherReason}`}>
-                                Autre raison (à préciser)
-                                <br/>
-                                <Input onChange={ e => setOtherReason(e.target.value) } value={otherReason} />
-                                </Radio>
-                            </Radio.Group>
-                        </div>
-                    </Modal>
-                </Content>         
-            </Layout>
-        </Layout>
+                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'J’ai déjà répondu à cette question'}>
+                        J’ai déjà répondu à cette question
+                        </Radio>
+                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'L’information demandée est disponible sur l’annonce'}>
+                        L’information demandée est disponible sur l’annonce
+                        </Radio>
+                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'Je ne comprends pas la question'}>
+                        Je ne comprends pas la question
+                        </Radio>
+                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'La question comprend des propos injurieux'}>
+                        La question comprend des propos injurieux
+                        </Radio>
+                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={`Autre: ${otherReason}`}>
+                        Autre raison (à préciser)
+                        <br/>
+                        <Input onChange={ e => setOtherReason(e.target.value) } value={otherReason} />
+                        </Radio>
+                    </Radio.Group>
+                </div>
+            </Modal>
+        </div>
     )
   }
 

@@ -2,14 +2,11 @@ import React, {useState, useEffect} from 'react'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
-
-import { Layout, Spin} from 'antd'
+import {Spin} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import {useCookies} from 'react-cookie'
 
-const {Content} = Layout
 
 function Unauthorized401(props) {
 
@@ -44,23 +41,16 @@ function Unauthorized401(props) {
 
     return (
 
-        <Layout className="user-layout">
-            <UserNavHeader/> 
-            <Layout className='user-layout main-content'>
-                
-                <Content style={{ margin: '24px 16px 0' }}>
-                    <h1>Vous avez été déconnecté(e) après une période d'inactivité.</h1>
-                    <p style={{textAlign:'center', marginTop: '4em', fontSize: '20px'}}>Redirection vers la page de connexion...</p>
-                    <div className="spinner" style={{ margin: '24px 16px 0' }}>
-                        <Spin
-                            size="large"
-                            indicator={logo}
-                        />
-                    </div>
-                    
-                </Content>
-            </Layout>
-        </Layout>
+        <div>
+            <h1>Vous avez été déconnecté(e) après une période d'inactivité.</h1>
+            <p style={{textAlign:'center', marginTop: '4em', fontSize: '20px'}}>Redirection vers la page de connexion...</p>
+            <div className="spinner" style={{ margin: '24px 16px 0' }}>
+                <Spin
+                    size="large"
+                    indicator={logo}
+                />
+            </div>
+        </div>
     )
 }
 

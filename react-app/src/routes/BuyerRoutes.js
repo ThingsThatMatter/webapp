@@ -1,5 +1,5 @@
 import React from 'react'
-import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
+import {Switch, Route, Redirect, useLocation} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
@@ -14,10 +14,15 @@ import OfferForm1 from '../screens/Buyer/OfferForm1'
 import OfferForm2 from '../screens/Buyer/OfferForm2'
 import OfferForm3 from '../screens/Buyer/OfferForm3'
 import NotFound404 from '../screens/Buyer/NotFound404'
+import UserNavHeader from '../components/Buyer/UserNavHeader'
+
+import { Layout} from 'antd'
+const {Content} = Layout
 
 function BuyerRoutes(props) {
 
-    const [cookies] = useCookies(['name']); // initilizing state cookies
+    const [cookies] = useCookies(['name']) // initializing state cookies
+    const location = useLocation()
 
     const checkToken = async () => {
         const authenticateUser = await fetch('/user/user-access', {
@@ -45,30 +50,52 @@ function BuyerRoutes(props) {
         checkToken()
     }
 
-    const PrivateRoute = ({ component: Component, ...rest }) => (
-        <Route {...rest} render={(state) => (
-            props.userLoginStatus.login_success
-            ? <Component {...state} />
-            : <Redirect to='/sign' />
-        )} />
+
+    const PrivateRoute = ({ component: Component, ...rest }) => {
+        if (props.userLoginStatus.login_success) {
+            return (
+                <Route {...rest} render={ state => (
+                    <Component {...state} />
+                )}/>
+            )
+        } else {
+            props.pageToRedirect(location) // store page to redirect after login
+            return (
+                <Route {...rest} render={ () => <Redirect to='/sign' /> }/>
+            )
+        }
+    }
+
+    const PublicRoute = ({ component: Component, ...rest }) => (
+        <Route {...rest} render={ state => (
+            <Component {...state} />
+        )}/>
     )
     
+    
     return (
-        <Router>
-            <Switch>
-                <PrivateRoute component={Home} path='/' exact/>
-                <PrivateRoute component={Visits} path='/visits' exact/>
-                <PrivateRoute component={Offers} path='/offers' exact/>
-                <PrivateRoute component={OfferForm1} path='/newoffer/step1' exact/>
-                <PrivateRoute component={OfferForm2} path='/newoffer/step2' exact/>
-                <PrivateRoute component={OfferForm3} path='/newoffer/step3' exact/>
-                
-                <Route component={buyerSign} path='/sign' exact/>
-                <Route component={EmailConf} path='/confirmation/:user_token' exact/>
-                <Route component={AdDesc} path='/ad/:ad_id' exact/>
-                {/* <Route component={NotFound404} path={new RegExp("^/(?!pro)")} /> Any routes not starting by pro */}
-            </Switch>
-        </Router>  
+        <Switch>
+            <Route component={buyerSign} path='/sign' exact/>
+            <Route component={EmailConf} path='/confirmation/:user_token' exact/>
+
+            <Layout className="user-layout">
+                <UserNavHeader/> 
+                <Layout className='user-layout main-content'>
+                    <Content style={{ margin: '24px 16px 0' }}>
+                        <Switch>
+                            <PublicRoute component={AdDesc} path='/ad/:ad_id' exact/>
+                            <PrivateRoute component={Home} path='/' exact/>
+                            <PrivateRoute component={Visits} path='/visits' exact/>
+                            <PrivateRoute component={Offers} path='/offers' exact/>
+                            <PrivateRoute component={OfferForm1} path='/offer/new/step1' exact/>
+                            <PrivateRoute component={OfferForm2} path='/offer/new/step2' exact/>
+                            <PrivateRoute component={OfferForm3} path='/offer/new/step3' exact/>
+                            <Route component={NotFound404} path='/' />
+                        </Switch>
+                    </Content>  
+                </Layout>
+            </Layout>
+        </Switch>
     )
 }
 
@@ -95,6 +122,12 @@ function mapDispatchToProps(dispatch) {
             dispatch({
                 type: 'user_saveInfo',
                 userInfo
+            })
+        },
+        pageToRedirect: function(page) {
+            dispatch({
+                type: 'userRedirectIfLoggedIn',
+                path: page
             })
         }
     }

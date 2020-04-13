@@ -5,7 +5,7 @@ import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
 
 import {RightOutlined, LeftOutlined, DownOutlined, WarningOutlined} from '@ant-design/icons'
-import {Layout, Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Button, Popconfirm, message, Radio, Alert} from 'antd'
+import {Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Button, Popconfirm, message, Radio, Alert} from 'antd'
 import locale from 'antd/es/date-picker/locale/fr_FR'
 import moment from 'moment'
 import 'moment/locale/fr'
@@ -13,10 +13,9 @@ import 'moment/locale/fr'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 import InternalError500 from './InternalError500'
-import GlobalSpin from '../../components/Agent/GlobalSpin'
+import GlobalSpin from './GlobalSpin'
 
 import './Calendar.css'
 import 'antd/dist/antd.css'
@@ -26,7 +25,6 @@ const ts = require("time-slots-generator")
 
 const { RangePicker } = TimePicker
 const { Option } = Select
-const { Content } = Layout
 
 
 function Visits() {
@@ -463,179 +461,174 @@ function Visits() {
 
   return (
 
-    <Layout>
-      <Sidebar/>
-      <Layout className='main-content'>
-        <Content>
-          <h1 className='pageTitle'>Visites</h1>
+    <div>
+      <h1 className='pageTitle'>Visites</h1>
 
-          <div className="calendar-header">
-              <div className="calendar-headerNavLeft">
-              <LeftOutlined
-                  className="calendar-headerNavLeft-chevronIcon"
-                  onClick={ () => {
-                  const calendarApi = calendar.current.getApi()
-                  calendarApi.prev()
-                  setTitle(calendar.current.calendar.view.title)
-                  }}
-              />
-
-              <div className="calendar-headerNavLeft-dateTitle">
-                  {title}
-              </div>
-
-              <RightOutlined
-                className="calendar-headerNavLeft-chevronIcon"
-                onClick={ () => {
-                const calendarApi = calendar.current.getApi()
-                calendarApi.next()
-                setTitle(calendar.current.calendar.view.title)
-                }}
-              />
-              </div>
-
-              <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
-                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                    {view} <DownOutlined />
-                </a>
-              </Dropdown>
-          </div>
-
-          <FullCalendar
-            /* Global Settings */
-            ref={calendar}
-            plugins={[ dayGridPlugin, timeGrid, interaction ]}
-            defaultView="timeGridWeek"
-            locale= 'fr'
-            header={{
-            left: '',
-            center: '',
-            right: ''
-            }}
-            contentHeight= "auto"
-
-            /* Events */
-            events={myEvents}
-
-            /* Time Settings */
-            timeZone='UTC'
-            firstDay= {1}
-            hiddenDays={[0]}
-            allDaySlot={false}
-            minTime={'08:00'}
-            maxTime={'20:00'}
-            defaultTimedEventDuration={'00:30'}
-
-            /* Column headers */
-            columnHeaderHtml={ (date) => {
-                if (view==='Semaine') {
-                    return (
-                    `<div class="calendar-week-column-header" >
-                        <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
-                        <div class="calendar-week-column-header-number">${date.getDate()}</div>
-                    </div>`
-                    )
-                }
-                else if (view==='Mois') {
-                    return (
-                        `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                    )
-                }
-                else if (view==='Jour') {
-                    return (
-                        `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                    )
-                }
-            }}
-            
-            /*Manage clicks on elements*/
-            selectable= {true}
-            navLinks= {true}
-            navLinkDayClick="timeGridDay"
-            select={(info) => {
-              setAppointmentModalEventDate(info.start.toISOString().slice(0,10))
-              setAppointmentModalEventHour1(info.start.toTimeString().slice(0,5))
-              setAppointmentModalEventHour2(info.end.toTimeString().slice(0,5))
-              setAppointmentModalMode("create")
-              setAppointmentModalVisible(true)
-            }}
-            eventClick= { (info) => {
-              setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
-              setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
-              setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
-              setAppointmentModalEventProperty(info.event.title)
-              setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
-              setAppointmentModalEventPrivate(info.event.extendedProps.private)
-              setAppointmentModalEventId(info.event.id)
-              setAppointmentModalMode('edit')
-              setAppointmentModalVisible(true)
-            }}    
+      <div className="calendar-header">
+          <div className="calendar-headerNavLeft">
+          <LeftOutlined
+              className="calendar-headerNavLeft-chevronIcon"
+              onClick={ () => {
+              const calendarApi = calendar.current.getApi()
+              calendarApi.prev()
+              setTitle(calendar.current.calendar.view.title)
+              }}
           />
 
-          <Modal
-              title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}
-              visible={appointmentModalVisible}
-              footer= {modalFooter}
-              destroyOnClose= {true}
-              width= "50%"
-              closable={true}
-              mask={true}
-              maskClosable={true}
-              onCancel={handleCancel}
-          >
-              <div className='input-modal'>
-                  <p className="input-modal-label">Date du RDV</p>
-                  <DatePicker
-                    locale={locale}
-                    defaultValue={moment(appointmentModalEventDate, 'YYYY-MM-DD')}
-                    onChange= {(date, dateString) => { setAppointmentModalEventDate(dateString) }}
-                  />
-              </div>
+          <div className="calendar-headerNavLeft-dateTitle">
+              {title}
+          </div>
 
-              <div className='input-modal'>
-                  <p className="input-modal-label">Horaires du RDV</p>
-                  <RangePicker
-                      locale={locale}
-                      format= 'HH:mm'
-                      minuteStep={30}
-                      disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23]}
-                      hideDisabledOptions={true}
-                      placeholder={["Début", "Fin"]}
-                      defaultValue={[moment(appointmentModalEventHour1, 'HH:mm'), moment(appointmentModalEventHour2, 'HH:mm')]}
-                      onChange= { (time, timeSring) => {
-                        setAppointmentModalEventHour1(timeSring[0])
-                        setAppointmentModalEventHour2(timeSring[1])
-                      }}
-                  />
-              </div>
+          <RightOutlined
+            className="calendar-headerNavLeft-chevronIcon"
+            onClick={ () => {
+            const calendarApi = calendar.current.getApi()
+            calendarApi.next()
+            setTitle(calendar.current.calendar.view.title)
+            }}
+          />
+          </div>
 
-              {appointmentModalMode !== "edit" && 
-              <div className='input-modal'>
-                  <p className="input-modal-label">Choix du bien</p>
-                  <Select
-                      style={{ width: '80%' }}
-                      placeholder="Bien à faire visiter"
-                      optionFilterProp="children"
-                      onChange={value => setAppointmentModalEventPropertyId(value)}
-                  >
-                      {propertiesOptions}
-                  </Select>
-              </div>
-              }
+          <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
+            <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                {view} <DownOutlined />
+            </a>
+          </Dropdown>
+      </div>
 
-              <div>
-              <Radio.Group
-                onChange={e => { setAppointmentModalEventPrivate(e.target.value) }}
-                value={appointmentModalEventPrivate} 
+      <FullCalendar
+        /* Global Settings */
+        ref={calendar}
+        plugins={[ dayGridPlugin, timeGrid, interaction ]}
+        defaultView="timeGridWeek"
+        locale= 'fr'
+        header={{
+        left: '',
+        center: '',
+        right: ''
+        }}
+        contentHeight= "auto"
+
+        /* Events */
+        events={myEvents}
+
+        /* Time Settings */
+        timeZone='UTC'
+        firstDay= {1}
+        hiddenDays={[0]}
+        allDaySlot={false}
+        minTime={'08:00'}
+        maxTime={'20:00'}
+        defaultTimedEventDuration={'00:30'}
+
+        /* Column headers */
+        columnHeaderHtml={ (date) => {
+            if (view==='Semaine') {
+                return (
+                `<div class="calendar-week-column-header" >
+                    <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
+                    <div class="calendar-week-column-header-number">${date.getDate()}</div>
+                </div>`
+                )
+            }
+            else if (view==='Mois') {
+                return (
+                    `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                )
+            }
+            else if (view==='Jour') {
+                return (
+                    `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                )
+            }
+        }}
+        
+        /*Manage clicks on elements*/
+        selectable= {true}
+        navLinks= {true}
+        navLinkDayClick="timeGridDay"
+        select={(info) => {
+          setAppointmentModalEventDate(info.start.toISOString().slice(0,10))
+          setAppointmentModalEventHour1(info.start.toTimeString().slice(0,5))
+          setAppointmentModalEventHour2(info.end.toTimeString().slice(0,5))
+          setAppointmentModalMode("create")
+          setAppointmentModalVisible(true)
+        }}
+        eventClick= { (info) => {
+          setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
+          setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
+          setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
+          setAppointmentModalEventProperty(info.event.title)
+          setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
+          setAppointmentModalEventPrivate(info.event.extendedProps.private)
+          setAppointmentModalEventId(info.event.id)
+          setAppointmentModalMode('edit')
+          setAppointmentModalVisible(true)
+        }}    
+      />
+
+      <Modal
+          title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}
+          visible={appointmentModalVisible}
+          footer= {modalFooter}
+          destroyOnClose= {true}
+          width= "50%"
+          closable={true}
+          mask={true}
+          maskClosable={true}
+          onCancel={handleCancel}
+      >
+          <div className='input-modal'>
+              <p className="input-modal-label">Date du RDV</p>
+              <DatePicker
+                locale={locale}
+                defaultValue={moment(appointmentModalEventDate, 'YYYY-MM-DD')}
+                onChange= {(date, dateString) => { setAppointmentModalEventDate(dateString) }}
+              />
+          </div>
+
+          <div className='input-modal'>
+              <p className="input-modal-label">Horaires du RDV</p>
+              <RangePicker
+                  locale={locale}
+                  format= 'HH:mm'
+                  minuteStep={30}
+                  disabledHours={() => [0, 1, 2, 3, 4, 5, 6, 7, 20, 21, 22, 23]}
+                  hideDisabledOptions={true}
+                  placeholder={["Début", "Fin"]}
+                  defaultValue={[moment(appointmentModalEventHour1, 'HH:mm'), moment(appointmentModalEventHour2, 'HH:mm')]}
+                  onChange= { (time, timeSring) => {
+                    setAppointmentModalEventHour1(timeSring[0])
+                    setAppointmentModalEventHour2(timeSring[1])
+                  }}
+              />
+          </div>
+
+          {appointmentModalMode !== "edit" && 
+          <div className='input-modal'>
+              <p className="input-modal-label">Choix du bien</p>
+              <Select
+                  style={{ width: '80%' }}
+                  placeholder="Bien à faire visiter"
+                  optionFilterProp="children"
+                  onChange={value => setAppointmentModalEventPropertyId(value)}
               >
-                  <Radio value={true}>Visite individuelle</Radio>
-                  <Radio value={false}>Visite en groupe</Radio>
-              </Radio.Group>
-              </div>
-          </Modal>
-        </Content>  
-      </Layout>
-    </Layout>
+                  {propertiesOptions}
+              </Select>
+          </div>
+          }
+
+          <div>
+          <Radio.Group
+            onChange={e => { setAppointmentModalEventPrivate(e.target.value) }}
+            value={appointmentModalEventPrivate} 
+          >
+              <Radio value={true}>Visite individuelle</Radio>
+              <Radio value={false}>Visite en groupe</Radio>
+          </Radio.Group>
+          </div>
+      </Modal>
+    </div>
   )
 }
 

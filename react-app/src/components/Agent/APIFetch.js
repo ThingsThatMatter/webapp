@@ -4,7 +4,7 @@ import {useCookies} from 'react-cookie'
 
 import NotFound404Ad from '../../screens/Agent/NotFound404Ad'
 import Unauthorized401 from '../../screens/Agent/Unauthorized401'
-import GlobalSpin from './GlobalSpin'
+import GlobalSpin from '../../screens/Agent/GlobalSpin'
 import InternalError500 from '../../screens/Agent/InternalError500'
 
 function APIFetch(props) {

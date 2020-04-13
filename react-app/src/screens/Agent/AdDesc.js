@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react"
-import { Layout, Button, Switch, Badge, Collapse, Col, Row, Popconfirm, message } from "antd"
+import { Button, Switch, Badge, Collapse, Col, Row, Popconfirm, message } from "antd"
 import { Slide } from "react-slideshow-image"
 import { Redirect} from "react-router-dom"
 import {HashLink as Link} from "react-router-hash-link"
@@ -8,10 +8,8 @@ import { connect } from "react-redux"
 import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Agent/APIFetch'
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 
-const { Content } = Layout
 const { Panel } = Collapse
 
 const properties = {
@@ -194,7 +192,7 @@ function AdDesc(props) {
   }
 
   if (redirectToAdEdit === true) {
-    return <Redirect to="/pro/createform/step1" />
+    return <Redirect push to="/pro/ad/new/step1" />
   }
 
   if (redirectTo401) {
@@ -222,203 +220,194 @@ function AdDesc(props) {
           setDataLoaded(true)
       }}
     >
+      <div className="agent-section">
+        <h1 className="pageTitle">{adDetails.title}</h1>
 
-      <Layout>
-        <Sidebar />
-        <Layout className="main-content">
-          <Content style={{ margin: "2em 3em" }}>
-            <div className="agent-section">
-              <h1 className="pageTitle">{adDetails.title}</h1>
-
-              <div className="agent-action">
-                <Switch defaultChecked onChange={() => setToggle(!toggle)} />
-                <div>
-                  <img
-                    src="../../../edit.png"
-                    width="20px"
-                    style={{ marginRight: 20, cursor: "pointer" }}
-                    onClick={handleEdit}
-                  />
-                  <Popconfirm
-                      title="Êtes vous sûr(e) de vouloir supprimer l'annonce ?"
-                      onConfirm={() => handleDelete()}
-                      okText="Oui"
-                      okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
-                      cancelText="Non"
-                      cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
-                      placement="bottomLeft"
-                    >
-                  <img
-                    src="../../../bin.png"
-                    width="20px"
-                    style={{ cursor: "pointer" }}
-                  />
-                  </Popconfirm>
-                </div>
-              </div>
-            </div>
-            <div className="agent-resume">
-              <Badge count={adOffers.length}>
-              <Link to={`/pro/offers#${props.match.params.id}`}>
-                <Button type="primary" ghost className="button-add">
-                  Offres
-                </Button>
-              </Link>
-              </Badge>
-
-              <Badge count={adVisits.length}>
-                <Link to={`/pro/visits`}>
-                  <Button type="primary" ghost className="button-add">
-                    Visites
-                  </Button>
-                </Link>
-              </Badge>
-
-              <Badge count={pendingQuestions.length}>
-                <Link to={`/pro/questions#${props.match.params.id}`}>
-                  <Button type="primary" ghost className="button-add">
-                    Questions
-                  </Button>
-                </Link>
-              </Badge>
-            </div>
-
-            {/* PARTIE DESCRIPTION */}
-
-            <h2 className="pageSubTitle">Descriptif</h2>
-
-            <div className="section ad-main-details">
-              <div className="row">
-                <span>
-                  <img src="../../../expand.svg" width="20px" />
-                  <strong>{adDetails.area}</strong> m<sup>2</sup>
-                </span>
-                <span>
-                  <img src="../../../floor-plan.png" width="20px" />
-                  <strong>{adDetails.rooms}</strong> pièces
-                </span>
-                <span>
-                  <img src="../../../bed.svg" width="20px" />
-                  <strong>{adDetails.bedrooms}</strong> chambres
-                </span>
-              </div>
-
-              {avantages.length > 0 && (
-                <div className="dark-row">
-                  <div className="row">{avantages}</div>
-                </div>
-              )}
-
-              <Row gutter={16} className="section-text">
-                <Col
-                  xs={{ span: 24 }}
-                  md={{ span: 12 }}
-                  lg={{ span: 12 }}
-                  xl={{ span: 12 }}
-                >
-                  <div className="slide-container">
-                    <Slide {...properties}>{photos}</Slide>
-                  </div>
-                </Col>
-                <Col
-                  xs={{ span: 24 }}
-                  md={{ span: 12 }}
-                  lg={{ span: 12 }}
-                  xl={{ span: 12 }}
-                >
-                  <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{adDetails.description}</p>
-                </Col>
-              </Row>
-            </div>
-
-            {/* PARTIE PRIX ET HONORAIRES */}
-            <Row gutter={30}>
-              <Col
-                xs={{ span: 24 }}
-                md={{ span: 24 }}
-                lg={{ span: 8 }}
-                xl={{ span: 8 }}
+        <div className="agent-action">
+          <Switch defaultChecked onChange={() => setToggle(!toggle)} />
+          <div>
+            <img
+              src="../../../edit.png"
+              width="20px"
+              style={{ marginRight: 20, cursor: "pointer" }}
+              onClick={handleEdit}
+            />
+            <Popconfirm
+                title="Êtes vous sûr(e) de vouloir supprimer l'annonce ?"
+                onConfirm={() => handleDelete()}
+                okText="Oui"
+                okButtonProps={{type:'primary', className:'pop-confirm-buttons'}}
+                cancelText="Non"
+                cancelButtonProps={{type:'secondary', className:'pop-confirm-buttons'}}
+                placement="bottomLeft"
               >
-                <h2 className="pageSubTitle">Prix & honoraires</h2>
+            <img
+              src="../../../bin.png"
+              width="20px"
+              style={{ cursor: "pointer" }}
+            />
+            </Popconfirm>
+          </div>
+        </div>
+      </div>
+      <div className="agent-resume">
+        <Badge count={adOffers.length}>
+        <Link to={`/pro/offers#${props.match.params.id}`}>
+          <Button type="primary" ghost className="button-add">
+            Offres
+          </Button>
+        </Link>
+        </Badge>
 
-                <div className="section">
-                  <div className="section-text">
-                    <p>
-                      <span style={{ fontWeight: 700 }}>
-                        {priceFormatter.format(
-                          (adDetails.price * adDetails.fees) / 100 +
-                            adDetails.price
-                        )}{" "}
-                      </span>{" "}
-                      TTC
-                    </p>
-                    <p>
-                      <span style={{ fontWeight: 700 }}>
-                        {priceFormatter.format(adDetails.price)}
-                      </span>{" "}
-                      hors honoraires
-                    </p>
-                    <p>
-                      <span style={{ fontWeight: 700 }}>{adDetails.fees}</span>%
-                      honoraires à la charge de{" "}
-                      <span style={{ fontWeight: 700 }}>l'acquéreur</span>
-                    </p>
-                  </div>
-                </div>
-              </Col>
+        <Badge count={adVisits.length}>
+          <Link to={`/pro/visits`}>
+            <Button type="primary" ghost className="button-add">
+              Visites
+            </Button>
+          </Link>
+        </Badge>
 
-              {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
-              <Col
-                xs={{ span: 24 }}
-                md={{ span: 24 }}
-                lg={{ span: 8 }}
-                xl={{ span: 8 }}
-              >
-                <h2 className="pageSubTitle">Diagnostique électrique</h2>
+        <Badge count={pendingQuestions.length}>
+          <Link to={`/pro/questions#${props.match.params.id}`}>
+            <Button type="primary" ghost className="button-add">
+              Questions
+            </Button>
+          </Link>
+        </Badge>
+      </div>
 
-                <div className="section">
-                  <div className="section-text">
-                    <p>
-                      <span style={{ fontWeight: 700 }}>{adDetails.dpe}</span>{" "}
-                      kWhEP/m² /an
-                    </p>
-                    <p>
-                      <span style={{ fontWeight: 700 }}>{adDetails.ges}</span>{" "}
-                      kgeqCO2/m² /an
-                    </p>
-                  </div>
-                </div>
-              </Col>
+      {/* PARTIE DESCRIPTION */}
 
-              {/* PARTIE DOCUMENTS */}
-              <Col
-                xs={{ span: 24 }}
-                md={{ span: 24 }}
-                lg={{ span: 8 }}
-                xl={{ span: 8 }}
-              >
-                <h2 className="pageSubTitle">Documents</h2>
+      <h2 className="pageSubTitle">Descriptif</h2>
 
-                <div className="section">
-                  <div className="section-text">{documents}</div>
-                </div>
-              </Col>
-            </Row>
+      <div className="section ad-main-details">
+        <div className="row">
+          <span>
+            <img src="../../../expand.svg" width="20px" />
+            <strong>{adDetails.area}</strong> m<sup>2</sup>
+          </span>
+          <span>
+            <img src="../../../floor-plan.png" width="20px" />
+            <strong>{adDetails.rooms}</strong> pièces
+          </span>
+          <span>
+            <img src="../../../bed.svg" width="20px" />
+            <strong>{adDetails.bedrooms}</strong> chambres
+          </span>
+        </div>
 
-            <h2 className="pageSubTitle">Questions fréquentes</h2>
+        {avantages.length > 0 && (
+          <div className="dark-row">
+            <div className="row">{avantages}</div>
+          </div>
+        )}
 
-            <Collapse
-              style={{ marginBottom: 20 }}
-              bordered={false}
-              defaultActiveKey={["1"]}
-            >
-              
-              {questions}
-              
-            </Collapse>
-          </Content>
-        </Layout>
-      </Layout>
+        <Row gutter={16} className="section-text">
+          <Col
+            xs={{ span: 24 }}
+            md={{ span: 12 }}
+            lg={{ span: 12 }}
+            xl={{ span: 12 }}
+          >
+            <div className="slide-container">
+              <Slide {...properties}>{photos}</Slide>
+            </div>
+          </Col>
+          <Col
+            xs={{ span: 24 }}
+            md={{ span: 12 }}
+            lg={{ span: 12 }}
+            xl={{ span: 12 }}
+          >
+            <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{adDetails.description}</p>
+          </Col>
+        </Row>
+      </div>
+
+      {/* PARTIE PRIX ET HONORAIRES */}
+      <Row gutter={30}>
+        <Col
+          xs={{ span: 24 }}
+          md={{ span: 24 }}
+          lg={{ span: 8 }}
+          xl={{ span: 8 }}
+        >
+          <h2 className="pageSubTitle">Prix & honoraires</h2>
+
+          <div className="section">
+            <div className="section-text">
+              <p>
+                <span style={{ fontWeight: 700 }}>
+                  {priceFormatter.format(
+                    (adDetails.price * adDetails.fees) / 100 +
+                      adDetails.price
+                  )}{" "}
+                </span>{" "}
+                TTC
+              </p>
+              <p>
+                <span style={{ fontWeight: 700 }}>
+                  {priceFormatter.format(adDetails.price)}
+                </span>{" "}
+                hors honoraires
+              </p>
+              <p>
+                <span style={{ fontWeight: 700 }}>{adDetails.fees}</span>%
+                honoraires à la charge de{" "}
+                <span style={{ fontWeight: 700 }}>l'acquéreur</span>
+              </p>
+            </div>
+          </div>
+        </Col>
+
+        {/* PARTIE DIAGNOSTIQUE ELECTRIQUE */}
+        <Col
+          xs={{ span: 24 }}
+          md={{ span: 24 }}
+          lg={{ span: 8 }}
+          xl={{ span: 8 }}
+        >
+          <h2 className="pageSubTitle">Diagnostique électrique</h2>
+
+          <div className="section">
+            <div className="section-text">
+              <p>
+                <span style={{ fontWeight: 700 }}>{adDetails.dpe}</span>{" "}
+                kWhEP/m² /an
+              </p>
+              <p>
+                <span style={{ fontWeight: 700 }}>{adDetails.ges}</span>{" "}
+                kgeqCO2/m² /an
+              </p>
+            </div>
+          </div>
+        </Col>
+
+        {/* PARTIE DOCUMENTS */}
+        <Col
+          xs={{ span: 24 }}
+          md={{ span: 24 }}
+          lg={{ span: 8 }}
+          xl={{ span: 8 }}
+        >
+          <h2 className="pageSubTitle">Documents</h2>
+
+          <div className="section">
+            <div className="section-text">{documents}</div>
+          </div>
+        </Col>
+      </Row>
+
+      <h2 className="pageSubTitle">Questions fréquentes</h2>
+
+      <Collapse
+        style={{ marginBottom: 20 }}
+        bordered={false}
+        defaultActiveKey={["1"]}
+      >
+        {questions}
+      </Collapse>
+      
     </APIFetch>
   )
 }

@@ -3,7 +3,7 @@ import {Redirect, Link} from 'react-router-dom'
 import { Form, Input, Button, Checkbox, Col, Row, Spin } from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
-import Spinner from '../../components/Buyer/GlobalSpin'
+import Spinner from './GlobalSpin'
 import Unauthorized401 from './Unauthorized401'
 
 import {connect} from 'react-redux'
@@ -97,8 +97,8 @@ function Sign(props) {
     }
 
     if (toRedirect) { // if login OK (from form) redirect to home
-        if (props.redirectToAdId !== '') {
-            return <Redirect to= {`/ad/${props.redirectToAdId}`} />
+        if (props.userPageToRedirect !== '/') {
+            return <Redirect to= {props.userPageToRedirect} />
         } else {
             return <Redirect to='/' /> 
         }
@@ -112,12 +112,7 @@ function Sign(props) {
             return <Spinner />
             
         } else if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_success) { 
-            if (props.redirectToAdId !== '') {
-                return <Redirect to= {`/ad/${props.redirectToAdId}`} />
-            
-            } else {
-                return <Redirect to='/' /> 
-            }
+            return <Redirect to={props.userPageToRedirect} />
 
         } else {
 
@@ -300,7 +295,8 @@ function Sign(props) {
 function mapStateToProps(state) {
     return { 
         userLoginStatus : state.userLoginStatus,
-        redirectToAdId: state.redirectToAdId
+        redirectToAdId: state.redirectToAdId,
+        userPageToRedirect: state.userPageToRedirect
     }
 }
 

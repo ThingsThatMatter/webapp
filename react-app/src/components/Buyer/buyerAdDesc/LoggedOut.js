@@ -8,10 +8,10 @@ import {connect} from 'react-redux'
 
 function AdDescSidebarLogout(props) {
 
-    const [redirectToSign, setRedirectToSign] = useState(false);
+    const [redirectToSign, setRedirectToSign] = useState(false)
 
     const handleConnectSidebar = () => {
-        props.setRedirectAdId(props.adId)
+        props.pageToRedirect(`/ad/${props.adId}`)
         setRedirectToSign(true)
     }
 
@@ -39,8 +39,11 @@ function AdDescSidebarLogout(props) {
 
 function mapDispatchToProps(dispatch){
     return {
-        setRedirectAdId : function(id) { 
-            dispatch( {type: 'setRedirectAdId', adId: id} ) 
+        pageToRedirect: function(page) {
+            dispatch({
+                type: 'userRedirectIfLoggedIn',
+                path: page
+            })
         },
         loggedOut: function() {
             dispatch({ type: 'user_loggedOut' })

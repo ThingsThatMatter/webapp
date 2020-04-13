@@ -89,7 +89,7 @@ function OfferForm2(props) {
             setContributionAmount(props.offerFormData.contributionAmount)
             setSalary(props.offerFormData.salary)
         }
-    },[]);
+    }, [])
 
     
 
@@ -108,119 +108,113 @@ function OfferForm2(props) {
     }
 
     if(offerRedir === true) {
-        return <Redirect to="/newoffer/step3"/> // Triggered by button handleClick
+        return <Redirect push to="/offer/new/step3"/> // Triggered by button handleClick
     }
     if(backOfferRedir === true) {
-        return <Redirect to="/newoffer/step1"/> // Triggered by button-back handleClick
+        return <Redirect push to="/offer/new/step1"/> // Triggered by button-back handleClick
     }
 
     return (
   
-        <Layout className="user-layout">
-            <UserNavHeader/> 
-            <Layout className='user-layout main-content'>
-                <Content>
-                   
-                    <Row className="newoffer-stepbar">
-                        <h1 className="newoffer-stepbar-title"> Nouvelle offre - Offre et Profil économique </h1>
-                        <div> {stepDots(props.newOfferStep)} </div>
-                    </Row>
+        <div>                  
+            <Row className="newoffer-stepbar">
+                <h1 className="newoffer-stepbar-title"> Nouvelle offre - Offre et Profil économique </h1>
+                <div> {stepDots(props.newOfferStep)} </div>
+            </Row>
 
-                   <Row className="newoffer-form-body" gutter={16}>
-                        <Col xs={24} md={12}>
+            <Row className="newoffer-form-body" gutter={16}>
+                <Col xs={24} md={12}>
 
-                            <form>
+                    <form>
 
-                                <h2 className="newoffer-subsection-title-first"> Offre </h2>
-                                <div className="newoffer-input-step2">
-                                    <div className="formLabel-offer step-2-label">
-                                        <p className='formLabel-offer step-2'>Mon offre est faite au prix NET vendeur de:</p>
-                                        <p className="new-offer-form-disclaimer">(hors frais d'agence)</p>
-                                    </div>
-                                    <label >
-                                        <InputNumber
-                                            onChange={ e => setOfferAmount(e)}
-                                            value={offerAmount}
-                                        /> €
-                                    </label> 
-                                </div>
-
-
-                                <h2 className="newoffer-subsection-title"> Profil économique </h2>
-                                <div className="newoffer-input-step2 exception-field">
-                                    <p className='formLabel-offer step-2'>Montant emprunté</p>
-                                    <label>
-                                        <InputNumber
-                                            onChange={ e => {setLoanAmount(e)}}
-                                            value={loanAmount}
-                                            disabled={disableLoan}
-                                        /> €
-                                    </label>
-                                </div>
-                                <label>
-                                    <Checkbox
-                                        className="no-loan"
-                                        onChange={ e => {
-                                            setDisableLoan(e.target.checked)
-                                            setLoanAmount(0)
-                                        }}
-                                        checked={disableLoan}
-                                    >
-                                        Je ne sollicite pas d'emprunt bancaire
-                                    </Checkbox>
-                                </label>
-                                
-
-                                <div className="newoffer-input-step2">
-                                    <p className='formLabel-offer step-2'>Apport Personnel</p>
-                                    <label >
-                                        <InputNumber
-                                            onChange={ e => setContributionAmount(e)}
-                                            value={contributionAmount}
-                                        /> €
-                                    </label>
-                                </div>
-
-                                <div className="newoffer-input-step2">
-                                    <p className='formLabel-offer step-2'>Salaire mensuel cumulé des acheteurs (optionnel)</p>
-                                    <label>
-                                        <InputNumber
-                                            onChange={ e => setSalary(e)}
-                                            value={salary}
-                                        /> €
-                                    </label>
-                                </div>
-                                
-                            </form>
-                            {offerFormError}
-                            <div className="form-buttons">
-                                <Button
-                                    type="primary"
-                                    className="button-back"
-                                    onClick={() => {
-                                        setOfferBackRedir(true)
-                                        props.modifyStep(1)
-                                    }}
-                                >
-                                    Précédent
-                                </Button> 
-                                <Button
-                                    onClick={()=> handleClick()}
-                                    type="primary"
-                                    className="button-validate"
-                                >
-                                    Suivant
-                                </Button>
+                        <h2 className="newoffer-subsection-title-first"> Offre </h2>
+                        <div className="newoffer-input-step2">
+                            <div className="formLabel-offer step-2-label">
+                                <p className='formLabel-offer step-2'>Mon offre est faite au prix NET vendeur de:</p>
+                                <p className="new-offer-form-disclaimer">(hors frais d'agence)</p>
                             </div>
+                            <label >
+                                <InputNumber
+                                    onChange={ e => setOfferAmount(e)}
+                                    value={offerAmount}
+                                /> €
+                            </label> 
+                        </div>
 
-                        </Col>
-                        <Col className="newoffer-ad-card"xs={0} md={12}>
-                            {ad}
-                        </Col>
-                   </Row >
-                </Content>  
-            </Layout>
-        </Layout>
+
+                        <h2 className="newoffer-subsection-title"> Profil économique </h2>
+                        <div className="newoffer-input-step2 exception-field">
+                            <p className='formLabel-offer step-2'>Montant emprunté</p>
+                            <label>
+                                <InputNumber
+                                    onChange={ e => {setLoanAmount(e)}}
+                                    value={loanAmount}
+                                    disabled={disableLoan}
+                                /> €
+                            </label>
+                        </div>
+                        <label>
+                            <Checkbox
+                                className="no-loan"
+                                onChange={ e => {
+                                    setDisableLoan(e.target.checked)
+                                    setLoanAmount(0)
+                                }}
+                                checked={disableLoan}
+                            >
+                                Je ne sollicite pas d'emprunt bancaire
+                            </Checkbox>
+                        </label>
+                        
+
+                        <div className="newoffer-input-step2">
+                            <p className='formLabel-offer step-2'>Apport Personnel</p>
+                            <label >
+                                <InputNumber
+                                    onChange={ e => setContributionAmount(e)}
+                                    value={contributionAmount}
+                                /> €
+                            </label>
+                        </div>
+
+                        <div className="newoffer-input-step2">
+                            <p className='formLabel-offer step-2'>Salaire mensuel cumulé des acheteurs (optionnel)</p>
+                            <label>
+                                <InputNumber
+                                    onChange={ e => setSalary(e)}
+                                    value={salary}
+                                /> €
+                            </label>
+                        </div>
+                        
+                    </form>
+                    {offerFormError}
+                    <div className="form-buttons">
+                        <Button
+                            type="primary"
+                            className="button-back"
+                            onClick={() => {
+                                setOfferBackRedir(true)
+                                props.modifyStep(1)
+                            }}
+                        >
+                            Précédent
+                        </Button> 
+                        <Button
+                            onClick={()=> handleClick()}
+                            type="primary"
+                            className="button-validate"
+                        >
+                            Suivant
+                        </Button>
+                    </div>
+
+                </Col>
+                <Col className="newoffer-ad-card"xs={0} md={12}>
+                    {ad}
+                </Col>
+            </Row >
+        </div>
     )
 }
 

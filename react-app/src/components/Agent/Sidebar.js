@@ -1,5 +1,5 @@
-import React, {useState} from 'react'
-import {div, Redirect, useHistory} from 'react-router-dom'
+import React, {useState, useEffect} from 'react'
+import {Redirect, useLocation, Link} from 'react-router-dom'
 import {connect} from 'react-redux'
 import { Layout, Menu } from 'antd'
 import {HomeOutlined, EuroCircleOutlined, CalendarOutlined, MailOutlined} from '@ant-design/icons'
@@ -10,9 +10,10 @@ const {Sider } = Layout
 
 function Sidebar(props) {
 
-  const [redirHome, setRedirHome] = useState(false)
+  const [redirSignIn, setRedirSignIn] = useState(false)
+  const [locationPathName, setLocationPathName] = useState()
   const [cookies, setCookie, removeCookie] = useCookies(['name']) // initializing state cookies
-  const history = useHistory()
+  const location = useLocation()
 
   const logout = async () => {
     removeCookie('aT', { path: '/pro' })
@@ -27,12 +28,17 @@ function Sidebar(props) {
     })
     
     props.loggedOut()
-    setRedirHome(true)
+    setRedirSignIn(true)
   }
 
-  if (redirHome) {
-    return <Redirect to="/pro/signin" />
+  useEffect( () => {
+    setLocationPathName(location.pathname.startsWith('/pro/ad') ? '/pro' : location.pathname)
+  }, [location])
+
+  if (redirSignIn) {
+    return <Redirect to="/pro/auth/signin" />
   }
+  console.log('a')
 
   return (
     
@@ -45,34 +51,38 @@ function Sidebar(props) {
           <div className="logo">
             <img width="100%" src='http://localhost:3001/logo.jpg'/>
           </div>
-          <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
+          <Menu
+            theme = "dark"
+            mode = "inline"
+            selectedKeys={[locationPathName]}
+          >
 
-            <Menu.Item key="1">
-              <div onClick = {() => history.push('/pro')}>
+            <Menu.Item key="/pro">
+              <Link to='/pro'>
                 <HomeOutlined />
                 <span className="nav-text">Biens</span>
-              </div>
+              </Link>
             </Menu.Item>
 
-            <Menu.Item key="2">
-              <div onClick = {() => history.push('/pro/offers')} >
+            <Menu.Item key="/pro/offers">
+              <Link to='/pro/offers' >
                 <EuroCircleOutlined />
                 <span className="nav-text">Offres</span>
-              </div>
+              </Link>
             </Menu.Item>
 
-            <Menu.Item key="3">
-              <div onClick = {() => history.push('/pro/visits')} >
+            <Menu.Item key="/pro/visits">
+              <Link to= '/pro/visits' >
                 <CalendarOutlined />
                 <span className="nav-text">Visites</span>
-              </div>
+              </Link>
             </Menu.Item>
 
-            <Menu.Item key="4">
-              <div onClick = {() => history.push('/pro/questions')} >
+            <Menu.Item key="/pro/questions">
+              <Link to='/pro/questions' >
                 <MailOutlined />
                 <span className="nav-text">Questions</span>
-              </div>
+              </Link>
             </Menu.Item>
 
           </Menu>

@@ -1,5 +1,5 @@
 import React from 'react'
-import {BrowserRouter as Router, Switch, Route, Redirect} from 'react-router-dom'
+import {Switch, Route, Redirect, useLocation} from 'react-router-dom'
 import {connect} from 'react-redux'
 
 import {useCookies} from 'react-cookie'
@@ -20,10 +20,14 @@ import agentSignUp from '../screens/Agent/SignUp'
 import NotFound404 from '../screens/Agent/NotFound404'
 import Sidebar from '../components/Agent/Sidebar'
 
+import { Layout} from 'antd'
+const {Content} = Layout
 
-function AgentRoutes(props) {
+
+function AgentApp(props) {
 
     const [cookies] = useCookies(['name']); // initializing state cookies
+    const location = useLocation()
 
     const checkToken = async () => {
         const authenticateAgent = await fetch('/pro/user-access', {
@@ -51,40 +55,50 @@ function AgentRoutes(props) {
         checkToken()
     }
 
-    const PrivateRoute = ({ component: Component, ...rest }) => (
-        <Route {...rest} render={(state) => (
-            props.agentLoginStatus.login_success 
-            ? <Component {...state} />
-            : <Redirect to='/pro/signin' />
-        )} />
-    )
+
+    const PrivateRoute = ({ component: Component, ...rest }) => {
+        if (props.agentLoginStatus.login_success) {
+            return (
+                <Route {...rest} render={ state => (
+                    <Component {...state} />
+                )}/>
+            )
+        } else {
+            props.pageToRedirect(location) // store page to redirect after login
+            return (
+                <Route {...rest} render={ () => <Redirect to='/pro/auth/signin' /> }/>
+            )
+        }
+    }
     
     return (
-        <div>
-            <h1>TOTO</h1>
 
-        <Router>
-            <Switch>
-                <PrivateRoute component={Home} path='/pro' exact />
-                <PrivateRoute component={Offers} path='/pro/offers' exact/>
-                <PrivateRoute component={Visits} path='/pro/visits' exact/>
-                <PrivateRoute component={Questions} path='/pro/questions' exact/>
-                <PrivateRoute component={AdDesc} path='/pro/ad/:id' exact/>
-                <PrivateRoute component={CreateFormOne} path='/pro/createform/step1' exact/>
-                <PrivateRoute component={CreateFormTwo} path='/pro/createform/step2' exact/>
-                <PrivateRoute component={CreateFormThree} path='/pro/createform/step3' exact/>
-                <PrivateRoute component={CreateFormFour} path='/pro/createform/step4' exact/>
-                <PrivateRoute component={CreateFormFive} path='/pro/createform/step5' exact/>
-                <PrivateRoute component={CreateFormSix} path='/pro/createform/step6' exact/>
-
-                <Route component={agentSignIn} path='/pro/signin' exact/>
-                <Route component={agentSignUp} path='/pro/signup' exact/>
-                <Route component = {NotFound404} path='/pro' />
-            </Switch>
-        </Router>
-
-        </div>
-          
+        <Switch>
+            <Route component={agentSignIn} path='/pro/auth/signin' exact/>
+            <Route component={agentSignUp} path='/pro/auth/signup' exact/>
+        
+            <Layout>
+                <Sidebar/>
+                <Layout className='main-content'>
+                    <Content style={{ margin: '24px 16px 0' }}>
+                        <Switch>
+                            <PrivateRoute component={Home} path='/pro' exact />
+                            <PrivateRoute component={Offers} path='/pro/offers' exact/>
+                            <PrivateRoute component={Visits} path='/pro/visits' exact/>
+                            <PrivateRoute component={Questions} path='/pro/questions' exact/>
+                            <PrivateRoute component={AdDesc} path='/pro/ad/:id' exact/>
+                            <PrivateRoute component={CreateFormOne} path='/pro/ad/new/step1' exact/>
+                            <PrivateRoute component={CreateFormTwo} path='/pro/ad/new/step2' exact/>
+                            <PrivateRoute component={CreateFormThree} path='/pro/ad/new/step3' exact/>
+                            <PrivateRoute component={CreateFormFour} path='/pro/ad/new/step4' exact/>
+                            <PrivateRoute component={CreateFormFive} path='/pro/ad/new/step5' exact/>
+                            <PrivateRoute component={CreateFormSix} path='/pro/ad/new/step6' exact/>                
+                            <PrivateRoute component = {NotFound404} path='/pro' />
+                        </Switch>
+                    </Content>
+                </Layout>
+            </Layout>
+        </Switch>
     )
 }
 
@@ -110,6 +124,12 @@ function mapDispatchToProps(dispatch){
                 type: 'agent_saveInfo',
                 agentInfo
             })
+        },
+        pageToRedirect: function(page) {
+            dispatch({
+                type: 'agentRedirectIfLoggedIn',
+                path: page
+            })
         }
     }
 }
@@ -117,4 +137,4 @@ function mapDispatchToProps(dispatch){
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-)(AgentRoutes)
+)(AgentApp)

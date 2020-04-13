@@ -5,7 +5,7 @@ import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
 
 import {RightOutlined, LeftOutlined, DownOutlined} from '@ant-design/icons'
-import {Layout, Menu, Dropdown, Modal, Button, Popconfirm, message, Spin} from 'antd'
+import {Menu, Dropdown, Modal, Button, Popconfirm, message, Spin} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import 'moment/locale/fr'
@@ -14,12 +14,10 @@ import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Buyer/APIFetch'
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
 import Unauthorized401 from './Unauthorized401'
 
 import 'antd/dist/antd.css'
 
-const {Content} = Layout
 
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginLeft: '4px', marginTop: '4px' }} spin/>
 
@@ -279,129 +277,122 @@ function Visits() {
           setDataLoaded(true)
       }}
     >
-      <Layout className="user-layout">
-          <UserNavHeader current="Biens consultés"/>
-              <Layout className='user-layout main-content'>
-              <Content>
-              <h1 className='pageTitle'>Mon calendrier</h1>
+        <h1 className='pageTitle'>Mon calendrier</h1>
 
-              <div className="calendar-header">
-                  <div className="calendar-headerNavLeft">
-                  <LeftOutlined
-                      className="calendar-headerNavLeft-chevronIcon"
-                      onClick={ () => {
-                      const calendarApi = calendar.current.getApi()
-                      calendarApi.prev()
-                      setTitle(calendar.current.calendar.view.title)
-                      }}
-                  />
+        <div className="calendar-header">
+            <div className="calendar-headerNavLeft">
+            <LeftOutlined
+                className="calendar-headerNavLeft-chevronIcon"
+                onClick={ () => {
+                const calendarApi = calendar.current.getApi()
+                calendarApi.prev()
+                setTitle(calendar.current.calendar.view.title)
+                }}
+            />
 
-                  <div className="calendar-headerNavLeft-dateTitle">
-                      {title}
-                  </div>
+            <div className="calendar-headerNavLeft-dateTitle">
+                {title}
+            </div>
 
-                  <RightOutlined
-                      className="calendar-headerNavLeft-chevronIcon"
-                      onClick={ () => {
-                      const calendarApi = calendar.current.getApi()
-                      calendarApi.next()
-                      setTitle(calendar.current.calendar.view.title)
-                      }}
-                  />
-                  </div>
+            <RightOutlined
+                className="calendar-headerNavLeft-chevronIcon"
+                onClick={ () => {
+                const calendarApi = calendar.current.getApi()
+                calendarApi.next()
+                setTitle(calendar.current.calendar.view.title)
+                }}
+            />
+            </div>
 
-                  <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
-                      <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
-                          {view} <DownOutlined />
-                      </a>
-                  </Dropdown>
-              </div>
+            <Dropdown className="calendar-headerNavRight" overlay={menu} trigger={['click']}>
+                <a className="ant-dropdown-link" onClick={e => e.preventDefault()}>
+                    {view} <DownOutlined />
+                </a>
+            </Dropdown>
+        </div>
 
-              <FullCalendar
-                  /* Global Settings */
-                  ref={calendar}
-                  plugins={[ dayGridPlugin, timeGrid, interaction ]}
-                  defaultView="timeGridWeek"
-                  locale= 'fr'
-                  header={{
-                  left: '',
-                  center: '',
-                  right: ''
-                  }}
-                  contentHeight= "auto"
+        <FullCalendar
+            /* Global Settings */
+            ref={calendar}
+            plugins={[ dayGridPlugin, timeGrid, interaction ]}
+            defaultView="timeGridWeek"
+            locale= 'fr'
+            header={{
+            left: '',
+            center: '',
+            right: ''
+            }}
+            contentHeight= "auto"
 
-                  /* Events */
-                  events={myEvents}
+            /* Events */
+            events={myEvents}
 
-                  /* Time Settings */
-                  timeZone='UTC'
-                  firstDay= {1}
-                  hiddenDays={[0]}
-                  allDaySlot={false}
-                  minTime={'08:00'}
-                  maxTime={'20:00'}
-                  defaultTimedEventDuration={'00:30'}
+            /* Time Settings */
+            timeZone='UTC'
+            firstDay= {1}
+            hiddenDays={[0]}
+            allDaySlot={false}
+            minTime={'08:00'}
+            maxTime={'20:00'}
+            defaultTimedEventDuration={'00:30'}
 
-                  /* Column headers */
-                  columnHeaderHtml={ (date) => {
-                      if (view==='Semaine') {
-                          return (
-                          `<div class="calendar-week-column-header" >
-                              <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
-                              <div class="calendar-week-column-header-number">${date.getDate()}</div>
-                          </div>`
-                          )
-                      }
-                      else if (view==='Mois') {
-                          return (
-                              `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                          )
-                      }
-                      else if (view==='Jour') {
-                          return (
-                              `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
-                          )
-                      }
-                  }}
-                  
-                  /*Manage clicks on elements*/
-                  selectable= {true}
-                  navLinks= {true}
-                  navLinkDayClick="timeGridDay"
-                  eventClick= { (info) => {
-                    setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
-                    setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
-                    setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
-                    setAppointmentModalEventProperty(info.event.title)
-                    setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
-                    setAppointmentModalEventId(info.event.id)
-                    setAppointmentModalVisible(true)
-                  }}    
-              />
+            /* Column headers */
+            columnHeaderHtml={ (date) => {
+                if (view==='Semaine') {
+                    return (
+                    `<div class="calendar-week-column-header" >
+                        <div class="calendar-week-column-header-text">${daysTranslate(date.getDay())}</div>
+                        <div class="calendar-week-column-header-number">${date.getDate()}</div>
+                    </div>`
+                    )
+                }
+                else if (view==='Mois') {
+                    return (
+                        `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                    )
+                }
+                else if (view==='Jour') {
+                    return (
+                        `<div class="calendar-default-column-header">${daysTranslate(date.getDay())}</div>`
+                    )
+                }
+            }}
+            
+            /*Manage clicks on elements*/
+            selectable= {true}
+            navLinks= {true}
+            navLinkDayClick="timeGridDay"
+            eventClick= { (info) => {
+              setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
+              setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
+              setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
+              setAppointmentModalEventProperty(info.event.title)
+              setAppointmentModalEventPropertyId(info.event.extendedProps.adId)
+              setAppointmentModalEventId(info.event.id)
+              setAppointmentModalVisible(true)
+            }}    
+        />
 
-              <Modal
-                  title={appointmentModalEventProperty}
-                  visible={appointmentModalVisible}
-                  footer= {modalFooter}
-                  destroyOnClose= {true}
-                  width= "50%"
-                  closable={true}
-                  mask={true}
-                  maskClosable={true}
-                  onCancel={handleCancel}
-              >
-                  <div className='input-modal'>
-                      <p className="input-modal-label">Date de la visite : {appointmentModalEventDate}</p>
-                  </div>
+        <Modal
+            title={appointmentModalEventProperty}
+            visible={appointmentModalVisible}
+            footer= {modalFooter}
+            destroyOnClose= {true}
+            width= "50%"
+            closable={true}
+            mask={true}
+            maskClosable={true}
+            onCancel={handleCancel}
+        >
+            <div className='input-modal'>
+                <p className="input-modal-label">Date de la visite : {appointmentModalEventDate}</p>
+            </div>
 
-                  <div className='input-modal'>
-                      <p className="input-modal-label">Horaires de la visite : de {appointmentModalEventHour1} à {appointmentModalEventHour2}</p>
-                  </div>
+            <div className='input-modal'>
+                <p className="input-modal-label">Horaires de la visite : de {appointmentModalEventHour1} à {appointmentModalEventHour2}</p>
+            </div>
 
-              </Modal>
-            </Content>  
-          </Layout>
-      </Layout>
+        </Modal>
     </APIFetch>
   )
 }

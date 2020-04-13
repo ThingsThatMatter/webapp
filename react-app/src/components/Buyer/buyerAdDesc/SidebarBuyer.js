@@ -132,8 +132,8 @@ function SidebarBuyer(props) {
         dbFetch()
     }, [refreshDb])
 
-    if (redirectNewOffer) { // if login OK (from form) redirect to home
-        return <Redirect to='/newoffer/step1' /> 
+    if (redirectNewOffer) {
+        return <Redirect push to='/offer/new/step1' /> 
     }
 
     return (

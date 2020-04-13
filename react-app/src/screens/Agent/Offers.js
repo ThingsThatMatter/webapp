@@ -1,17 +1,14 @@
 import React, {useState, useEffect} from 'react'
-import { Layout, Row, Button, Col, Modal, message } from 'antd'
+import { Row, Button, Col, Modal, message } from 'antd'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import Sidebar from '../../components/Agent/Sidebar'
 import Unauthorized401 from './Unauthorized401'
 import InternalError500 from './InternalError500'
-import GlobalSpin from '../../components/Agent/GlobalSpin'
+import GlobalSpin from './GlobalSpin'
 
 import {CheckCircleOutlined, WarningOutlined} from '@ant-design/icons'
-
-const { Content } = Layout
 
 function Offers() {
 
@@ -293,50 +290,45 @@ function Offers() {
 
     return (
   
-        <Layout>
-            <Sidebar/>
-            <Layout className='main-content'>
-                <Content>
-                <h1 className='pageTitle'>Les offres</h1>
+        <div>
+        <h1 className='pageTitle'>Les offres</h1>
 
-                    {sortedOffers}
-                    
-                    <Modal
-                        title="Offre d'achat"
-                        visible={offerModalVisible}
-                        footer= {modalFooter}
-                        destroyOnClose= {true}
-                        width= "50%"
-                        closable={true}
-                        mask={true}
-                        maskClosable={true}
-                        onCancel={hideModal}
-                    >
-                        <div className="offer-modal">
-                            <Row gutter={16}>
-                                <Col xs={12}>
-                                    <p><span>Acheteur #1 : </span>{offerModalProperties.firstName1} {offerModalProperties.lastName1}</p>
-                                    <p><span>Acheteur #2 : </span>{offerModalProperties.firstName2} {offerModalProperties.lastName2}</p>
-                                    <p><span>Montant de l'offre : </span>{priceFormatter.format(offerModalProperties.amount)}</p>
-                                    <p><span>Emprunt : </span>{priceFormatter.format(offerModalProperties.loanAmount)}</p>
-                                    <p><span>Apport : </span>{priceFormatter.format(offerModalProperties.contributionAmount)}</p>
-                                    <p><span>Salaire mensuel : </span>{priceFormatter.format(offerModalProperties.monthlyPay)} /mois</p>
-                                </Col>
-                                <Col xs={12}>
-                                    <p><span>Notaire acheteur : </span>{offerModalProperties.notaryName} à {offerModalProperties.notaryAddress}</p>
-                                    <p><span>Email notaire : </span>{offerModalProperties.notaryEmail}</p>
+            {sortedOffers}
+            
+            <Modal
+                title="Offre d'achat"
+                visible={offerModalVisible}
+                footer= {modalFooter}
+                destroyOnClose= {true}
+                width= "50%"
+                closable={true}
+                mask={true}
+                maskClosable={true}
+                onCancel={hideModal}
+            >
+                <div className="offer-modal">
+                    <Row gutter={16}>
+                        <Col xs={12}>
+                            <p><span>Acheteur #1 : </span>{offerModalProperties.firstName1} {offerModalProperties.lastName1}</p>
+                            <p><span>Acheteur #2 : </span>{offerModalProperties.firstName2} {offerModalProperties.lastName2}</p>
+                            <p><span>Montant de l'offre : </span>{priceFormatter.format(offerModalProperties.amount)}</p>
+                            <p><span>Emprunt : </span>{priceFormatter.format(offerModalProperties.loanAmount)}</p>
+                            <p><span>Apport : </span>{priceFormatter.format(offerModalProperties.contributionAmount)}</p>
+                            <p><span>Salaire mensuel : </span>{priceFormatter.format(offerModalProperties.monthlyPay)} /mois</p>
+                        </Col>
+                        <Col xs={12}>
+                            <p><span>Notaire acheteur : </span>{offerModalProperties.notaryName} à {offerModalProperties.notaryAddress}</p>
+                            <p><span>Email notaire : </span>{offerModalProperties.notaryEmail}</p>
 
-                                    <p><span>Validité de l'offre : </span>{offerModalProperties.validityPeriod} jours</p>
-                                    <p>Fait à {offerModalProperties.location}, le {new Date(offerModalProperties.creationDate).toLocaleDateString('fr-FR')}</p>
+                            <p><span>Validité de l'offre : </span>{offerModalProperties.validityPeriod} jours</p>
+                            <p>Fait à {offerModalProperties.location}, le {new Date(offerModalProperties.creationDate).toLocaleDateString('fr-FR')}</p>
 
-                                    <p><span>Message de l'acheteur : </span>{offerModalProperties.message}</p>
-                                </Col>
-                            </Row>
-                        </div>
-                    </Modal>
-                </Content>         
-            </Layout>
-        </Layout>
+                            <p><span>Message de l'acheteur : </span>{offerModalProperties.message}</p>
+                        </Col>
+                    </Row>
+                </div>
+            </Modal>
+        </div>
     )
   }
 

@@ -7,6 +7,9 @@ import {LoadingOutlined} from '@ant-design/icons'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
+import Spinner from './GlobalSpin'
+import Unauthorized401 from './Unauthorized401'
+
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginTop: '8px' }} spin/>
 
 
@@ -59,99 +62,114 @@ function SignUp(props) {
         return <Redirect to='/pro' /> 
     }
 
-    return (
-        <div className="pro-sign-layout">
-            <div className="nav-header-logo" style={{margin:"30px 0"}}><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
-            <Row>
-                <Col
-                xs={{ span: 24 }}
-                md={{ span: 8 }}
-                lg={{ span: 8 }}
-                xl={{ span: 8 }}
-                >
-                <div className="pro-sign-box">
-                    <div className="pro-sign-box-title">
-                        Création d'un compte agent
-                    </div>
-                    <Form layout="vertical" >
+    if (props.agentLoginStatus.login_failed && !props.agentLoginStatus.logout) {
+        return <Unauthorized401 />
+        
+    } else {
+        if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_request) {
+            return <Spinner />
 
-                        <Form.Item
-                            label="Nom"
-                            required={true}
-                        >
-                            <Input
-                                value={lastname}
-                                onChange={e => setLastName(e.target.value)}
-                                className="sign-input-field"
-                                placeholder="Saisissez votre nom"
-                            />
-                        </Form.Item>
+        } else if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_success) {  //if landing on signin and has a valid token
+            return <Redirect to={props.agentPageToRedirect} />
+        }
+        else {
 
-                        <Form.Item
-                            label="Prénom"
-                            required={true}
+            return (
+                <div className="pro-sign-layout">
+                    <div className="nav-header-logo" style={{margin:"30px 0"}}><Link to="/"><img src="http://localhost:3001/logo-ttm-white.png"/></Link></div>
+                    <Row>
+                        <Col
+                        xs={{ span: 24 }}
+                        md={{ span: 8 }}
+                        lg={{ span: 8 }}
+                        xl={{ span: 8 }}
                         >
-                            <Input
-                                value={firstname}
-                                onChange={e => setFirstName(e.target.value)}
-                                className="sign-input-field"
-                                placeholder="Saisissez votre prénom"
-                            />
-                        </Form.Item>
-
-                        <Form.Item
-                            label="Email"
-                            required={true}
-                        >
-                            <Input
-                                value={email}
-                                onChange={e => setEmail(e.target.value)}
-                                className="sign-input-field"
-                                placeholder="Saisissez votre adresse email"
-                            />
-                        </Form.Item>
-                        
-                        <Form.Item
-                            label="Mot de passe (temporaire)"
-                            required= {true}
-                        >
-                            <Input.Password
-                                value={password}
-                                onChange={e => setPassword(e.target.value)}
-                                className="sign-input-field"
-                                placeholder="Saisissez votre mot de passe"
-                                onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
-                            />
-                        </Form.Item>
-                        <p className="sign-error-text">{msgErrorSignup}</p>
-                        <Form.Item >
-                            <div className='local-loader-block'>
-                                <Button
-                                    type="primary"
-                                    onClick={handleSubmitSignup}
-                                >
-                                    Inscription
-                                </Button>
-                                {signupLoad &&
-                                    <Spin
-                                        size="large"
-                                        indicator={logo}
-                                    />
-                                }
+                        <div className="pro-sign-box">
+                            <div className="pro-sign-box-title">
+                                Création d'un compte agent
                             </div>
-                        </Form.Item>
-                    </Form>
-                </div>
+                            <Form layout="vertical" >
 
-                </Col>
-            </Row>
-        </div>
-    )
+                                <Form.Item
+                                    label="Nom"
+                                    required={true}
+                                >
+                                    <Input
+                                        value={lastname}
+                                        onChange={e => setLastName(e.target.value)}
+                                        className="sign-input-field"
+                                        placeholder="Saisissez votre nom"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="Prénom"
+                                    required={true}
+                                >
+                                    <Input
+                                        value={firstname}
+                                        onChange={e => setFirstName(e.target.value)}
+                                        className="sign-input-field"
+                                        placeholder="Saisissez votre prénom"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label="Email"
+                                    required={true}
+                                >
+                                    <Input
+                                        value={email}
+                                        onChange={e => setEmail(e.target.value)}
+                                        className="sign-input-field"
+                                        placeholder="Saisissez votre adresse email"
+                                    />
+                                </Form.Item>
+                                
+                                <Form.Item
+                                    label="Mot de passe (temporaire)"
+                                    required= {true}
+                                >
+                                    <Input.Password
+                                        value={password}
+                                        onChange={e => setPassword(e.target.value)}
+                                        className="sign-input-field"
+                                        placeholder="Saisissez votre mot de passe"
+                                        onKeyPress={(e) => e.key === 'Enter' ?  handleSubmitSignup() : ""}
+                                    />
+                                </Form.Item>
+                                <p className="sign-error-text">{msgErrorSignup}</p>
+                                <Form.Item >
+                                    <div className='local-loader-block'>
+                                        <Button
+                                            type="primary"
+                                            onClick={handleSubmitSignup}
+                                        >
+                                            Inscription
+                                        </Button>
+                                        {signupLoad &&
+                                            <Spin
+                                                size="large"
+                                                indicator={logo}
+                                            />
+                                        }
+                                    </div>
+                                </Form.Item>
+                            </Form>
+                        </div>
+
+                        </Col>
+                    </Row>
+                </div>
+            )
+        }
+    }
 }
 
 function mapStateToProps(state) {
     return { 
-        agentLoginInfo : state.agentLoginInfo
+        agentLoginStatus : state.agentLoginStatus,
+        agentPageToRedirect: state.agentPageToRedirect
     }
 }
 
@@ -167,7 +185,7 @@ function mapDispatchToProps(dispatch){
             })
         }
     }
-  }
+}
   
 export default connect(
     mapStateToProps,
