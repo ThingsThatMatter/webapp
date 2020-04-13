@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react'
-import { Steps, Button, Radio, InputNumber} from 'antd'
+import {Button, Radio, InputNumber} from 'antd'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
-const { Step } = Steps
+import StepDots from '../../components/StepDots'
 
 
 function CreateFormFour(props) {
@@ -12,15 +12,13 @@ function CreateFormFour(props) {
     const [price, setPrice] = useState(0)
     const [fees, setFees] = useState(0)
 
-    const [currentPage, setCurrentPage] = useState(0)
-    const [redir, setRedir] = useState(false)
-    const [backRedir, setBackRedir] = useState(false)
-    const [skipRedir, setSkipRedir] = useState(false)
+    const [redirToStep5, setRedirToStep5] = useState(false)
+    const [redirToStep3, setRedirToStep3] = useState(false)
+    const [redirToStep6, setRedirToStep6] = useState(false)
     const [formError, setFormError] = useState("")
 
-
+/* ---------------------------------------------------PREFILL FORM---------------------------------------------- */
     useEffect(() => {
-        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
 
         if(props.formData.price) {     // Display inputed info if user goes back from next form pages
             setFeesPayer(props.formData.feesPayer)
@@ -29,17 +27,19 @@ function CreateFormFour(props) {
         }
     }, [])
 
-     
+    if (!props.formData.type) {
+        return <Redirect to ='/pro/ad/new/step2' />
+    }
+
+/*-------------------------------------------------- NAVIGATION ---------------------------------------------------*/
     const handleClick = () => {
 
         if(feesPayer !== "" && price !== 0 && fees !== 0) {
-            props.nextStep()
             props.saveFormData(feesPayer, price, fees)
             if(props.edit === true) {
-                props.nextStep()
-                setSkipRedir(true)
+                setRedirToStep6(true)
             } else {
-                setRedir(true)
+                setRedirToStep5(true)
             }       
 
         } else {
@@ -47,29 +47,31 @@ function CreateFormFour(props) {
         }    
     }
 
-    if(redir === true) {
+/*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
+
+    if(redirToStep5 === true) {
         return <Redirect push to="/pro/ad/new/step5"/> // When button "suivant" is clicked
     }
-    if(skipRedir === true) {
-
+    if(redirToStep6 === true) {
         return <Redirect push to="/pro/ad/new/step6"/> // If in edit mode, skip to step 6 (recap)
     }
 
-    if(backRedir === true) {
+    if(redirToStep3 === true) {
         return <Redirect push to="/pro/ad/new/step3"/> // When butti-on "retour" is clicked
     }
 
     return (
 
         <div>
-            <Steps progressDot current={currentPage}>
-                <Step title="Localisation" />
-                <Step title="Description" />
-                <Step title="Documents" />
-                <Step title="Prix/honoraires" />
-                <Step title="Créneaux" />
-                <Step title="Récap" />
-            </Steps>
+            <StepDots
+                title = 'Prix & Honoraires'
+                totalSteps = {6}
+                currentStep = {4}
+                filledDotsBackgroundColor = '#355c7d'
+                filledDotsBorderColor = 'f8b195'
+                emptyBackgroundColor = '#FFF'
+                emptyDotsBorderColor = '#355c7d'
+            />
 
             <form>
                 
@@ -132,8 +134,7 @@ function CreateFormFour(props) {
 
                 <Button type="primary" className="button-back"
                     onClick={() => {
-                        setBackRedir(true)
-                        props.previousStep()
+                        setRedirToStep3(true)
                     }}
                 >
                     Précédent
@@ -151,7 +152,6 @@ function CreateFormFour(props) {
 
 function mapStateToProps(state) {
     return { 
-        step : state.step,
         formData: state.formData,
         edit: state.edit
     }
@@ -159,12 +159,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        nextStep : function() { 
-            dispatch( {type: 'agent_newOfferNextStep'} ) 
-        },
-        previousStep : function() {
-            dispatch( {type: 'agent_newOfferPrevStep'} )
-        },
         saveFormData : function(feesPayer, price, fees) { 
             dispatch({
                 type: 'agent_newOfferSaveFormData4',

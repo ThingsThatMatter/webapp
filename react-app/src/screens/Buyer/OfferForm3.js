@@ -1,15 +1,14 @@
 import React, {useState, useEffect} from 'react'
 import {Redirect} from 'react-router-dom'
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
 import Unauthorized401 from './Unauthorized401'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-import { Layout, Row, Col, Input, InputNumber, Button, Checkbox, Modal, message, Spin} from 'antd'
+import {Row, Col, Input, InputNumber, Button, Checkbox, Modal, message, Spin} from 'antd'
 import {EditOutlined, LoadingOutlined} from '@ant-design/icons'
+import StepDots from '../../components/StepDots'
 
-const {Content} = Layout
 const {TextArea} = Input
 
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginLeft: '4px', marginTop: '4px' }} spin/>
@@ -27,9 +26,9 @@ function OfferForm3(props) {
     
     const [cookies, setCookie] = useCookies(['name']) // initializing state cookies
     const [offerFormError, setOfferFormError] = useState('')
-    const [offerRedirHome, setOfferRedirHome] = useState(false)
-    const [offerRedirStep1, setOfferRedirStep1] = useState(false)
-    const [offerBackRedir, setOfferBackRedir] = useState(false)
+    const [redirToHome, setRedirToHome] = useState(false)
+    const [redirToStep1, setRedirToStep1] = useState(false)
+    const [redirToStep2, setRedirToStep2] = useState(false)
     const [redirectTo401, setRedirectTo401] = useState(false)
 
     const [modalVisible, setModalVisible] = useState(false)
@@ -43,7 +42,26 @@ function OfferForm3(props) {
         }
     }
 
-    /* ----------------------------------------------------AD CARD--------------------------------------- */
+/* --------------------------------------------------PREFILL FORM-------------------------------------------- */
+    useEffect(() => {
+
+        if(props.offerFormData.validityPeriod) {     // Display inputed info if user goes back from next form pages
+            setNotaryName(props.offerFormData.notaryName)
+            setNotaryEmail(props.offerFormData.notaryEmail)
+            setNotaryAddress(props.offerFormData.notaryAddress)
+            setDisableNotary(props.offerFormData.disableNotary)
+            setValidityPeriod(props.offerFormData.validityPeriod)
+            setOfferLocation(props.offerFormData.offerLocation)
+            setComments(props.offerFormData.comments)
+        }
+    }, [])
+
+
+/* ----------------------------------------------------AD CARD---------------------------------------------- */
+
+    if (!props.offerFormData.offerAmount) { // If previous step is not completed
+        return <Redirect to ='/offer/new/step2' />
+    }
 
     /* Price formatting */
     const priceFormatter = new Intl.NumberFormat('fr', {
@@ -80,41 +98,14 @@ function OfferForm3(props) {
                 <p className="annonce-address-sub">{props.newOfferAd.postcode} {props.newOfferAd.city}</p>
             </div>
             <div className="annonce-infos-buyer">
-                <span className="annonce-area"><img src="../expand.svg" width="20px"/> {props.newOfferAd.area} <span>&nbsp;m2</span></span>
-                <span className="annonce-room"><img src="../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;pièces</span></span>
-                <span className="annonce-bedroom"><img src="../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;chambres</span></span>
+                <span className="annonce-area"><img src="../../../expand.svg" width="20px"/> {props.newOfferAd.area} <span>&nbsp;m2</span></span>
+                <span className="annonce-room"><img src="../../../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;pièces</span></span>
+                <span className="annonce-bedroom"><img src="../../../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;chambres</span></span>
             </div>
             <div className="annonce-status-buyer">
                 {visitMessage}
             </div>
         </div>
-
-/* ------------------------------------------------------DOTS-------------------------------------------- */
-
-    const stepDots = step => {
-        let spans = []
-        for (let i=0 ; i<step ; i++) {
-            spans.push(<span key={i} className="newoffer-step-dots filled-dots"> </span>)
-        }
-        for (let i=0 ; i<3-step ; i++) {
-            spans.push(<span key={step+i} className="newoffer-step-dots empty-dots"> </span>)
-        }
-        return spans
-    }
-
-/* --------------------------------------------------PREFILL FORM-------------------------------------------- */
-    useEffect(() => {
-
-        if(props.offerFormData.validityPeriod) {     // Display inputed info if user goes back from next form pages
-            setNotaryName(props.offerFormData.notaryName)
-            setNotaryEmail(props.offerFormData.notaryEmail)
-            setNotaryAddress(props.offerFormData.notaryAddress)
-            setDisableNotary(props.offerFormData.disableNotary)
-            setValidityPeriod(props.offerFormData.validityPeriod)
-            setOfferLocation(props.offerFormData.offerLocation)
-            setComments(props.offerFormData.comments)
-        }
-    }, [])
 
 
 /* -----------------------------------------------FORM VALIDATION------------------------------------------ */
@@ -127,19 +118,6 @@ function OfferForm3(props) {
         } else {
             setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         }
-    }
-
-    if(offerRedirHome === true) {
-        props.modifyStep(1)
-        return <Redirect push to="/"/> // Triggered by button handleClick
-    }
-    if(offerRedirStep1 === true) {
-        props.modifyStep(1)
-        return <Redirect push to="/offer/new/step1"/> // Triggered by button handleClick
-    }
-    if(offerBackRedir === true) {
-        props.modifyStep(2)
-        return <Redirect push to="/offer/new/step2"/> // Triggered by button-back handleClick
     }
 
 /* ------------------------------------------OFFER CREATION IN DB------------------------------------------ */
@@ -193,9 +171,8 @@ function OfferForm3(props) {
             renewAccessToken(body.accessToken)
             setPostOfferLoad(false)
             message.success('Votre offre a bien été transmise !', 4)
-            setOfferRedirHome(true)
+            setRedirToHome(true)
             props.offerClear()
-            props.modifyStep(1)
             props.setOfferAd({})
         }
     }
@@ -231,6 +208,16 @@ function OfferForm3(props) {
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 
+    if(redirToHome === true) {
+        return <Redirect push to="/"/> // Triggered by button handleClick
+    }
+    if(redirToStep1 === true) {
+        return <Redirect push to="/offer/new/step1"/> // Triggered by button handleClick
+    }
+    if(redirToStep2 === true) {
+        return <Redirect push to="/offer/new/step2"/> // Triggered by button-back handleClick
+    }
+
     if (redirectTo401) {
         return <Unauthorized401 />
     }
@@ -240,8 +227,15 @@ function OfferForm3(props) {
         <div>
                 
             <Row className="newoffer-stepbar">
-                <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations complémentaires </h1>
-                <div> {stepDots(props.newOfferStep)} </div>
+                <StepDots
+                    title = 'Nouvelle offre - Informations complémentaires'
+                    totalSteps = {3}
+                    currentStep = {3}
+                    filledDotsBackgroundColor = '#355c7d'
+                    filledDotsBorderColor = '#355c7d'
+                    emptyBackgroundColor = '#FFF'
+                    emptyDotsBorderColor = '#355c7d'
+                />
             </Row>
 
             <Row className="newoffer-form-body" gutter={16}>
@@ -302,8 +296,7 @@ function OfferForm3(props) {
                                 type="primary"
                                 className="button-back"
                                 onClick={() => {
-                                    setOfferBackRedir(true)
-                                    props.modifyStep(2)
+                                    setRedirToStep2(true)
                                 }}
                             >
                                 Précédent
@@ -342,7 +335,7 @@ function OfferForm3(props) {
                             <p>Informations personnelles</p>
                             <EditOutlined
                                 className="newoffer-modal-section-title-icon"
-                                onClick={() => setOfferRedirStep1(true)}
+                                onClick={() => setRedirToStep1(true)}
                             />
                         </div>
                         <div className="newoffer-modal-section-content">
@@ -368,7 +361,7 @@ function OfferForm3(props) {
                             <p>Offre</p>
                             <EditOutlined
                                 className="newoffer-modal-section-title-icon"
-                                onClick={() => setOfferBackRedir(true)}
+                                onClick={() => setRedirToStep2(true)}
                             />
                         </div>
                         <div className="newoffer-modal-section-content">
@@ -458,7 +451,6 @@ function OfferForm3(props) {
 
 function mapStateToProps(state) {
     return { 
-        newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData,
         newOfferAd: state.newOfferAd,
         userLoginStatus: state.userLoginStatus
@@ -467,9 +459,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        modifyStep : function(step) { 
-            dispatch( {type: 'buyer_modifyStep', futureStep: step} ) 
-        },
         offerSaveFormData : function(validityPeriod, offerLocation, comments, notaryName, notaryEmail, notaryAddress) { 
             dispatch({
                 type: 'offerSaveFormData3',

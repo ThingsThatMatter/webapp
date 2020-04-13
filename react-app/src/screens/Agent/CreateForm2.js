@@ -1,7 +1,9 @@
 import React, {useState, useEffect} from 'react'
 
-import { Steps, Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd'
+import { Button, Input, Radio, InputNumber, Checkbox, Upload, message } from 'antd'
 import { InboxOutlined, DeleteOutlined } from '@ant-design/icons'
+
+import StepDots from '../../components/StepDots'
 
 import Unauthorized401 from './Unauthorized401'
 
@@ -9,7 +11,6 @@ import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-const { Step } = Steps
 const { TextArea } = Input
 const { Dragger } = Upload
 
@@ -27,9 +28,8 @@ function CreateFormTwo(props) {
     const [conso, setConso] = useState(0)   
     const [photosDB, setPhotosDB] = useState([])   
 
-    const [currentPage, setCurrentPage] = useState(0)
-    const [redir, setRedir] = useState(false)
-    const [backRedir, setBackRedir] = useState(false)
+    const [redirToStep3, setRedirToStep3] = useState(false)
+    const [redirToStep1, setRedirToStep1] = useState(false)
     const [redirectTo401, setRedirectTo401] = useState(false)
 
     const [formError, setFormError] = useState('')
@@ -45,8 +45,6 @@ function CreateFormTwo(props) {
 
 /*----------------------------------------------- PREPARE DATA AND COMPONENT ---------------------------------------------------*/
     useEffect(() => {
-
-        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
 
         if(props.formData.rooms) {     // Display inputed info if user goes back from next form pages
             setType(props.formData.type)
@@ -66,6 +64,10 @@ function CreateFormTwo(props) {
             setPhotosDB(props.formData.photos)
         }
     }, [])
+
+    if (!props.formData.street) {
+        return <Redirect to ='/pro/ad/new/step1' />
+    }
 
     const options = [
         {label : "Ascenseur", value : "ascenseur"},
@@ -188,9 +190,8 @@ function CreateFormTwo(props) {
     const goToNextStep = () => {
 
         if(type !== "" && area !== 0 && rooms !== 0 && desc !== "" && (photoList.length > 0 || photosDB.length > 0) ) {
-            props.nextStep()
             props.saveFormData(type, area, rooms, bedrooms, avantages, desc, photoList, video, emission, conso, photosDB)
-            setRedir(true)
+            setRedirToStep3(true)
 
         } else {
             setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
@@ -198,10 +199,10 @@ function CreateFormTwo(props) {
     }
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
-    if(redir === true) {
+    if(redirToStep3 === true) {
         return <Redirect push to="/pro/ad/new/step3"/> // Triggered by button-add goToNextStep
     }
-    if(backRedir === true) {
+    if(redirToStep1 === true) {
         return <Redirect push to="/pro/ad/new/step1"/> // Triggered by button-back goToNextStep
     }
 
@@ -212,14 +213,15 @@ function CreateFormTwo(props) {
     return (
 
         <div>
-            <Steps progressDot current={currentPage}>
-                <Step title="Localisation" />
-                <Step title="Description" />
-                <Step title="Documents" />
-                <Step title="Prix/honoraires" />
-                <Step title="Créneaux" />
-                <Step title="Récap" />
-            </Steps>
+            <StepDots
+                title = 'Description'
+                totalSteps = {6}
+                currentStep = {2}
+                filledDotsBackgroundColor = '#355c7d'
+                filledDotsBorderColor = 'f8b195'
+                emptyBackgroundColor = '#FFF'
+                emptyDotsBorderColor = '#355c7d'
+            />
 
             <form>
     
@@ -361,8 +363,7 @@ function CreateFormTwo(props) {
             <div className="form-buttons">
                 <Button type="primary" className="button-back"
                     onClick={() => {
-                        setBackRedir(true)
-                        props.previousStep()
+                        setRedirToStep1(true)
                     }}
                 >
                     Précédent
@@ -376,7 +377,6 @@ function CreateFormTwo(props) {
 
 function mapStateToProps(state) {
     return { 
-        step : state.step,
         formData: state.formData,
         edit: state.edit
     }
@@ -384,12 +384,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-      nextStep : function() { 
-          dispatch( {type: 'agent_newOfferNextStep'} ) 
-      },
-      previousStep : function() {
-          dispatch( {type: 'agent_newOfferPrevStep'} )
-      },
       saveFormData : function(type, area, rooms, bedrooms, avantages, desc, photoList, video, emission, conso, photosDB) { 
         dispatch( {
             type: 'agent_newOfferSaveFormData2',

@@ -22,7 +22,7 @@ let login_duration = 60 //30 minutes
 /* --------------------------------------------------TOKEN GENERATION & CHECK--------------------------------------------------------- */
 const generateUserAccessToken = (userInfo, minutes) => { 
   return jwt.sign(userInfo, process.env.JWT_USER_ACCESS_KEY, {
-    expiresIn: 30 * minutes // 60sec * 30min
+    expiresIn: 60 * minutes // 60sec * 30min
   })
 }
 
@@ -247,7 +247,7 @@ router.get('/ad/:ad_id/public', async function(req, res, next) {
 
       let adFromDb = await adModel.findById(req.params.ad_id)
       if(!adFromDb) { 
-        resp = notFound()
+        resp = internalError()
 
       } else {
         adFromDb.timeSlots = []

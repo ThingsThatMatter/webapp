@@ -1,8 +1,6 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom'
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
-import { Layout, Button} from 'antd'
-const {Content} = Layout
+import { Button} from 'antd'
 
 
 function NotFound404Ad() {
@@ -24,7 +22,7 @@ function NotFound404Ad() {
             >
                 Retour à la page d'accueil
             </Button>
-    </div>
+        </div>
     )
 }
 

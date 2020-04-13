@@ -11,7 +11,7 @@ import {useCookies} from 'react-cookie'
 function Unauthorized401(props) {
 
     const [redirHome, setRedirHome] = useState(false)
-    const [cookies, setCookie, removeCookie] = useCookies(['name']); // initilizing state cookies
+    const [cookies, setCookie, removeCookie] = useCookies(['name']) // initializing state cookies
 
     const logo = <LoadingOutlined style={{ fontSize: 50, color: "#355c7d" }} spin/>
 

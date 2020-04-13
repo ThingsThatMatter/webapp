@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from 'react'
-import { Steps, Button, message, Row, Col } from 'antd'
+import {Button, message, Row, Col } from 'antd'
 
 import Unauthorized401 from './Unauthorized401'
+import StepDots from '../../components/StepDots'
 
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
@@ -9,7 +10,6 @@ import {useCookies} from 'react-cookie'
 
 import { Slide } from 'react-slideshow-image'
 
-const { Step } = Steps
 
 const properties = {  // carroussel properties
     duration: 5000,
@@ -24,12 +24,14 @@ function CreateFormSix(props) {
  
     const [avantages, setAvantages] = useState([])
 
-    const [currentPage, setCurrentPage] = useState(0)
-    const [redir, setRedir] = useState(false)
-    const [backRedir, setBackRedir] = useState(false)
+    const [redirToHome, setRedirToHome] = useState(false)
+    const [redirToStep5, setRedirToStep5] = useState(false)
+    const [redirToStep4, setRedirToStep4] = useState(false)
     const [redirectTo401, setRedirectTo401] = useState(false)
 
     const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
+
+
 
     /* Renew Access Token */
     const renewAccessToken = (token) => {
@@ -40,7 +42,6 @@ function CreateFormSix(props) {
 
     useEffect(() => {
 
-        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
         let tempTable = []
 
         // Creates avantages list
@@ -72,6 +73,10 @@ function CreateFormSix(props) {
         setAvantages(tempTable)
 
     }, [])
+
+    if (!props.formData.price) {
+        return <Redirect to ='/pro/ad/new/step4' />
+    }
 
     /* Price formatting */
     const priceFormatter = new Intl.NumberFormat('fr', {
@@ -147,9 +152,8 @@ function CreateFormSix(props) {
             const body = await postAd.json()
             renewAccessToken(body.accessToken)
             message.success({ content: "L'annonce a bien été créée !", key: messageKey, duration: 2 })
-            setRedir(true)
+            setRedirToHome(true)
             props.clear()
-            props.clearSteps()
         }
     }
     
@@ -204,8 +208,7 @@ function CreateFormSix(props) {
             const body = await editAd.json()
             renewAccessToken(body.accessToken)
             message.success({ content: "L'annonce a bien été modifiée !", key: messageKey, duration: 3 })
-            setRedir(true)
-            props.clearSteps()
+            setRedirToHome(true)
             props.clearEdit()
             props.clear()
         }
@@ -218,11 +221,14 @@ function CreateFormSix(props) {
 
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
-    if(redir === true) {
+    if(redirToHome === true) {
         return <Redirect push to="/pro"/> // Triggered by button-add handleClick
     }
-    if(backRedir === true) {
+    if(redirToStep5 === true) {
         return <Redirect push to="/pro/ad/new/step5"/> // Triggered by button-back handleClick
+    }
+    if(redirToStep4 === true) {
+        return <Redirect push to="/pro/ad/new/step4"/> // Triggered by button-back handleClick
     }
 
     if (redirectTo401) {
@@ -232,14 +238,15 @@ function CreateFormSix(props) {
     return (
 
         <div>
-            <Steps progressDot current={currentPage}> 
-                <Step title="Localisation" />
-                <Step title="Description" />
-                <Step title="Documents" />
-                <Step title="Prix/honoraires" />
-                <Step title="Créneaux" />
-                <Step title="Récap" />
-            </Steps>
+            <StepDots
+                title = 'Récapitulatif'
+                totalSteps = {6}
+                currentStep = {6}
+                filledDotsBackgroundColor = '#355c7d'
+                filledDotsBorderColor = 'f8b195'
+                emptyBackgroundColor = '#FFF'
+                emptyDotsBorderColor = '#355c7d'
+            />
 
             <div style={{margin : "3em 0"}}>
                 <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
@@ -355,8 +362,7 @@ function CreateFormSix(props) {
             <div className="form-buttons">
                 <Button type="primary" className="button-back"
                     onClick={() => {
-                        setBackRedir(true)
-                        props.previousStep()
+                        props.edit ? setRedirToStep4(true) : setRedirToStep5(true)
                     }}
                 >
                     Précédent
@@ -378,12 +384,6 @@ function mapDispatchToProps(dispatch) {
         clear : function() { 
             dispatch( {type: 'agent_newOfferClear'} ) 
         },
-        clearSteps : function() { 
-            dispatch( {type: 'agent_newOfferClearSteps'} ) 
-        },
-        previousStep : function() {
-            dispatch( {type: 'agent_newOfferPrevStep'} )
-        },
         clearEdit : function() {
             dispatch({type: 'agent_newOfferClearEdit'})
         }
@@ -393,7 +393,6 @@ function mapDispatchToProps(dispatch) {
 
 function mapStateToProps(state) {
     return {
-        step : state.step,
         formData: state.formData,
         agentLoginInfo: state.agentLoginInfo,
         edit: state.edit

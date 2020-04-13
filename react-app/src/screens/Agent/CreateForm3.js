@@ -1,22 +1,21 @@
 import React, {useState, useEffect} from 'react'
 
-import { Steps, Button, Upload, message } from 'antd'
+import { Button, Upload, message } from 'antd'
 import { InboxOutlined, DeleteOutlined } from '@ant-design/icons'
 
 import Unauthorized401 from './Unauthorized401'
+import StepDots from '../../components/StepDots'
 
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-const { Step } = Steps
 const { Dragger } = Upload
 
 function CreateFormThree(props) {
 
-    const [currentPage, setCurrentPage] = useState(0)
-    const [redir, setRedir] = useState(false)
-    const [backRedir, setBackRedir] = useState(false)
+    const [redirToStep4, setRedirToStep4] = useState(false)
+    const [redirToStep2, setRedirToStep2] = useState(false)
     const [redirectTo401, setRedirectTo401] = useState(false)
 
     const[fileList, setFileList] = useState([])
@@ -33,7 +32,6 @@ function CreateFormThree(props) {
 
 /*----------------------------------------------- PREPARE DATA AND COMPONENT ---------------------------------------------------*/
     useEffect(() => {
-        setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
         if(props.formData.files) {
             setFileList(props.formData.files)
         }
@@ -43,6 +41,10 @@ function CreateFormThree(props) {
             setFilesDB(props.formData.files)
         }
     }, [])
+
+    if (!props.formData.type) {
+        return <Redirect to ='/pro/ad/new/step2' />
+    }
 
     // DOCUMENTS UPLOADED IN TEMP
     const filesUploaded = fileList.map(e => 
@@ -152,15 +154,14 @@ function CreateFormThree(props) {
 /*-------------------------------------------------- NAVIGATION ---------------------------------------------------*/
     const goToNextStep = () => {
         props.saveFormData(fileList, filesDB)
-        props.nextStep()
-        setRedir(true)    
+        setRedirToStep4(true)    
     }
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
-    if(redir === true) {
+    if(redirToStep4 === true) {
         return <Redirect push to="/pro/ad/new/step4"/> // Triggered by button-validate handleClick
     }
-    if(backRedir === true) {
+    if(redirToStep2 === true) {
         return <Redirect push to="/pro/ad/new/step2"/> // Triggered by button-back handleClick
     }
 
@@ -171,14 +172,15 @@ function CreateFormThree(props) {
     return (
 
         <div>
-            <Steps progressDot current={currentPage}>
-                <Step title="Localisation" />
-                <Step title="Description" />
-                <Step title="Documents" />
-                <Step title="Prix/honoraires" />
-                <Step title="Créneaux" />
-                <Step title="Récap" />
-            </Steps>
+            <StepDots
+                title = 'Documents'
+                totalSteps = {6}
+                currentStep = {3}
+                filledDotsBackgroundColor = '#355c7d'
+                filledDotsBorderColor = 'f8b195'
+                emptyBackgroundColor = '#FFF'
+                emptyDotsBorderColor = '#355c7d'
+            />
 
             <form>
                 <p className='formLabel'>Documents (Optionnel)</p>
@@ -213,8 +215,7 @@ function CreateFormThree(props) {
             <div className="form-buttons">
                 <Button type="primary" className="button-back"
                     onClick={() => {
-                        setBackRedir(true)
-                        props.previousStep()
+                        setRedirToStep2(true)
                     }}
                 >
                     Précédent
@@ -228,7 +229,6 @@ function CreateFormThree(props) {
 
 function mapStateToProps(state) {
     return {
-        step : state.step,
         formData : state.formData,
         edit : state.edit
     }
@@ -236,12 +236,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        nextStep : function() { 
-            dispatch( {type: 'agent_newOfferNextStep'} ) 
-        },
-        previousStep : function() {
-            dispatch( {type: 'agent_newOfferPrevStep'} )
-        },
         saveFormData : function(fileList, filesDB) { 
             dispatch({
                 type: 'agent_newOfferSaveFormData3',

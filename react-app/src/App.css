@@ -50,23 +50,23 @@ h1:after {
 }
 
 h2 {
-  font-size: 2.3em;
+  font-size: 1.8em;
   margin: 0.83em 0;
 }
 h3 {
-  font-size: 1.9em;
+  font-size: 1.4em;
   margin: 1em 0;
 }
 h4 {
-  font-size: 1.4em;
+  font-size: 1.0em;
   margin: 1.33em 0;
 }
 h5 {
-  font-size: 0.95em;
+  font-size: 0.75em;
   margin: 1.67em 0;
 }
 h6 {
-  font-size: 0.7em;
+  font-size: 0.5em;
   margin: 2.33em 0;
 }
 .ant-layout-content {
@@ -271,6 +271,7 @@ input.short, .ant-input.short, .ant-upload.short {
   justify-content: flex-start;
   align-items: center;
   margin-top: 2em;
+  margin-bottom: 2em;
 }
 
 .form-buttons button {
@@ -1177,20 +1178,20 @@ h1.userTitle  {
   margin: 0 auto !important;
 }
 
-.newoffer-stepbar {
-  width: 100vw;
+.stepbar {
+  width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding:0
 }
 
-.newoffer-stepbar-title {
+.stepbar-title {
   text-align: center;
-  margin-bottom:1em;
+  margin-top:0;
 }
 
-.newoffer-step-dots {
+.step-dots {
   height: 20px;
   width: 20px;
   border-radius: 50%;
@@ -1198,14 +1199,6 @@ h1.userTitle  {
   margin: 0.8em;
 }
 
-.filled-dots {
-  background-color: #355c7d;
-}
-
-.empty-dots {
-  background-color: #FFF;
-  border: 2px solid #355c7d;
-}
 
 .formLabel-offer {
   color: #355c7d;

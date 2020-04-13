@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Redirect} from 'react-router-dom'
-import {Button} from 'antd'
+import { Button} from 'antd'
 
 
 function NotFound404() {
@@ -26,4 +26,4 @@ function NotFound404() {
     )
 }
 
-export default NotFound404
+  export default NotFound404

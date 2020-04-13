@@ -97,7 +97,7 @@ function SidebarBuyer(props) {
                         }
 
                         if (ad.offers.length === 0) {
-
+                            props.setOfferAd(ad)
                             setComponent(
                                 <div className="sidebar-offer">
                                     <p>
@@ -107,7 +107,7 @@ function SidebarBuyer(props) {
                                         <p style={{marginTop: '1em'}}>Documents</p>
                                         {documents}
                                     </div>
-                                    <Button type="primary" onClick={ () => {setRedirectNewOffer(true); props.setOfferAd(ad)}}>Déposer une offre</Button>
+                                    <Button type="primary" onClick={ () => {setRedirectNewOffer(true)}}>Déposer une offre</Button>
                                 </div>
                             )
                         } else {

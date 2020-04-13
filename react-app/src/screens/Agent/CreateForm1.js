@@ -1,10 +1,10 @@
 import React, {useState, useEffect} from 'react'
-import { Steps, Button, Input, Radio, InputNumber } from 'antd'
+import { Button, Input, Radio, InputNumber } from 'antd'
 import {Redirect} from 'react-router-dom'
 import {connect} from 'react-redux'
 
+import StepDots from '../../components/StepDots'
 
-const { Step } = Steps
 
 function CreateFormOne(props) {
 
@@ -13,13 +13,13 @@ function CreateFormOne(props) {
     const [pref, setPref] = useState("")
     const [city, setCity] = useState("")
 
-
-    const [redir, setRedir] = useState(false) 
+    const [redirToStep2, setRedirToStep2] = useState(false) 
 
     const [formError, setFormError] = useState("")
 
     const adID =  (Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)).slice(0, 15)
 
+/* ---------------------------------------------------PREFILL FORM---------------------------------------------- */
     useEffect(() => {
         if (props.formData.address) {
             setStreet(props.formData.address)
@@ -29,33 +29,36 @@ function CreateFormOne(props) {
         }
     }, [])
 
+
+/* -----------------------------------------------FORM VALIDATION------------------------------------------ */
     const handleClick = () => {
 
         if(street !== "" && postal !== "" && pref !== "") {
             props.saveFormData(street, postal, city, pref, adID)
-            props.nextStep()
-            setRedir(true)
+            setRedirToStep2(true)
 
         } else {
             setFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
         } 
     }
 
-    if(redir === true) {
+/* -----------------------------------------------RENDER------------------------------------------ */
+    if(redirToStep2 === true) {
         return <Redirect push to="/pro/ad/new/step2"/> // Triggered by button handleClick
     }
 
     return (
 
         <div>
-            <Steps progressDot current={0}>
-                <Step title="Localisation" />
-                <Step title="Description" />
-                <Step title="Documents" />
-                <Step title="Prix/honoraires" />
-                <Step title="Créneaux" />
-                <Step title="Récap" />
-            </Steps>
+            <StepDots
+                title = 'Localisation'
+                totalSteps = {6}
+                currentStep = {1}
+                filledDotsBackgroundColor = '#355c7d'
+                filledDotsBorderColor = 'f8b195'
+                emptyBackgroundColor = '#FFF'
+                emptyDotsBorderColor = '#355c7d'
+            />
 
             <form>
                 
@@ -97,16 +100,12 @@ function CreateFormOne(props) {
 function mapStateToProps(state) {
     return { 
         formData: state.formData,
-        step : state.step,
         edit: state.edit
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return {
-        nextStep : function() { 
-            dispatch( {type: 'agent_newOfferNextStep'} ) 
-        },
         saveFormData : function(street, postal, city, pref, adID) { 
             dispatch( {type: 'agent_newOfferSaveFormData', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
         }

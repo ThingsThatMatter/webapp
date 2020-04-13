@@ -5,6 +5,8 @@ import {connect} from 'react-redux'
 
 import {Row, Col, Input, InputNumber, Button, Checkbox} from 'antd'
 
+import StepDots from '../../components/StepDots'
+
 function OfferForm1(props) {
 
     const [firstName1, setFirstName1] = useState(props.userInfo.firstname)
@@ -18,9 +20,29 @@ function OfferForm1(props) {
     const [showSecondBuyer, setShowSecondBuyer] = useState(false)
 
     const [offerFormError, setOfferFormError] = useState('')
-    const [offerRedir, setOfferRedir] = useState(false)
+    const [redirToStep2, setRedirToStep2] = useState(false)
 
-    /* ----------------------------------------------------AD CARD--------------------------------------- */
+
+/* ---------------------------------------------------PREFILL FORM---------------------------------------------- */
+    useEffect(() => {
+
+        if(Object.keys(props.offerFormData).length !== 0) {     // Display inputed info if user goes back from next form pages
+            setFirstName1(props.offerFormData.firstName1)
+            setLastName1(props.offerFormData.lastName1)
+            setShowSecondBuyer(props.offerFormData.showSecondBuyer)
+            setFirstName2(props.offerFormData.firstName2)
+            setLastName2(props.offerFormData.lastName2)
+            setAddress(props.offerFormData.address)
+            setPostal(props.offerFormData.postCode)
+            setCity(props.offerFormData.city)
+        }
+    }, [])
+
+/* ----------------------------------------------------AD CARD-------------------------------------------------- */
+
+    if (!props.newOfferAd.title) { // If coming from an other page than the ad 
+        return <Redirect to ='/' />
+    }
 
     /* Price formatting */
     const priceFormatter = new Intl.NumberFormat('fr', {
@@ -57,66 +79,47 @@ function OfferForm1(props) {
                 <p className="annonce-address-sub">{props.newOfferAd.postcode} {props.newOfferAd.city}</p>
             </div>
             <div className="annonce-infos-buyer">
-                <span className="annonce-area"><img src="../expand.svg" width="20px"/> {props.newOfferAd.area} <span>&nbsp;m2</span></span>
-                <span className="annonce-room"><img src="../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;pièces</span></span>
-                <span className="annonce-bedroom"><img src="../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;chambres</span></span>
+                <span className="annonce-area"><img src="../../../expand.svg" width="20px"/> {props.newOfferAd.area} <span>&nbsp;m2</span></span>
+                <span className="annonce-room"><img src="../../../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;pièces</span></span>
+                <span className="annonce-bedroom"><img src="../../../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;chambres</span></span>
             </div>
             <div className="annonce-status-buyer">
                 {visitMessage}
             </div>
         </div>
 
-/* ------------------------------------------------------DOTS-------------------------------------------- */
-
-    const stepDots = step => {
-        let spans = []
-        for (let i=0 ; i<step ; i++) {
-            spans.push(<span key={i} className="newoffer-step-dots filled-dots"> </span>)
-        }
-        for (let i=0 ; i<3-step ; i++) {
-            spans.push(<span key={step+i} className="newoffer-step-dots empty-dots"> </span>)
-        }
-        return spans
-    }
-
-/* --------------------------------------------------PREFILL FORM-------------------------------------------- */
-useEffect(() => {
-
-    if(Object.keys(props.offerFormData).length !== 0) {     // Display inputed info if user goes back from next form pages
-        setFirstName1(props.offerFormData.firstName1)
-        setLastName1(props.offerFormData.lastName1)
-        setShowSecondBuyer(props.offerFormData.showSecondBuyer)
-        setFirstName2(props.offerFormData.firstName2)
-        setLastName2(props.offerFormData.lastName2)
-        setAddress(props.offerFormData.address)
-        setPostal(props.offerFormData.postCode)
-        setCity(props.offerFormData.city)
-    }
-  },[]);
-
 /* -----------------------------------------------FORM VALIDATION------------------------------------------ */
 
-const handleClick = () => {
-    if(firstName1 !== "" && lastName1 !== "" && address !== "" && postal !== "" && city !== "") {
-        props.offerSaveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city)
-        props.modifyStep(2)
-        setOfferRedir(true)
+    const handleClick = () => {
+        if(firstName1 !== "" && lastName1 !== "" && address !== "" && postal !== "" && city !== "") {
+            props.offerSaveFormData(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city)
+            setRedirToStep2(true)
 
-    } else {
-        setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+        } else {
+            setOfferFormError(<p style={{paddingTop : "2%", color: "#E74A34", fontWeight: 700, marginBottom: "-2%"}}>Merci de bien vouloir remplir tous les champs du formulaire !</p>)
+        }
     }
-}
 
-if(offerRedir === true) {
-    return <Redirect push to="/offer/new/step2"/> // Triggered by button handleClick
-}
+
+/* -----------------------------------------------RENDER------------------------------------------ */
+
+    if (redirToStep2 === true) {
+        return <Redirect push to='/offer/new/step2'/> // Triggered by button handleClick
+    }
 
     return (
   
         <div>               
-            <Row className="newoffer-stepbar">
-                <h1 className="newoffer-stepbar-title"> Nouvelle offre - Informations personnelles </h1>
-                <div> {stepDots(props.newOfferStep)} </div>
+            <Row>
+                <StepDots
+                    title = 'Nouvelle offre - Informations personnelles'
+                    totalSteps = {3}
+                    currentStep = {1}
+                    filledDotsBackgroundColor = '#355c7d'
+                    filledDotsBorderColor = '#355c7d'
+                    emptyBackgroundColor = '#FFF'
+                    emptyDotsBorderColor = '#355c7d'
+                />
             </Row>
 
             <Row className="newoffer-form-body" gutter={16}>
@@ -193,7 +196,6 @@ if(offerRedir === true) {
 
 function mapStateToProps(state) {
     return { 
-        newOfferStep : state.newOfferStep,
         offerFormData: state.offerFormData,
         newOfferAd: state.newOfferAd,
         userLoginStatus: state.userLoginStatus,
@@ -203,9 +205,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        modifyStep : function(step) { 
-            dispatch( {type: 'buyer_modifyStep', futureStep: step} ) 
-        },
         offerSaveFormData : function(firstName1, lastName1, showSecondBuyer, firstName2, lastName2, address, postal, city) {
             dispatch({
                 type: 'offerSaveFormData1',

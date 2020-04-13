@@ -5,7 +5,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
 
-import {Steps, Button, Radio, Menu, Dropdown, Modal, DatePicker, TimePicker, Popconfirm, message} from 'antd'
+import {Button, Radio, Menu, Dropdown, Modal, DatePicker, TimePicker, Popconfirm, message} from 'antd'
 import {RightOutlined, LeftOutlined, DownOutlined} from '@ant-design/icons'
 import locale from 'antd/es/date-picker/locale/fr_FR'
 import moment from 'moment'
@@ -16,12 +16,12 @@ import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Agent/APIFetch'
+import StepDots from '../../components/StepDots'
 
 
 import './Calendar.css'
 import 'antd/dist/antd.css'
 
-const { Step } = Steps
 const { RangePicker } = TimePicker
 
 const ts = require("time-slots-generator")
@@ -39,7 +39,22 @@ function CreateFormFive(props) {
   const [title, setTitle] = useState('')
   const [view, setView] = useState('Semaine')
   const [adColor, setAdColor] = useState(['#052040', '#1abc9c', '#2ecc71', '#f1c40f', '#e67e22', '#e74c3c', '#3498db', '#95a5a6', '#9b59b6', '#bdc3c7', '#16a085', '#2980b9', '#7f8c8d', '#c0392b', '#474787'])
-  const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
+  const [cookies] = useCookies(['name']) // initializing state cookies
+
+  const [redirToStep6, setRedirToStep6] = useState(false)
+  const [redirToStep4, setRedirToStep4] = useState(false)
+
+  //Modal states
+  const [appointmentModalVisible, setAppointmentModalVisible] = useState(false)
+  const [appointmentModalMode, setAppointmentModalMode] = useState(null)
+
+  const [appointmentModalEventDate, setAppointmentModalEventDate] = useState(null)
+  const [appointmentModalEventHour1, setAppointmentModalEventHour1] = useState(null)
+  const [appointmentModalEventHour2, setAppointmentModalEventHour2] = useState(null)
+  const [appointmentModalEventProperty, setAppointmentModalEventProperty] = useState(null)
+  const [appointmentModalEventPrivate, setAppointmentModalEventPrivate] = useState(true)
+  const [appointmentModalEventId, setAppointmentModalEventId] = useState(0)
+
 
   var calendar = useRef(null)
 
@@ -104,6 +119,10 @@ function CreateFormFive(props) {
   }, [dataLoaded])
 
 
+  if (!props.formData.price) {
+    return <Redirect to ='/pro/ad/new/step4' />
+  }
+  
 
   /* View choice : day, week, month */
   const menu = (
@@ -145,15 +164,6 @@ function CreateFormFive(props) {
   )
 
   /*----------------------------------------------- MODAL ---------------------------------------------------*/
-  const [appointmentModalVisible, setAppointmentModalVisible] = useState(false)
-  const [appointmentModalMode, setAppointmentModalMode] = useState(null)
-
-  const [appointmentModalEventDate, setAppointmentModalEventDate] = useState(null)
-  const [appointmentModalEventHour1, setAppointmentModalEventHour1] = useState(null)
-  const [appointmentModalEventHour2, setAppointmentModalEventHour2] = useState(null)
-  const [appointmentModalEventProperty, setAppointmentModalEventProperty] = useState(null)
-  const [appointmentModalEventPrivate, setAppointmentModalEventPrivate] = useState(true)
-  const [appointmentModalEventId, setAppointmentModalEventId] = useState(0)
 
   /* TimeSlot: Convert time to hour and minutes */
   function minToHandM(n) {
@@ -313,26 +323,17 @@ function CreateFormFive(props) {
   const daysTranslate = (state) => daysInFrench[state]
 
 
-  /* ------------------------------------------NAVIGATION---------------------------------------------- */  
-  const [currentPage, setCurrentPage] = useState(0)
-  const [redir, setRedir] = useState(false)
-  const [backRedir, setBackRedir] = useState(false)
-
-  useEffect(() => {
-    setCurrentPage(props.step)     // Gets current page number from redux sotre for steps display
-  },[])
-
-  if(redir === true) {
+  /* ------------------------------------------NAVIGATION---------------------------------------------- */
+  if(redirToStep6 === true) {
       return <Redirect push to="/pro/ad/new/step6"/> // Triggered by button-add handleClick
   }
-  if(backRedir === true) {
+  if(redirToStep4 === true) {
       return <Redirect push to="/pro/ad/new/step4"/> // Triggered by button-back handleClick
   }
 
   const handleClick = () => {
-      props.nextStep()
       props.saveFormData(newEvents, adColor)
-      setRedir(true)
+      setRedirToStep6(true)
   }
   
   /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
@@ -356,14 +357,15 @@ function CreateFormFive(props) {
             setDataLoaded(true)
         }}
       >
-        <Steps progressDot current={currentPage}>
-          <Step title="Localisation" />
-          <Step title="Description" />
-          <Step title="Documents" />
-          <Step title="Prix/honoraires" />
-          <Step title="Créneaux" />
-          <Step title="Récap" />
-        </Steps>
+        <StepDots
+          title = 'Créneaux de visite'
+          totalSteps = {6}
+          currentStep = {5}
+          filledDotsBackgroundColor = '#355c7d'
+          filledDotsBorderColor = 'f8b195'
+          emptyBackgroundColor = '#FFF'
+          emptyDotsBorderColor = '#355c7d'
+        />
 
         <div>
           <div className="calendar-header">
@@ -528,8 +530,7 @@ function CreateFormFive(props) {
             type="primary" 
             className="button-back"
             onClick={() => {
-                setBackRedir(true)
-                props.previousStep()
+                setRedirToStep4(true)
             }}
           >
             Précédent
@@ -539,8 +540,7 @@ function CreateFormFive(props) {
             type="primary" 
             className="button-skip"
             onClick= { () => {
-              setRedir(true)
-              props.nextStep()
+              setRedirToStep6(true)
             }}
           >
             Passer cette étape
@@ -560,7 +560,6 @@ function CreateFormFive(props) {
 
 function mapStateToProps(state) {
   return { 
-      step : state.step,
       formData: state.formData,
       agentLoginInfo: state.agentLoginInfo
   }
@@ -568,18 +567,13 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    nextStep : function() { 
-        dispatch( {type: 'agent_newOfferNextStep'} ) 
-    },
-    previousStep : function() {
-        dispatch( {type: 'agent_newOfferPrevStep'} )
-    },
     saveFormData : function(timeslots, color) { 
-      dispatch( {
+      dispatch({
           type: 'agent_newOfferSaveFormData5',
           timeSlots : timeslots !== null ? timeslots : [],
           color: color
-      } ) } 
+      })
+    } 
   }
 }
   
