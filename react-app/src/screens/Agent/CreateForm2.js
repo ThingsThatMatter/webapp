@@ -248,32 +248,32 @@ function CreateFormTwo(props) {
 
                 <p className='formLabel'>Surface</p>
                 <label >
-                    <InputNumber 
+                    <InputNumber
+                        type='number'
                         min={0} 
                         onChange={(e) => setArea(e)} 
                         value={area} 
-                        placeholder="75 m2"
                     />
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>m2</span>
 
                 <p className='formLabel'>Nombre de pièce(s)</p>
                 <label>
-                    <InputNumber 
+                    <InputNumber
+                        type='number'
                         min={0} 
                         onChange={(e) => setRooms(e)} 
                         value={rooms} 
-                        placeholder="75018"
                     />
                 </label>
                 
                 <p className='formLabel'>Nombre de chambre(s)</p>
                 <label>
                     <InputNumber
+                        type='number'
                         min={0} 
                         onChange={(e) => setBedrooms(e)} 
                         value={bedrooms} 
-                        placeholder="75018"
                     />
                 </label>
 
@@ -337,10 +337,10 @@ function CreateFormTwo(props) {
                 <p className='formLabel'>Emission de gaz à effet de serre (optionnel)</p>
                 <label >
                     <InputNumber
+                        type='number'
                         min={0} 
                         onChange={(e) => setEmission(e)} 
                         value={emission} 
-                        placeholder="23"
                     />
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>kgeq/m2/an</span>
@@ -348,10 +348,10 @@ function CreateFormTwo(props) {
                 <p className='formLabel'>Consommation énergétique (optionnel)</p>
                 <label >
                     <InputNumber
+                        type='number'
                         min={0}
                         onChange={(e) => setConso(e)} 
                         value={conso} 
-                        placeholder="438"
                     />
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>kWhEP/m2/an</span>     

@@ -170,7 +170,7 @@ function OfferForm1(props) {
 
                         <p className='formLabel-offer'>Code postal</p>
                         <label>
-                            <InputNumber onChange={ e => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
+                            <InputNumber onChange={ e => setPostal(e)} value={postal} maxLength="5" placeholder="75018" type='number'/>
                         </label>
 
                         <p className='formLabel-offer'>Ville</p>

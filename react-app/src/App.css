@@ -1181,7 +1181,7 @@ h1.userTitle  {
 }
 
 
-/* NEW OFFER - ALL STEPS */
+/* STEPS */
 
 .newoffer-form-body {
   width: 70%;
@@ -1209,7 +1209,7 @@ h1.userTitle  {
   margin: 0.8em;
 }
 
-
+/* New Offer Form */
 .formLabel-offer {
   color: #355c7d;
   /* font-weight: 500; */
@@ -1230,6 +1230,10 @@ h1.userTitle  {
   font-size:10px
 }
 
+.newoffer-stepbar {
+  padding-bottom: 0em;
+}
+
   /* Step 1 */
 
   .last-name-1-offer {
@@ -1245,11 +1249,6 @@ h1.userTitle  {
   }
 
   /* Step 2*/
-  .newoffer-input-step2 {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.2em;
-  }
 
   .newoffer-subsection-title {
     margin-top: 2em;
@@ -1258,21 +1257,6 @@ h1.userTitle  {
   .newoffer-subsection-title-first {
     margin-top: 1em;
     margin-bottom: 0.5em;
-  }
-
-  .formLabel-offer.step-2 {
-      margin-right: 1em;
-      padding: 0
-  }
-
-  .formLabel-offer.step-2-label {
-    display: flex;
-    flex-direction: column;
-    line-height: 110%;
-  }
-
-  .newoffer-input-step2.exception-field {
-    margin-bottom: 0;
   }
 
   .no-loan {

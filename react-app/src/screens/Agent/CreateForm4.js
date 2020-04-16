@@ -98,31 +98,33 @@ function CreateFormFour(props) {
 
                 <p className='formLabel'>Prix du bien hors honoraires</p>
                 <label >
-                    <InputNumber 
+                    <InputNumber
                         min={0} 
-                        onChange={(e) => setPrice(e)} 
-                        value={price} 
-                        placeholder="700000"
+                        value={price}
+                        step={1000}
+                        formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                        onChange={e => setPrice(e)} 
                     />
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
 
                 <p className='formLabel'>Honoraires TTC en % du prix du bien</p>
                 <label >
-                    <InputNumber 
-                        min={0} 
+                    <InputNumber
+                        min={0}
+                        max={100}
+                        step={0.1}
                         onChange={(e) => setFees(e)} 
                         value={fees} 
-                        placeholder="8"
                     />
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
 
                 <p className='formLabel'>Prix du bien incluant les honoraires</p>
                 <label >
-                    <InputNumber 
+                    <InputNumber
+                        formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
                         value={price*fees/100+price} 
-                        placeholder="75"
                     />
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>

@@ -69,7 +69,14 @@ function CreateFormOne(props) {
 
                 <p className='formLabel'>Code postal</p>
                 <label>
-                    <InputNumber onChange={(e) => setPostal(e)} value={postal} maxLength="5" placeholder="75018"/>
+                    <InputNumber
+                        type='number'
+                        min={0}
+                        value={postal}
+                        maxLength="5"
+                        placeholder="75018"
+                        onChange={(e) => setPostal(e)}
+                    />
                 </label>
 
                 <p className='formLabel'>Ville</p>

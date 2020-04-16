@@ -127,31 +127,31 @@ useEffect(() => {
                     <form>
 
                         <h2 className="newoffer-subsection-title-first"> Offre </h2>
-                        <div className="newoffer-input-step2">
-                            <div className="formLabel-offer step-2-label">
-                                <p className='formLabel-offer step-2'>Mon offre est faite au prix NET vendeur de:</p>
-                                <p className="new-offer-form-disclaimer">(hors frais d'agence)</p>
-                            </div>
-                            <label >
-                                <InputNumber
-                                    onChange={ e => setOfferAmount(e)}
-                                    value={offerAmount}
-                                /> €
-                            </label> 
-                        </div>
 
+                        <p className='formLabel-offer'>Mon offre est faite au prix NET vendeur de :</p>
+                        <label >
+                            <InputNumber
+                                min={0}
+                                step={1000}
+                                formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} 
+                                value={offerAmount}
+                                onChange={ e => setOfferAmount(e)}
+                            /> €
+                        </label>
 
                         <h2 className="newoffer-subsection-title"> Profil économique </h2>
-                        <div className="newoffer-input-step2 exception-field">
-                            <p className='formLabel-offer step-2'>Montant emprunté</p>
-                            <label>
-                                <InputNumber
-                                    onChange={ e => {setLoanAmount(e)}}
-                                    value={loanAmount}
-                                    disabled={disableLoan}
-                                /> €
-                            </label>
-                        </div>
+
+                        <p className='formLabel-offer'>Montant emprunté</p>
+                        <label >
+                            <InputNumber
+                                disabled={disableLoan}
+                                min={0}
+                                step={1000}
+                                formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} 
+                                value={loanAmount}
+                                onChange={ e => {setLoanAmount(e)}}
+                            /> €
+                        </label>
                         <label>
                             <Checkbox
                                 className="no-loan"
@@ -165,26 +165,27 @@ useEffect(() => {
                             </Checkbox>
                         </label>
                         
+                        <p className='formLabel-offer'>Apport Personnel</p>
+                        <label >
+                            <InputNumber
+                                min={0}
+                                step={1000}
+                                formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
+                                value={contributionAmount}
+                                onChange={ e => setContributionAmount(e)}
+                            /> €
+                        </label>
 
-                        <div className="newoffer-input-step2">
-                            <p className='formLabel-offer step-2'>Apport Personnel</p>
-                            <label >
-                                <InputNumber
-                                    onChange={ e => setContributionAmount(e)}
-                                    value={contributionAmount}
-                                /> €
-                            </label>
-                        </div>
-
-                        <div className="newoffer-input-step2">
-                            <p className='formLabel-offer step-2'>Salaire mensuel cumulé des acheteurs (optionnel)</p>
-                            <label>
-                                <InputNumber
-                                    onChange={ e => setSalary(e)}
-                                    value={salary}
-                                /> €
-                            </label>
-                        </div>
+                        <p className='formLabel-offer'>Salaire mensuel cumulé des acheteurs (optionnel)</p>
+                        <label >
+                            <InputNumber
+                                min={0}
+                                step={100}
+                                formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} 
+                                onChange={ e => setSalary(e)}
+                                value={salary}
+                            /> €
+                        </label>
                         
                     </form>
                     {offerFormError}

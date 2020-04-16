@@ -275,7 +275,12 @@ function OfferForm3(props) {
                             <h2 className="newoffer-subsection-title"> Conditions </h2>
                             <p className='formLabel-offer'>Durée de validité de l'offre (jours)</p>
                             <label >
-                                <InputNumber onChange={ e => setValidityPeriod(e)} value={validityPeriod}/>
+                                <InputNumber
+                                    type='number'
+                                    min={0}
+                                    value={validityPeriod}
+                                    onChange={ e => setValidityPeriod(e)}
+                                />
                             </label>
 
                             <p className='formLabel-offer'>Offre faite à</p>
