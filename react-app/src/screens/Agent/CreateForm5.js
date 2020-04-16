@@ -119,7 +119,7 @@ function CreateFormFive(props) {
   }, [dataLoaded])
 
 
-  if (!props.formData.price) {
+  if (!props.newAdFormData.price) {
     return <Redirect to ='/pro/ad/new/step4' />
   }
   
@@ -208,7 +208,7 @@ function CreateFormFive(props) {
     const slotsForCalendar = slots.map( (e,i) => {   //create timeslots for calendar render
       var start = new Date(year, month, day, minToHandM(e).hour, minToHandM(e).minute)
       return {
-        title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2',
+        title: capFirst(props.newAdFormData.type) + ' - ' + props.newAdFormData.address + ' - ' + props.newAdFormData.area + 'm2',
         start: start,
         end: moment(start).add(interval, 'm').toDate(),
         backgroundColor: adColor,
@@ -560,7 +560,7 @@ function CreateFormFive(props) {
 
 function mapStateToProps(state) {
   return { 
-      formData: state.formData,
+      newAdFormData: state.newAdFormData,
       agentLoginInfo: state.agentLoginInfo
   }
 }
@@ -569,7 +569,7 @@ function mapDispatchToProps(dispatch) {
   return {
     saveFormData : function(timeslots, color) { 
       dispatch({
-          type: 'agent_newOfferSaveFormData5',
+          type: 'agent_newAdSaveFormData5',
           timeSlots : timeslots !== null ? timeslots : [],
           color: color
       })

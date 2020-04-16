@@ -45,7 +45,7 @@ function CreateFormSix(props) {
         let tempTable = []
 
         // Creates avantages list
-        if (props.formData.advantages.findIndex(e => e === "ascenseur") !== -1) {
+        if (props.newAdFormData.advantages.findIndex(e => e === "ascenseur") !== -1) {
             tempTable.push(
                 <span>
                 <img src="../../../elevator.png" width="20px" alt="ascenseur" />
@@ -54,7 +54,7 @@ function CreateFormSix(props) {
             )
           }
   
-        if (props.formData.advantages.findIndex(e => e === "balcon") !== -1) {
+        if (props.newAdFormData.advantages.findIndex(e => e === "balcon") !== -1) {
           tempTable.push(
             <span>
               <img src="../../../balcony.png" width="20px" alt="balcon" />
@@ -62,7 +62,7 @@ function CreateFormSix(props) {
             </span>
           )
         }
-        if (props.formData.advantages.findIndex(e => e === "terrasse") !== -1) {
+        if (props.newAdFormData.advantages.findIndex(e => e === "terrasse") !== -1) {
           tempTable.push(
             <span>
               <img src="../../../floor.png" width="20px" alt="terrasse" />
@@ -74,7 +74,7 @@ function CreateFormSix(props) {
 
     }, [])
 
-    if (!props.formData.price) {
+    if (!props.newAdFormData.price) {
         return <Redirect to ='/pro/ad/new/step4' />
     }
 
@@ -87,13 +87,13 @@ function CreateFormSix(props) {
     })
 
     /* Photos, documents and questions */
-    const imagesUpload = props.formData.photos.map( e => 
+    const imagesUpload = props.newAdFormData.photos.map( e => 
         <div className="each-slide" key={e.id}>
-            <div style={{backgroundImage: `url(http://localhost:3000/pro/ad/${props.formData.adID}/file/${e.id}${e.extension}/temp)`}}> </div>
+            <div style={{backgroundImage: `url(http://localhost:3000/pro/ad/${props.newAdFormData.adID}/file/${e.id}${e.extension}/temp)`}}> </div>
         </div>
     )
      
-    const imagesDB = props.formData.photosDB.map( e => 
+    const imagesDB = props.newAdFormData.photosDB.map( e => 
         <div className="each-slide" key = {e.id}>
             <div style={{'backgroundImage': `url(${e.url})`}}> </div>
         </div>
@@ -116,28 +116,28 @@ function CreateFormSix(props) {
                 'Authorization': `Bearer ${cookies.aT}`
             },
             body: JSON.stringify({
-                adID: props.formData.adID,
-                price: props.formData.price,
-                fees: props.formData.fees,
-                feesPayer: props.formData.feesPayer,
-                type: props.formData.type,
-                title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price),
-                description: props.formData.description,
-                typeAddress: props.formData.typeAddress,
-                address: props.formData.address,
-                postcode: props.formData.postcode,
-                city: props.formData.city,
-                photos: props.formData.photos,
-                video: props.formData.video,
-                area: props.formData.area,
-                rooms: props.formData.rooms ,
-                bedrooms: props.formData.bedrooms,
-                advantages: props.formData.advantages,
-                dpe: props.formData.dpe,
-                ges: props.formData.ges,
-                files: props.formData.files,
-                color : props.formData.color,
-                timeSlots: props.formData.timeSlots
+                adID: props.newAdFormData.adID,
+                price: props.newAdFormData.price,
+                fees: props.newAdFormData.fees,
+                feesPayer: props.newAdFormData.feesPayer,
+                type: props.newAdFormData.type,
+                title: capFirst(props.newAdFormData.type) + ' - ' + props.newAdFormData.address + ' - ' + props.newAdFormData.area + 'm2 - ' + priceFormatter.format(props.newAdFormData.price),
+                description: props.newAdFormData.description,
+                typeAddress: props.newAdFormData.typeAddress,
+                address: props.newAdFormData.address,
+                postcode: props.newAdFormData.postcode,
+                city: props.newAdFormData.city,
+                photos: props.newAdFormData.photos,
+                video: props.newAdFormData.video,
+                area: props.newAdFormData.area,
+                rooms: props.newAdFormData.rooms ,
+                bedrooms: props.newAdFormData.bedrooms,
+                advantages: props.newAdFormData.advantages,
+                dpe: props.newAdFormData.dpe,
+                ges: props.newAdFormData.ges,
+                files: props.newAdFormData.files,
+                color : props.newAdFormData.color,
+                timeSlots: props.newAdFormData.timeSlots
             })
         })
 
@@ -162,7 +162,7 @@ function CreateFormSix(props) {
         const messageKey = '456'
         message.loading({ content: 'Edition de l\'annonce en cours...', key: messageKey})
 
-        let editAd = await fetch(`/pro/ad/${props.formData._id}`, {
+        let editAd = await fetch(`/pro/ad/${props.newAdFormData._id}`, {
             method: 'put',
             headers: {
                 'Content-Type': 'application/json',
@@ -170,30 +170,30 @@ function CreateFormSix(props) {
                 'Authorization': `Bearer ${cookies.aT}`
             },
             body: JSON.stringify({
-                adID: props.formData.adID,
-                price: props.formData.price,
-                fees: props.formData.fees,
-                feesPayer: props.formData.feesPayer,
-                type: props.formData.type,
-                title: capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price),
-                description: props.formData.description,
-                typeAddress: props.formData.typeAddress,
-                address: props.formData.address,
-                postcode: props.formData.postcode,
-                city: props.formData.city,
-                photos: props.formData.photos,
-                video: props.formData.video,
-                area: props.formData.area,
-                rooms: props.formData.rooms ,
-                bedrooms: props.formData.bedrooms,
-                advantages: props.formData.advantages,
-                dpe: props.formData.dpe,
-                ges: props.formData.ges,
-                files: props.formData.files,
-                color : props.formData.color,
-                timeSlots: props.formData.timeSlots,
-                photosDB: props.formData.photosDB,
-                filesDB: props.formData.filesDB
+                adID: props.newAdFormData.adID,
+                price: props.newAdFormData.price,
+                fees: props.newAdFormData.fees,
+                feesPayer: props.newAdFormData.feesPayer,
+                type: props.newAdFormData.type,
+                title: capFirst(props.newAdFormData.type) + ' - ' + props.newAdFormData.address + ' - ' + props.newAdFormData.area + 'm2 - ' + priceFormatter.format(props.newAdFormData.price),
+                description: props.newAdFormData.description,
+                typeAddress: props.newAdFormData.typeAddress,
+                address: props.newAdFormData.address,
+                postcode: props.newAdFormData.postcode,
+                city: props.newAdFormData.city,
+                photos: props.newAdFormData.photos,
+                video: props.newAdFormData.video,
+                area: props.newAdFormData.area,
+                rooms: props.newAdFormData.rooms ,
+                bedrooms: props.newAdFormData.bedrooms,
+                advantages: props.newAdFormData.advantages,
+                dpe: props.newAdFormData.dpe,
+                ges: props.newAdFormData.ges,
+                files: props.newAdFormData.files,
+                color : props.newAdFormData.color,
+                timeSlots: props.newAdFormData.timeSlots,
+                photosDB: props.newAdFormData.photosDB,
+                filesDB: props.newAdFormData.filesDB
             })
         })
 
@@ -249,7 +249,7 @@ function CreateFormSix(props) {
             />
 
             <div style={{margin : "3em 0"}}>
-                <h1 className='pageTitle'>{capFirst(props.formData.type) + ' - ' + props.formData.address + ' - ' + props.formData.area + 'm2 - ' + priceFormatter.format(props.formData.price)}</h1>
+                <h1 className='pageTitle'>{capFirst(props.newAdFormData.type) + ' - ' + props.newAdFormData.address + ' - ' + props.newAdFormData.area + 'm2 - ' + priceFormatter.format(props.newAdFormData.price)}</h1>
             </div>
 
             <h2 className="pageSubTitle">Descriptif</h2>
@@ -258,15 +258,15 @@ function CreateFormSix(props) {
                 <div className="row">
                     <span>
                         <img src="../../../expand.svg" width="20px" />
-                        <strong>{props.formData.area}</strong> m<sup>2</sup>
+                        <strong>{props.newAdFormData.area}</strong> m<sup>2</sup>
                     </span>
                     <span>
                         <img src="../../../floor-plan.png" width="20px" />
-                        <strong>{props.formData.rooms}</strong> pièces
+                        <strong>{props.newAdFormData.rooms}</strong> {props.newAdFormData.rooms > 1 ? 'pièces' : 'pièce'}
                     </span>
                     <span>
                         <img src="../../../bed.svg" width="20px" />
-                        <strong>{props.formData.bedrooms}</strong> chambres
+                        <strong>{props.newAdFormData.bedrooms}</strong> {props.newAdFormData.bedrooms > 1 ? 'chambres' : 'chambre'}
                     </span>
                 </div>
                 
@@ -295,7 +295,7 @@ function CreateFormSix(props) {
                         lg={{ span: 12 }}
                         xl={{ span: 12 }}
                     >
-                        <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{props.formData.description}</p>
+                        <p style={{ textAlign: "justify", whiteSpace: "pre-wrap" }}>{props.newAdFormData.description}</p>
                     </Col>
                 </Row>
             </div>
@@ -313,9 +313,9 @@ function CreateFormSix(props) {
 
                     <div className="section">
                         <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>{props.formData.price+props.formData.price*props.formData.fees/100}</span>€ TTC</p>
-                            <p><span style={{fontWeight: 700}}>{props.formData.price}</span>€ hors honoraires</p>
-                            <p><span style={{fontWeight: 700}}>{props.formData.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
+                            <p><span style={{fontWeight: 700}}>{props.newAdFormData.price+props.newAdFormData.price*props.newAdFormData.fees/100}</span>€ TTC</p>
+                            <p><span style={{fontWeight: 700}}>{props.newAdFormData.price}</span>€ hors honoraires</p>
+                            <p><span style={{fontWeight: 700}}>{props.newAdFormData.fees}</span>% honoraires à la charge de <span style={{fontWeight: 700}}>l'acquéreur</span></p>
                         </div>
                     </div>
                 </Col>
@@ -331,8 +331,8 @@ function CreateFormSix(props) {
 
                     <div className="section">
                         <div className="section-text">
-                            <p><span style={{fontWeight: 700}}>{props.formData.dpe}</span> kWhEP/m².an</p>
-                            <p><span style={{fontWeight: 700}}>{props.formData.ges}</span> kgeqCO2/m².an</p>
+                            <p><span style={{fontWeight: 700}}>{props.newAdFormData.dpe}</span> kWhEP/m².an</p>
+                            <p><span style={{fontWeight: 700}}>{props.newAdFormData.ges}</span> kgeqCO2/m².an</p>
                         </div>
                     </div>
                 </Col>
@@ -349,9 +349,9 @@ function CreateFormSix(props) {
 
                     <div className="section">
                         <div className="section-text">
-                            {props.formData.files.map((e, i) => 
+                            {props.newAdFormData.files.map((e, i) => 
                                 <div>
-                                    <a key={i} href={`http://localhost:3000/pro/ad/${props.formData.adID}/file/${e.id}${e.extension}/temp`} target="_blank">{e.name}</a>
+                                    <a key={i} href={`http://localhost:3000/pro/ad/${props.newAdFormData.adID}/file/${e.id}${e.extension}/temp`} target="_blank">{e.name}</a>
                                 </div>
                             )}                       
                         </div>
@@ -362,16 +362,16 @@ function CreateFormSix(props) {
             <div className="form-buttons">
                 <Button type="primary" className="button-back"
                     onClick={() => {
-                        props.edit ? setRedirToStep4(true) : setRedirToStep5(true)
+                        props.adEdit ? setRedirToStep4(true) : setRedirToStep5(true)
                     }}
                 >
                     Précédent
                 </Button>  
 
                 <Button type="primary" className="button-validate" 
-                    onClick={async() => props.edit ? updateAd() : postNewAd()}
+                    onClick={async() => props.adEdit ? updateAd() : postNewAd()}
                 >
-                    {props.edit ? 'Editer l\'annonce' : 'Créer et diffuser l\'annonce'}
+                    {props.adEdit ? 'Editer l\'annonce' : 'Créer et diffuser l\'annonce'}
                 </Button>
 
             </div>   
@@ -379,25 +379,25 @@ function CreateFormSix(props) {
     )
 }
 
+function mapStateToProps(state) {
+    return {
+        newAdFormData: state.newAdFormData,
+        agentLoginInfo: state.agentLoginInfo,
+        adEdit: state.adEdit
+    }
+}
+
 function mapDispatchToProps(dispatch) {
     return {
         clear : function() { 
-            dispatch( {type: 'agent_newOfferClear'} ) 
+            dispatch( {type: 'agent_newAdClear'} ) 
         },
-        clearEdit : function() {
-            dispatch({type: 'agent_newOfferClearEdit'})
+        clearAdEdit : function() {
+            dispatch({type: 'agent_clearAdEdit'})
         }
     }
 }
 
-
-function mapStateToProps(state) {
-    return {
-        formData: state.formData,
-        agentLoginInfo: state.agentLoginInfo,
-        edit: state.edit
-    }
-}
 
 export default connect(
     mapStateToProps, 

@@ -17,9 +17,9 @@ const {TextArea} = Input
 
 function Questions() {
 
-    const [questionsList, setQuestionslist] = useState([])
+    const [adsList, setAdsList] = useState([])
 
-    const [displayQuestions, setDisplayQuestions] = useState(true)
+    const [loadQuestions, setLoadQuestions] = useState(true)
 
     const [declineModalVisible, setDeclineModalVisible] = useState(false)
     const [answerModalVisible, setAnswerModalVisible] = useState(false)
@@ -34,9 +34,11 @@ function Questions() {
     const [declineQuestionError, setDeclineQuestionError] = useState('')
 
     const [response, setResponse] = useState()
-    const [otherReason, setOtherReason] = useState()
+    const [answers, setAnswers] = useState([])
+    const [otherReasonChecked, setOtherReasonChecked] = useState(false)
+    const [otherReason, setOtherReason] = useState('')
 
-    const [cookies, setCookie] = useCookies(['name']) // initilizing state cookies
+    const [cookies, setCookie] = useCookies(['name']) // initializing state cookies
 
     const [declineReason, setDeclineReason] = useState('')
 
@@ -75,15 +77,34 @@ function Questions() {
             } else if (getAds.status === 200) {
                 const response = await getAds.json()
                 renewAccessToken(response.accessToken) // Renew token if invalid soon
-                setQuestionslist(response.data.ads.filter( e => e.questions.length > 0))
+                setAdsList(response.data.ads.filter( e => e.questions.length > 0))
                 setDbLoading(false)
             }
         }   
         dbFetch()
-    }, [displayQuestions])
+    }, [loadQuestions])
+
+
+    // FUNCTIONS TO HANDLE DIFFERENT TEXT AREAS WITHIN THE SAME STATE
+    const setQuestionAnswer = (text, id) => {
+        const indexToFind = answers.findIndex(e => e.id === id)
+        if (indexToFind === -1) {
+            setAnswers([...answers, {id, text}])
+        } else {
+            let arrayCopy = [...answers]
+            arrayCopy[indexToFind] = {id, text}
+            setAnswers(arrayCopy)
+        }
+    }
+
+    const getQuestionAnswer = id => {
+        const answer = answers.filter(e => e.id == id)
+        return answer.length > 0 ? answer[0].text : ''
+    }
+    
 
     // PREPARE COMPONENTS
-    let sortedQuestions = questionsList.map((e,i) => 
+    let sortedQuestions = adsList.map((e,i) => 
         <Row key={i} id={e._id}>
             <Col
                 xs={{ span: 24 }}
@@ -109,11 +130,14 @@ function Questions() {
                                 </div>
                             }
                         >
-                            <p className="response-text">{f.response}</p>
+                            <p className="response-text">
+                                <span className= "response-text-intro">Votre réponse : </span>
+                                {f.response}
+                            </p>
 
                             <TextArea className="response-content" style={{ display: ((f.status === 'answered' || f.status=== 'declined') ? 'none' : 'block') }} 
-                                value={response}
-                                onChange={ e => setResponse(e.target.value)}
+                                value={getQuestionAnswer(f._id)}
+                                onChange={ e => { setResponse(e.target.value) ; setQuestionAnswer(e.target.value, f._id) }}
                             />
 
                             <div className="modal-footer-buttons" style={{ display: ((f.status === 'answered' || f.status=== 'declined') ? 'none' : 'flex') }} >
@@ -145,12 +169,12 @@ function Questions() {
                     )}
                 </Collapse>
             </Col>
-        </Row>    
+        </Row>
     )
 
 /*----------------------------------------------- ACTIONS ---------------------------------------------------*/
 
-    let hideModal = () => {
+    const hideModal = () => {
         setDeclineModalVisible(false)
         setAnswerModalVisible(false)
     }
@@ -166,7 +190,7 @@ function Questions() {
                 Accept: 'application/json',
                 'Authorization': `Bearer ${cookies.aT}`
             },
-            body: JSON.stringify({response:response})
+            body: JSON.stringify({response: getQuestionAnswer(questionModalProperties._id)})
         })
 
         if (answerQuestion.status === 500) {
@@ -185,7 +209,7 @@ function Questions() {
             setQuestionModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setAnswerModalVisible(false)
             setAnswserQuestionLoading(false)
-            setDisplayQuestions(!displayQuestions)
+            setLoadQuestions(!loadQuestions)
             setAnswerQuestionError('')
         }
     }
@@ -201,7 +225,7 @@ function Questions() {
                 Accept: 'application/json',
                 'Authorization': `Bearer ${cookies.aT}`
             },
-            body: JSON.stringify({declineReason:declineReason})
+            body: JSON.stringify({declineReason})
         })
 
         if (declineQuestion.status === 500) {
@@ -217,10 +241,10 @@ function Questions() {
             const body = await declineQuestion.json()
             renewAccessToken(body.accessToken)
             message.success('La question a été déclinée et n\'apparaîtra pas sur l\'annonce', 3) // add a message with email 
-            setQuestionModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setQuestionModalProperties({_id:'', status:'', question:'', response:''})
             setDeclineModalVisible(false)
             setDeclineQuestionLoading(false)
-            setDisplayQuestions(!displayQuestions)
+            setLoadQuestions(!loadQuestions)
             setDeclineQuestionError('')
         }
     }
@@ -276,7 +300,7 @@ function Questions() {
                 onCancel={hideModal}
             >
                 <div className="question-modal">
-                    <p>{response}</p>
+                    <p>{getQuestionAnswer(questionModalProperties._id)}</p>
                 </div>
             </Modal>
 
@@ -311,40 +335,67 @@ function Questions() {
             >
                 <div className="question-modal">
                     <Radio.Group 
-                        onChange={ 
-                            e => setDeclineReason(e.target.value)
-                        }
-                        value={declineReason}
+                        onChange={ e => setDeclineReason(e.target.value)}
                     >
-                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'J’ai déjà répondu à cette question'}>
-                        J’ai déjà répondu à cette question
+                        <Radio
+                            className= 'question-radio-button'
+                            onClick= { () =>  setOtherReasonChecked(false)}
+                            value={'J’ai déjà répondu à cette question'}
+                        >
+                            J’ai déjà répondu à cette question
                         </Radio>
-                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'L’information demandée est disponible sur l’annonce'}>
-                        L’information demandée est disponible sur l’annonce
+
+                        <Radio 
+                            className= 'question-radio-button'
+                            onClick= { () =>  setOtherReasonChecked(false)}
+                            value={'L’information demandée est disponible sur l’annonce'}
+                        >
+                            L’information demandée est disponible sur l’annonce
                         </Radio>
-                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'Je ne comprends pas la question'}>
-                        Je ne comprends pas la question
+
+                        <Radio
+                            className= 'question-radio-button'
+                            onClick= { () =>  setOtherReasonChecked(false)}
+                            value={'Je ne comprends pas la question'}
+                        >
+                            Je ne comprends pas la question
                         </Radio>
-                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={'La question comprend des propos injurieux'}>
-                        La question comprend des propos injurieux
+
+                        <Radio
+                            className= 'question-radio-button'
+                            onClick= { () =>  setOtherReasonChecked(false)}
+                            value={'La question comprend des propos injurieux'}
+                        >
+                            La question comprend des propos injurieux
                         </Radio>
-                        <Radio style={{display: 'block',height: '30px',lineHeight: '30px'}} value={`Autre: ${otherReason}`}>
-                        Autre raison (à préciser)
-                        <br/>
-                        <Input onChange={ e => setOtherReason(e.target.value) } value={otherReason} />
+
+                        <Radio
+                            className= 'question-radio-button'
+                            checked={otherReasonChecked}
+                            value={`Autre: ${otherReason}`}
+                        >
+                            Autre raison (à préciser)
+                            <br/>
+                            <Input
+                                onChange={ e => {
+                                    setOtherReasonChecked(true)
+                                    setOtherReason(e.target.value) 
+                                }}
+                                value={otherReason}
+                            />
                         </Radio>
                     </Radio.Group>
                 </div>
             </Modal>
         </div>
     )
-  }
+}
 
-  function mapStateToProps(state) {
+function mapStateToProps(state) {
     return { 
       agentLoginInfo : state.agentLoginInfo
     }
-  }
+}
 
 export default connect(
     mapStateToProps,

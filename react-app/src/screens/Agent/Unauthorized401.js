@@ -10,7 +10,7 @@ import {useCookies} from 'react-cookie'
 
 function Unauthorized401(props) {
 
-    const [redirHome, setRedirHome] = useState(false)
+    const [redirectToSignin, setRedirectToSignin] = useState(false)
     const [cookies, setCookie, removeCookie] = useCookies(['name']) // initializing state cookies
 
     const logo = <LoadingOutlined style={{ fontSize: 50, color: "#355c7d" }} spin/>
@@ -30,13 +30,13 @@ function Unauthorized401(props) {
             })
 
             props.loggedOut()
-            setRedirHome(true)
+            setRedirectToSignin(true)
 
         }, 4000)
     }, [])
 
-    if (redirHome) {
-        return <Redirect to='/pro'/>
+    if (redirectToSignin) {
+        return <Redirect to='/pro/auth/signin'/>
     }
 
     return (
@@ -57,6 +57,7 @@ function mapDispatchToProps(dispatch) {
     return {
         loggedOut: function() {
             dispatch({ type: 'agent_loggedOut' })
+            dispatch({type: 'agent_clearInfo'})
         }
     }
 }

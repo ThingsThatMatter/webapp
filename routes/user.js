@@ -16,6 +16,11 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const saltRounds = 12
 
+const checkEmail = email => {
+  const regexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+  return email.match(regexp) ? true : false
+}
+
 let resp
 let login_duration = 60 //30 minutes
 
@@ -108,44 +113,49 @@ router.post('/sign-in', async function(req, res, next) {
 
   try {
 
-    if( ['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
+    if( ['null', ''].indexOf(req.body.email) > -1 || ['', 'null'].indexOf(req.body.password) > -1 ) {
       resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
     } else {
-      const findUser = await userModel.findOne({ email:req.body.email })
-      if(!findUser) {
-        resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+      if (!checkEmail(req.body.email)) {
+        resp = badRequest('Merci de fournir une adresse email valide')
 
       } else {
-        const pwdMatch = await bcrypt.compare(req.body.password, findUser.password)
-        if (!pwdMatch) {
+        const findUser = await userModel.findOne({ email:req.body.email })
+        if(!findUser) {
           resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
 
         } else {
-          /* Update refresh token */
-          const refreshToken = jwt.sign({}, process.env.JWT_USER_REFRESH_KEY)
-          await userModel.updateOne(
-            {_id: findUser._id},
-            {$set: {token: refreshToken}}
-          )
+          const pwdMatch = await bcrypt.compare(req.body.password, findUser.password)
+          if (!pwdMatch) {
+            resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
 
-          const userInfo = {
-            lastname: findUser.lastname,
-            firstname: findUser.firstname,
-            email: findUser.email,
-            id: findUser._id
-          }
+          } else {
+            /* Update refresh token */
+            const refreshToken = jwt.sign({}, process.env.JWT_USER_REFRESH_KEY)
+            await userModel.updateOne(
+              {_id: findUser._id},
+              {$set: {token: refreshToken}}
+            )
 
-          if (req.body.stayLoggedIn === 'true') {
-            login_duration = 60 * 24 * 365 // stay login for a year
-          }
+            const userInfo = {
+              lastname: findUser.lastname,
+              firstname: findUser.firstname,
+              email: findUser.email,
+              id: findUser._id
+            }
 
-          refreshCookie = refreshToken
-          resp = success(
-            generateUserAccessToken(userInfo, login_duration),
-            {userInfo}
-          )
-        }   
+            if (req.body.stayLoggedIn === 'true') {
+              login_duration = 60 * 24 * 365 // stay login for a year
+            }
+
+            refreshCookie = refreshToken
+            resp = success(
+              generateUserAccessToken(userInfo, login_duration),
+              {userInfo}
+            )
+          }   
+        }
       }
     }
 
@@ -157,73 +167,78 @@ router.post('/sign-in', async function(req, res, next) {
 })
 
 /* USER sign-up */
-router.post('/sign-up', async function(req, res, next) {
+router.post('/sign-up', async function(req, res) {
 
   let refreshCookie
 
   try {
 
-    if(['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 || ['', 'null'].indexOf(req.body.firstname) > 0 || ['', 'null'].indexOf(req.body.lastname) > 0) {
+    if(['null', ''].indexOf(req.body.email) > -1 || ['', 'null'].indexOf(req.body.password) > -1 || ['', 'null'].indexOf(req.body.firstname) > -1 || ['', 'null'].indexOf(req.body.lastname) > -1) {
       resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
     } else {
-      const findUser = await userModel.findOne({email: req.body.email})
-      if(findUser){
-        resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
+      if (!checkEmail(req.body.email)) {
+        resp = badRequest('Merci de fournir une adresse email valide')
 
       } else {
-        const refreshToken = jwt.sign({}, process.env.JWT_USER_REFRESH_KEY)
-        var hash = await bcrypt.hash(req.body.password, saltRounds)
-        /* Création user */
-        const newUser = new userModel({
-          creationDate: new Date,
-          lastname: req.body.lastname,
-          firstname: req.body.firstname,
-          email: req.body.email,
-          password: hash,
-          token: refreshToken
-        })
+        const findUser = await userModel.findOne({email: req.body.email})
+        if(findUser){
+          resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
 
-        saveUser = await newUser.save()
+        } else {
+          const refreshToken = jwt.sign({}, process.env.JWT_USER_REFRESH_KEY)
+          var hash = await bcrypt.hash(req.body.password, saltRounds)
+          /* Création user */
+          const newUser = new userModel({
+            creationDate: new Date,
+            lastname: req.body.lastname,
+            firstname: req.body.firstname,
+            email: req.body.email,
+            password: hash,
+            token: refreshToken
+          })
 
-        /* Envoi de l'email de confirmation*/
+          saveUser = await newUser.save()
 
-        const url = `http://localhost:3001/confirmation/${refreshToken}`
+          /* Envoi de l'email de confirmation*/
 
-        const request = await mailjet
-        .post("send", {'version': 'v3.1'})
-        .request({
-          "Messages":[
-            {
-              "From": {
-                "Email": "augustin.demaintenant@gmail.com",
-                "Name": "Augustin"
-              },
-              "To": [
-                {
-                  "Email": req.body.email,
-                  "Name": req.body.firstname
-                }
-              ],
-              "Subject": "Bienvenue sur la plateforme TTM !",
-              "TextPart": "My first Mailjet email",
-              "HTMLPart": `<h3>Cher ${req.body.firstname}, Bienvenue sur TTM ! </h3><p>Veuillez confirmer votre email en cliquant sur le lien ci-dessous :</p><a href=${url}>${url}</a>`,
-              "CustomID": "AppGettingStartedTest"
-            }
-          ]
-        })
+          const url = `http://localhost:3001/confirmation/${refreshToken}`
 
-        const userInfo = {
-          lastname: saveUser.lastname,
-          firstname: saveUser.firstname,
-          email: saveUser.email,
-          id: saveUser._id
+          const request = await mailjet
+          .post("send", {'version': 'v3.1'})
+          .request({
+            "Messages":[
+              {
+                "From": {
+                  "Email": "augustin.demaintenant@gmail.com",
+                  "Name": "Augustin"
+                },
+                "To": [
+                  {
+                    "Email": req.body.email,
+                    "Name": req.body.firstname
+                  }
+                ],
+                "Subject": "Bienvenue sur la plateforme TTM !",
+                "TextPart": "My first Mailjet email",
+                "HTMLPart": `<h3>Cher ${req.body.firstname}, Bienvenue sur TTM ! </h3><p>Veuillez confirmer votre email en cliquant sur le lien ci-dessous :</p><a href=${url}>${url}</a>`,
+                "CustomID": "AppGettingStartedTest"
+              }
+            ]
+          })
+
+          const userInfo = {
+            lastname: saveUser.lastname,
+            firstname: saveUser.firstname,
+            email: saveUser.email,
+            id: saveUser._id
+          }
+          refreshCookie = refreshToken
+          resp = created(
+            generateUserAccessToken(userInfo, login_duration),
+            {userInfo}
+          )
         }
-        refreshCookie = refreshToken
-        resp = created(
-          generateUserAccessToken(userInfo, login_duration),
-          {userInfo}
-        )
       }
     }
 

@@ -10,10 +10,10 @@ import AgentApp from './routes/AgentRoutes'
 import BuyerApp from './routes/BuyerRoutes'
 import ScrollToTop from './components/ScrollToTop'
 
-import formData from './reducers/Agent/formData.reducer'
+import newAdFormData from './reducers/Agent/newAdFormData.reducer'
 import agentLoginStatus from './reducers/Agent/authentification.reducer'
 import agentInfo from './reducers/Agent/agentInfo.reducer'
-import edit from './reducers/Agent/edit.reducer'
+import adEdit from './reducers/Agent/adEdit.reducer'
 import agentPageToRedirect from './reducers/Agent/pageToRedirect.reducer'
 
 import offerFormData from './reducers/Buyer/offerFormData.reducer'
@@ -22,7 +22,23 @@ import userInfo from './reducers/Buyer/userInfo.reducer'
 import newOfferAd from './reducers/Buyer/newOfferAd.reducer'
 import userPageToRedirect from './reducers/Buyer/pageToRedirect.reducer'
 
-const store = createStore(combineReducers({ formData, agentLoginStatus, agentInfo, edit, agentPageToRedirect, offerFormData, userLoginStatus, userInfo, newOfferAd, userPageToRedirect})
+const reducer= combineReducers({
+  // Agent
+  agentLoginStatus,
+  agentInfo,
+  agentPageToRedirect,
+  newAdFormData,
+  adEdit,
+  // User
+  userLoginStatus,
+  userInfo,
+  userPageToRedirect,
+  offerFormData,
+  newOfferAd,
+})
+
+
+const store = createStore(reducer
 , window.__REDUX_DEVTOOLS_EXTENSION__ && window.__REDUX_DEVTOOLS_EXTENSION__() //redux devtool
 )
 

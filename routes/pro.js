@@ -26,7 +26,12 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_SECRET_KEY
 })
 
-const agencyID = "5e6222aa670cd85f2fb6ba51" // temporaire le temps de gérer les agences 
+const agencyID = "5e6222aa670cd85f2fb6ba51" // temporaire le temps de gérer les agences
+
+const checkEmail = email => {
+  const regexp = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/
+  return email.match(regexp) ? true : false
+}
 
 let status
 let response
@@ -115,50 +120,56 @@ router.get('/logout', async function(req,res) {
 })
 
 /* PRO sign-in */
-router.post('/sign-in', async function(req, res, next) {
+router.post('/sign-in', async function(req, res) {
 
   let refreshCookie
 
   try {
 
-    if( ['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
+    if( ['null', ''].indexOf(req.body.email) > -1 || ['', 'null'].indexOf(req.body.password) > -1 ) {
       resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
     } else {
-      const findAgent = await agentModel.findOne({ email:req.body.email })
-      if(!findAgent) {
-        resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+      if (!checkEmail(req.body.email)) {
+        resp = badRequest('Merci de fournir une adresse email valide')
 
       } else {
-        const pwdMatch = await bcrypt.compare(req.body.password, findAgent.password)
-        if (!pwdMatch) {
+
+        const findAgent = await agentModel.findOne({ email:req.body.email })
+        if(!findAgent) {
           resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+
         } else {
+          const pwdMatch = await bcrypt.compare(req.body.password, findAgent.password)
+          if (!pwdMatch) {
+            resp = badRequest('L\'adresse email et/ou le mot de passe sont incorrects')
+          } else {
 
-          /* Update refresh token */
-          const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
-          await agentModel.updateOne(
-            {_id: findAgent._id},
-            {$set: {token: refreshToken}}
-          )
+            /* Update refresh token */
+            const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
+            await agentModel.updateOne(
+              {_id: findAgent._id},
+              {$set: {token: refreshToken}}
+            )
 
-          const agentInfo = {
-            lastname: findAgent.lastname,
-            firstname: findAgent.firstname,
-            email: findAgent.email,
-            id: findAgent._id
-          }
+            const agentInfo = {
+              lastname: findAgent.lastname,
+              firstname: findAgent.firstname,
+              email: findAgent.email,
+              id: findAgent._id
+            }
 
-          if (req.body.stayLoggedIn === 'true') {
-            login_duration = 60 * 24 * 365 // stay login for a year
-          }
+            if (req.body.stayLoggedIn === 'true') {
+              login_duration = 60 * 24 * 365 // stay login for a year
+            }
 
-          refreshCookie = refreshToken
-          resp = success(
-            generateAgentAccessToken(agentInfo, login_duration),
-            {agentInfo}
-          )
-        }  
+            refreshCookie = refreshToken
+            resp = success(
+              generateAgentAccessToken(agentInfo, login_duration),
+              {agentInfo}
+            )
+          }  
+        }
       }
     }
 
@@ -176,50 +187,55 @@ router.post('/sign-up', async function(req, res) {
 
   try {
 
-    if(['null', ''].indexOf(req.body.email) > 0 || ['', 'null'].indexOf(req.body.password) > 0 ) {
+    if(['null', ''].indexOf(req.body.email) > -1 || ['', 'null'].indexOf(req.body.password) > -1 ) {
       resp = badRequest('Veuillez remplir tous les champs du formulaire')
 
     } else {
-      const findAgent = await agentModel.findOne({
-        email: req.body.email
-      })
-
-      if(findAgent){
-        resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
+      if (!checkEmail(req.body.email)) {
+        resp = badRequest('Merci de fournir une adresse email valide')
 
       } else {
-        const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
-        const hash = await bcrypt.hash(req.body.password, saltRounds)
-        /* Création agent */
-        const newAgent = new agentModel({
-          // admin: req.body.admin,
-          lastname: req.body.lastname,
-          firstname: req.body.firstname,
-          email: req.body.email,
-          password: hash,
-          token: refreshToken
+        const findAgent = await agentModel.findOne({
+          email: req.body.email
         })
 
-        saveAgent = await newAgent.save()
+        if(findAgent){
+          resp = badRequest('Un compte est déjà enregistré avec cette adresse email')
 
-        /* Rattachement à l'agence */
-        await agencyModel.updateOne(
-          { _id: agencyID }, 
-          { $push: { agents : saveAgent._id } }
-        )
+        } else {
+          const refreshToken = jwt.sign({}, process.env.JWT_AGENT_REFRESH_KEY)
+          const hash = await bcrypt.hash(req.body.password, saltRounds)
+          /* Création agent */
+          const newAgent = new agentModel({
+            // admin: req.body.admin,
+            lastname: req.body.lastname,
+            firstname: req.body.firstname,
+            email: req.body.email,
+            password: hash,
+            token: refreshToken
+          })
 
-        /* Réponse */
-        const agentInfo = {
-          lastname: saveAgent.lastname,
-          firstname: saveAgent.firstname,
-          email: saveAgent.email,
-          id : saveAgent._id
-        }
-        refreshCookie = refreshToken
-        resp = created(
-          generateAgentAccessToken(agentInfo, login_duration),
-          {agentInfo}
+          saveAgent = await newAgent.save()
+
+          /* Rattachement à l'agence */
+          await agencyModel.updateOne(
+            { _id: agencyID }, 
+            { $push: { agents : saveAgent._id } }
           )
+
+          /* Réponse */
+          const agentInfo = {
+            lastname: saveAgent.lastname,
+            firstname: saveAgent.firstname,
+            email: saveAgent.email,
+            id : saveAgent._id
+          }
+          refreshCookie = refreshToken
+          resp = created(
+            generateAgentAccessToken(agentInfo, login_duration),
+            {agentInfo}
+            )
+        }
       }
     }
 
@@ -521,10 +537,8 @@ router.delete('/ad/:ad_id', authenticateAgent, async function(req, res) {
     resp = success(req.accessToken, {})
 
   } catch(e) {
-    console.log(e)
     resp = internalError()
   }
-  console.log(resp)
   res.status(resp.status).json(resp.response)
 })
 

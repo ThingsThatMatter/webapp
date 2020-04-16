@@ -1,13 +1,11 @@
 import React, {useState} from 'react'
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
 import { Link} from 'react-router-dom'
 import {connect} from 'react-redux' 
 import {useCookies} from 'react-cookie'
 
 import APIFetch from '../../components/Buyer/APIFetch'
 
-import { Layout, Col, Row} from 'antd'
-const {Content} = Layout
+import {Col, Row} from 'antd'
 
 
 function Home() {
@@ -81,8 +79,8 @@ function Home() {
                         </div>
                         <div className="annonce-infos-buyer">
                             <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
-                            <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
-                            <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+                            <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;{e.rooms > 1 ? 'pièces' : 'pièce'}</span></span>
+                            <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;{e.bedrooms > 1 ? 'chambres' : 'chambre'}</span></span>
                         </div>
                         <div className="annonce-status-buyer">
                             {offerMessage}
@@ -126,8 +124,8 @@ function Home() {
                         </div>
                         <div className="annonce-infos-buyer">
                             <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
-                            <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
-                            <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+                            <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;{e.rooms > 1 ? 'pièces' : 'pièce'}</span></span>
+                            <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;{e.bedrooms > 1 ? 'chambres' : 'chambre'}</span></span>
                         </div>
                         <div className="annonce-status-buyer">
                             {visitMessage}
@@ -152,8 +150,8 @@ function Home() {
                 </div>
                 <div className="annonce-infos-buyer">
                     <span className="annonce-area"><img src="expand.svg" width="20px"/> {e.area} <span>&nbsp;m2</span></span>
-                    <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;pièces</span></span>
-                    <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+                    <span className="annonce-room"><img src="floor-plan.png" width="20px"/> {e.rooms} <span>&nbsp;{e.rooms > 1 ? 'pièces' : 'pièce'}</span></span>
+                    <span className="annonce-bedroom"><img src="bed.svg" width="20px"/> {e.bedrooms} <span>&nbsp;{e.bedrooms > 1 ? 'chambres' : 'chambre'}</span></span>
                 </div>
             </Link>
         </Col> 
@@ -196,13 +194,16 @@ function Home() {
                 </div>
             }
 
-            {adsCopy.length > 0 &&
+            {adsCopy.length > 0 
+            ?
                 <div>
                     <h1 className='userTitle'>Mes biens consultés</h1>
                     <Row gutter={16} className="ads-row">
                         {adsAll}
                     </Row>
                 </div>
+            :
+                <h3>Vous n'avez pas encore de biens dans votre liste</h3>
             }
         </APIFetch>
     )

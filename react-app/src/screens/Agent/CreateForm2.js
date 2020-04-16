@@ -46,26 +46,26 @@ function CreateFormTwo(props) {
 /*----------------------------------------------- PREPARE DATA AND COMPONENT ---------------------------------------------------*/
     useEffect(() => {
 
-        if(props.formData.rooms) {     // Display inputed info if user goes back from next form pages
-            setType(props.formData.type)
-            setArea(props.formData.area)
-            setRooms(props.formData.rooms)
-            setBedrooms(props.formData.bedrooms)
-            setAvantages(props.formData.advantages)
-            setDesc(props.formData.description)
-            setPhotoList(props.formData.photos)
-            setVideo(props.formData.video)
-            setEmission(props.formData.ges)
-            setConso(props.formData.dpe)
+        if(props.newAdFormData.rooms) {     // Display inputed info if user goes back from next form pages
+            setType(props.newAdFormData.type)
+            setArea(props.newAdFormData.area)
+            setRooms(props.newAdFormData.rooms)
+            setBedrooms(props.newAdFormData.bedrooms)
+            setAvantages(props.newAdFormData.advantages)
+            setDesc(props.newAdFormData.description)
+            setPhotoList(props.newAdFormData.photos)
+            setVideo(props.newAdFormData.video)
+            setEmission(props.newAdFormData.ges)
+            setConso(props.newAdFormData.dpe)
         }
 
-        if(props.edit === true) {
+        if(props.adEdit === true) {
             setPhotoList([])
-            setPhotosDB(props.formData.photos)
+            setPhotosDB(props.newAdFormData.photos)
         }
     }, [])
 
-    if (!props.formData.street) {
+    if (!props.newAdFormData.address) {
         return <Redirect to ='/pro/ad/new/step1' />
     }
 
@@ -81,7 +81,7 @@ function CreateFormTwo(props) {
             {e.name} 
             <DeleteOutlined
                 style = {{marginLeft: '4px'}}
-                onClick={ () => deleteTempPhoto(props.formData.adID, e)}
+                onClick={ () => deleteTempPhoto(props.newAdFormData.adID, e)}
             />
         </div>
     )
@@ -91,7 +91,7 @@ function CreateFormTwo(props) {
         <div key={e.externalId}>
             {e.name} 
             <DeleteOutlined 
-                onClick={ () => deleteCloudPhoto(props.formData.adID, e)}
+                onClick={ () => deleteCloudPhoto(props.newAdFormData.adID, e)}
             />
         </div>
     )
@@ -257,7 +257,7 @@ function CreateFormTwo(props) {
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>m2</span>
 
-                <p className='formLabel'>Nombre de pièces</p>
+                <p className='formLabel'>Nombre de pièce(s)</p>
                 <label>
                     <InputNumber 
                         min={0} 
@@ -267,7 +267,7 @@ function CreateFormTwo(props) {
                     />
                 </label>
                 
-                <p className='formLabel'>Nombre de chambres</p>
+                <p className='formLabel'>Nombre de chambre(s)</p>
                 <label>
                     <InputNumber
                         min={0} 
@@ -304,7 +304,7 @@ function CreateFormTwo(props) {
                     multiple= {true}
                     showUploadList= {false}
                     beforeUpload={ file => checkUploadFormat(file)}
-                    action= {`/pro/ad/${props.formData.adID}/file`}
+                    action= {`/pro/ad/${props.newAdFormData.adID}/file`}
                     method= 'POST'
                     headers= {{
                         'Authorization': `Bearer ${cookies.aT}`
@@ -377,8 +377,8 @@ function CreateFormTwo(props) {
 
 function mapStateToProps(state) {
     return { 
-        formData: state.formData,
-        edit: state.edit
+        newAdFormData: state.newAdFormData,
+        adEdit: state.adEdit
     }
 }
 
@@ -386,7 +386,7 @@ function mapDispatchToProps(dispatch) {
     return {
       saveFormData : function(type, area, rooms, bedrooms, avantages, desc, photoList, video, emission, conso, photosDB) { 
         dispatch( {
-            type: 'agent_newOfferSaveFormData2',
+            type: 'agent_newAdSaveFormData2',
             typeBien: type,
             area: area,
             rooms: rooms,

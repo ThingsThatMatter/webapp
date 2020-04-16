@@ -18,7 +18,7 @@ function Offers() {
     const [offerStatus, setOfferStatus] = useState(null)
 
     const [offerModalVisible, setOfferModalVisible] = useState(false)
-    const [offerModalProperties, setOfferModalProperties] = useState({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+    const [offerModalProperties, setOfferModalProperties] = useState({_id:'',singleBuyer:true,status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
     const [adModalProperties, setAdModalProperties] = useState({_id:''})
 
     const [offerAcceptLoading, setOfferAcceptLoading] = useState(false)
@@ -103,7 +103,7 @@ function Offers() {
             const body = await acceptOffer.json()
             renewAccessToken(body.accessToken)
             message.success('L\'offre a bien été acceptée', 3) // add a message with email 
-            setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setOfferModalProperties({_id:'',singleBuyer:true,status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setOfferModalVisible(false)
             setOfferAcceptLoading(false)
             setDisplayOffers(!displayOffers)
@@ -137,7 +137,7 @@ function Offers() {
             const body = await declineOffer.json()
             renewAccessToken(body.accessToken)
             message.success('L\'offre a bien été refusée', 3) // add a message with email 
-            setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setOfferModalProperties({_id:'',singleBuyer:true,status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setOfferModalVisible(false)
             setDisplayOffers(!displayOffers)
             setOfferDeclineLoading(false)
@@ -171,7 +171,7 @@ function Offers() {
             const body = await cancelOffer.json()
             renewAccessToken(body.accessToken)
             message.success('L\'offre n\'est plus acceptée', 3) // add a message with email 
-            setOfferModalProperties({_id:'',status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
+            setOfferModalProperties({_id:'', singleBuyer:true, status:'',firstname1:'',lastname1:'',firstname2:'',lastname2:'',amount:'',loanAmount:'',contributionAmount:'',monthlyPay:'',notaryName:'',notaryAddress:'',notaryEmail:'',validityPeriod:'',creationDate:'',message:''})
             setOfferModalVisible(false)
             setDisplayOffers(!displayOffers)
             setOfferCancelLoading(false)
@@ -244,7 +244,8 @@ function Offers() {
                         
                         return (
                             <Col key = {i} 
-                                onClick={ () => { 
+                                onClick={ () => {
+                                    console.log(f)
                                     showModal()
                                     setOfferModalProperties(f)
                                     setAdModalProperties(e)
@@ -296,41 +297,117 @@ function Offers() {
             {sortedOffers}
             
             <Modal
-                title="Offre d'achat"
+                className="new-offer-modal"
+                title= {<p className="newoffer-modal-title">RÉCAPITULATIF DE L'OFFRE</p>}
                 visible={offerModalVisible}
+                centered
                 footer= {modalFooter}
                 destroyOnClose= {true}
-                width= "50%"
+                width= "60%"
                 closable={true}
                 mask={true}
                 maskClosable={true}
                 onCancel={hideModal}
             >
-                <div className="offer-modal">
-                    <Row gutter={16}>
-                        <Col xs={12}>
-                            <p><span>Acheteur #1 : </span>{offerModalProperties.firstName1} {offerModalProperties.lastName1}</p>
-                            <p><span>Acheteur #2 : </span>{offerModalProperties.firstName2} {offerModalProperties.lastName2}</p>
-                            <p><span>Montant de l'offre : </span>{priceFormatter.format(offerModalProperties.amount)}</p>
-                            <p><span>Emprunt : </span>{priceFormatter.format(offerModalProperties.loanAmount)}</p>
-                            <p><span>Apport : </span>{priceFormatter.format(offerModalProperties.contributionAmount)}</p>
-                            <p><span>Salaire mensuel : </span>{priceFormatter.format(offerModalProperties.monthlyPay)} /mois</p>
-                        </Col>
-                        <Col xs={12}>
-                            <p><span>Notaire acheteur : </span>{offerModalProperties.notaryName} à {offerModalProperties.notaryAddress}</p>
-                            <p><span>Email notaire : </span>{offerModalProperties.notaryEmail}</p>
+                <div className="newoffer-modal">
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Informations personnelles</p>
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Acheteur : </span>
+                                <span className="newoffer-modal-section-content-data">{`${offerModalProperties.firstName1} ${offerModalProperties.lastName1}`}</span>
+                            </div>
+                            {!offerModalProperties.singleBuyer &&
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Acheteur 2 : </span>
+                                <span className="newoffer-modal-section-content-data">{`${offerModalProperties.firstName2} ${offerModalProperties.lastName2}`}</span>
+                            </div>
+                            }
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Adresse : </span>
+                                <span className="newoffer-modal-section-content-data">{`${offerModalProperties.address} - ${offerModalProperties.postCode} ${offerModalProperties.city}`}</span>
+                            </div>
+                        </div>
+                    </div>
+                
 
-                            <p><span>Validité de l'offre : </span>{offerModalProperties.validityPeriod} jours</p>
-                            <p>Fait à {offerModalProperties.location}, le {new Date(offerModalProperties.creationDate).toLocaleDateString('fr-FR')}</p>
+                    <div className="newoffer-modal-section">
+                            <div className="newoffer-modal-section-title">
+                                <p>Offre</p>
+                            </div>
+                            <div className="newoffer-modal-section-content">
+                                <div className="newoffer-modal-section-content-block">
+                                    <span>Montant : </span>
+                                    <span className="newoffer-modal-section-content-data">{priceFormatter.format(offerModalProperties.amount)}</span>
+                                </div>
+                                <div className="newoffer-modal-section-content-block">
+                                    <span className="newoffer-modal-section-content-minor">Dont apport : </span>
+                                    <span className="newoffer-modal-section-content-data">{priceFormatter.format(offerModalProperties.contributionAmount)}</span>
+                                </div>
+                                <div className="newoffer-modal-section-content-block">
+                                    <span className="newoffer-modal-section-content-minor">Dont emprunt : </span>
+                                    <span className="newoffer-modal-section-content-data">{priceFormatter.format(offerModalProperties.loanAmount)}</span>
+                                </div>
+                            </div>
+                        </div>
 
-                            <p><span>Message de l'acheteur : </span>{offerModalProperties.message}</p>
-                        </Col>
-                    </Row>
+                        <div className="newoffer-modal-section">
+                            <div className="newoffer-modal-section-title">
+                                <p>Notaire</p>
+                        </div>
+                        {offerModalProperties.notaryName ?
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Nom : </span>
+                                <span className="newoffer-modal-section-content-data">{offerModalProperties.notaryName}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Adresse email : </span>
+                                <span className="newoffer-modal-section-content-data">{offerModalProperties.notaryEmail}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Adresse postale : </span>
+                                <span className="newoffer-modal-section-content-data">{offerModalProperties.notaryAddress}</span>
+                            </div>
+                        </div>
+                        :
+                        <div>Ces informations seront communiquées ultérieurement</div>
+                        }
+                    </div>
+
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Commentaires</p>
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                            {offerModalProperties.comments}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="newoffer-modal-section">
+                        <div className="newoffer-modal-section-title">
+                            <p>Conditions</p>
+                        </div>
+                        <div className="newoffer-modal-section-content">
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Durée de validité de l'offre : </span>
+                                <span className="newoffer-modal-section-content-data">{`${offerModalProperties.validityPeriod} jours`}</span>
+                            </div>
+                            <div className="newoffer-modal-section-content-block">
+                                <span>Offre faite à : </span>
+                                <span className="newoffer-modal-section-content-data">{offerModalProperties.location}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </Modal>
         </div>
     )
-  }
+}
 
 function mapStateToProps(state) {
     return { 

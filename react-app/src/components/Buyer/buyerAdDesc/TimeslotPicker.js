@@ -54,13 +54,12 @@ export default function TimeslotPicker(props) {
                     'Authorization': `Bearer ${cookies.uT}`
                 }
             })
-        
             let body = await response.json()
             // No token refresh, because we already called the sidebar if user is loggedin
 
             let timeslots = body.data.timeslots
 
-            timeslots = timeslots.filter((e)=> {
+            timeslots = timeslots.filter( e => {
 
                 const year = e.start.slice(0,4)
                 let month = Number(e.start.slice(5,7))-1
@@ -69,18 +68,15 @@ export default function TimeslotPicker(props) {
                 const min1 = e.start.slice(14,16)
 
                 const fullDate = new Date(year, month, day, hour1, min1)
-
                 const now = new Date()
-
                 now.setHours(now.getHours() + 1)
 
                 return fullDate.getTime() > now.getTime()
-
             })
 
             const daySlots = []
 
-            for(let i=0 ; i < timeslots.length ; i++) {
+            for (let i=0 ; i < timeslots.length ; i++) {
 
                 const year = timeslots[i].start.slice(0,4)
                 let month = Number(timeslots[i].start.slice(5,7))-1
@@ -90,9 +86,7 @@ export default function TimeslotPicker(props) {
 
                 const date = new Date(year, month, day)
 
-                const index = daySlots.findIndex((e) => {
-                    return e.day.getTime() == date.getTime()
-                })
+                const index = daySlots.findIndex( e => e.day.getTime() == date.getTime())
             
                 if( timeslots[i].booked === false || (timeslots[i].booked === true && timeslots[i].private === false) ) {
                     if( index !== -1 ) {
@@ -112,39 +106,11 @@ export default function TimeslotPicker(props) {
                 }
             }
 
+            daySlots.sort( (a,b) => a.day - b.day )
 
-            daySlots.sort((a,b) => {
-                return (a.day - b.day)
-            })
+            const mapSlots = daySlots.map((e, i) =>
 
-            const pickerClick = async (timeslotId) => {
-                const postVisit = await fetch(`/user/ad/${props.adId}/timeslots/${timeslotId}`, {
-                    method : "put",
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Accept: 'application/json',
-                        'Authorization': `Bearer ${cookies.uT}`
-                    }
-                })
-
-                if (postVisit.status === 500) {
-                    message.warning('Nous rencontrons des difficultés pour planifier votre visite, veuillez réessayer.', 4)
-                
-                } else if (postVisit.status === 401) {
-                    setRedirectTo401(true)
-              
-                } else if (postVisit.status === 200) {
-                    const body = await postVisit.json()
-                    renewAccessToken(body.accessToken)
-                    message.success('Votre visite a bien été enregistrée', 2)
-                    props.goToVisitParent()
-                }
-                    
-            }
-
-            const mapSlots = daySlots.map((e, i) => {
-
-                return <Col span={6} key={i}>
+                <Col md={{span:12}} lg={{span:8}} xl={{span:6}} key={i}>
 
                     <div className="picker-date">
                         <div style={{fontWeight : 700, marginBottom : "-5px"}}>
@@ -171,11 +137,37 @@ export default function TimeslotPicker(props) {
                         </Popconfirm>
                     ))}
                 </Col>
-            })
+            )
             setSlotsDisplay(mapSlots)
         }
         getTimeslots()
     }, [])
+
+/* ---------------------------------------------------------------BOOK A VISIT------------------------------------------------------------------- */
+
+    const pickerClick = async (timeslotId) => {
+        const postVisit = await fetch(`/user/ad/${props.adId}/timeslots/${timeslotId}`, {
+            method : "put",
+            headers: {
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
+                'Authorization': `Bearer ${cookies.uT}`
+            }
+        })
+
+        if (postVisit.status === 500) {
+            message.warning('Nous rencontrons des difficultés pour planifier votre visite, veuillez réessayer.', 4)
+        
+        } else if (postVisit.status === 401) {
+            setRedirectTo401(true)
+      
+        } else if (postVisit.status === 200) {
+            const body = await postVisit.json()
+            renewAccessToken(body.accessToken)
+            message.success('Votre visite a bien été enregistrée', 2)
+            props.goToVisitParent()
+        }    
+    }
 
   /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/
 

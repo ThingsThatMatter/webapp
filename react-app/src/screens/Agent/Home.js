@@ -10,7 +10,7 @@ import {PlusCircleOutlined} from '@ant-design/icons'
 const { Panel } = Collapse
 
 
-function Home() {
+function Home(props) {
 
   const [dataLoaded, setDataLoaded] = useState(false)
   
@@ -96,8 +96,8 @@ function Home() {
           </div>
           <div className="annonce-infos">
               <span className="annonce-area"><img src="http://localhost:3001/expand.svg" width="20px" alt=''/> {e.area} <span>&nbsp;m2</span></span>
-              <span className="annonce-room"><img src="http://localhost:3001/floor-plan.png" width="20px" alt=''/> {e.rooms} <span>&nbsp;pièces</span></span>
-              <span className="annonce-bedroom"><img src="http://localhost:3001/bed.svg" width="20px" alt=''/> {e.bedrooms} <span>&nbsp;chambres</span></span>
+              <span className="annonce-room"><img src="http://localhost:3001/floor-plan.png" width="20px" alt=''/> {e.rooms} <span>&nbsp;{e.rooms > 1 ? 'pièces' : 'pièce'}</span></span>
+              <span className="annonce-bedroom"><img src="http://localhost:3001/bed.svg" width="20px" alt=''/> {e.bedrooms} <span>&nbsp;{e.bedrooms > 1 ? 'chambres' : 'chambre'}</span></span>
           </div>
         </div>
       </Col>
@@ -135,7 +135,11 @@ function Home() {
       <div className="ads-list-title">
         <h1 className='pageTitle'>Mes biens</h1>
         <Button
-          onClick={() => setNavToCreateAd(true)}
+          onClick={() => {
+            props.clearNewAd()
+            props.clearAdEdit()
+            setNavToCreateAd(true)
+          }}
           type="secondary"
         >
           Ajouter un bien
@@ -143,74 +147,91 @@ function Home() {
         </Button>
       </div>
 
-      <Collapse className="filter-header" bordered={false}>
-        <Panel className="filter-bar" header="Filtres">
-          <div className="filter-group">
-            <div>
-              <p className='filter-label'>En Ligne</p>
-                <Radio.Group
-                  onChange={e => {
-                    setOnlineStatus(e.target.value)
-                  }}
-                  value={onlineStatus}
-                >
-                <Radio className="filter-radio-button-main" value="All">
-                  Voir tout
-                </Radio>
-                <Radio className="filter-radio-button" value="Y">
-                  Oui
-                </Radio>
-                <Radio className="filter-radio-button" value="N">
-                  Non
-                </Radio>
-                </Radio.Group>
-            </div>
+      {adsCopy.length > 0 &&
+        <Collapse className="filter-header" bordered={false}>
+          <Panel className="filter-bar" header="Filtres">
+            <div className="filter-group">
+              <div>
+                <p className='filter-label'>En Ligne</p>
+                  <Radio.Group
+                    onChange={e => {
+                      setOnlineStatus(e.target.value)
+                    }}
+                    value={onlineStatus}
+                  >
+                  <Radio className="filter-radio-button-main" value="All">
+                    Voir tout
+                  </Radio>
+                  <Radio className="filter-radio-button" value="Y">
+                    Oui
+                  </Radio>
+                  <Radio className="filter-radio-button" value="N">
+                    Non
+                  </Radio>
+                  </Radio.Group>
+              </div>
 
-            <div>
-              <p className='filter-label'>Ouvert aux visites</p>
-                <Radio.Group
-                  onChange={e => setVisitStatus(e.target.value)}
-                  value={visitStatus}
-                >
-                <Radio className="filter-radio-button-main" value="All">
-                  Voir tout
-                </Radio>
-                <Radio className="filter-radio-button" value="Y">
-                  Oui
-                </Radio>
-                <Radio className="filter-radio-button" value="N">
-                  Non
-                </Radio>
-                </Radio.Group>
-            </div>
+              <div>
+                <p className='filter-label'>Ouvert aux visites</p>
+                  <Radio.Group
+                    onChange={e => setVisitStatus(e.target.value)}
+                    value={visitStatus}
+                  >
+                  <Radio className="filter-radio-button-main" value="All">
+                    Voir tout
+                  </Radio>
+                  <Radio className="filter-radio-button" value="Y">
+                    Oui
+                  </Radio>
+                  <Radio className="filter-radio-button" value="N">
+                    Non
+                  </Radio>
+                  </Radio.Group>
+              </div>
 
-            <div>
-              <p className='filter-label'>Ouvert aux offres</p>
-                <Radio.Group
-                  onChange={e => setOfferStatus(e.target.value)}
-                  value={offerStatus}
-                >
-                <Radio className="filter-radio-button-main" value="All">
-                  Voir tout
-                </Radio>
-                <Radio className="filter-radio-button" value="Y">
-                  Oui
-                </Radio>
-                <Radio className="filter-radio-button" value="N">
-                  Non
-                </Radio>
-                </Radio.Group>
+              <div>
+                <p className='filter-label'>Ouvert aux offres</p>
+                  <Radio.Group
+                    onChange={e => setOfferStatus(e.target.value)}
+                    value={offerStatus}
+                  >
+                  <Radio className="filter-radio-button-main" value="All">
+                    Voir tout
+                  </Radio>
+                  <Radio className="filter-radio-button" value="Y">
+                    Oui
+                  </Radio>
+                  <Radio className="filter-radio-button" value="N">
+                    Non
+                  </Radio>
+                  </Radio.Group>
+              </div>
             </div>
-          </div>
-        </Panel>
-      </Collapse>
+          </Panel>
+        </Collapse>
+      }
 
-      <Row gutter={16}>
-          {adsCopy}
-      </Row>
+      {adsCopy.length > 0
+        ? <Row gutter={16}>
+            {adsCopy}
+          </Row>
+        : <h3>Vous n'avez pas de biens à gérer. </h3>
+      }
 
     </APIFetch>
   )
+}
+
+
+function mapDispatchToProps(dispatch) {
+  return {
+    clearNewAd : function() { 
+      dispatch( {type: 'agent_clearNewAd'} ) 
+    },
+    clearAdEdit : function() {
+      dispatch({type: 'agent_clearAdEdit'})
+    }
+  }
 }
 
 function mapStateToProps(state) {
@@ -221,5 +242,5 @@ function mapStateToProps(state) {
 
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(Home)

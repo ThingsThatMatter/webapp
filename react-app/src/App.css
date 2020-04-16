@@ -648,12 +648,12 @@ p.offre-buyer-name {
   border-radius: 10px;
 }
 .ant-collapse-borderless > .ant-collapse-item {
-  border-bottom: 0 !important
+  border-bottom: 4px solid #F0F2F5
 }
 
-.ant-collapse-borderless > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
-  border-top: 2px solid #f0f2f5
-}
+/* .ant-collapse-borderless > .ant-collapse-item > .ant-collapse-content > .ant-collapse-content-box {
+  border-top: 1px solid #f0f2f5
+} */
 
 .filter-group {
   display: flex;
@@ -867,6 +867,16 @@ ul.questions-list {
 
 .question-element .question-content .question-text {
   font-weight: 700;
+}
+
+.question-radio-button {
+  display: block;
+  height: 30px;
+  line-height: 30px;
+}
+
+.response-text-intro {
+  font-weight: bold;
 }
 
 textarea.response-content {
@@ -1192,8 +1202,8 @@ h1.userTitle  {
 }
 
 .step-dots {
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
   border-radius: 50%;
   display: inline-block;
   margin: 0.8em;

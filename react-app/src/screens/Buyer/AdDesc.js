@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { Layout, Button, Input, Collapse, Col, Row, message, Modal, Spin } from 'antd'
+import { Button, Input, Collapse, Col, Row, message, Modal, Spin } from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import { Slide } from 'react-slideshow-image'
 import { Link } from 'react-router-dom'
 
-import UserNavHeader from '../../components/Buyer/UserNavHeader'
 import LoggedOut from '../../components/Buyer/buyerAdDesc/LoggedOut'
 import SidebarBuyer from '../../components/Buyer/buyerAdDesc/SidebarBuyer'
 import Spinner from '../../components/Buyer/buyerAdDesc/Spin'
@@ -16,7 +15,6 @@ import APIFetch from '../../components/Buyer/APIFetch'
 import { connect } from 'react-redux'
 import {useCookies} from 'react-cookie'
 
-const { Content } = Layout
 const { Panel } = Collapse
 
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginLeft: '4px', marginTop: '4px' }} spin/>
@@ -225,11 +223,11 @@ function AdDesc(props) {
               </span>
               <span>
                 <img src="../../../floor-plan.png" width="20px" />
-                <strong>{adDetails.rooms}</strong> pièces
+                <strong>{adDetails.rooms}</strong> {adDetails.rooms > 1 ? 'pièces' : 'pièce'}
               </span>
               <span>
                 <img src="../../../bed.svg" width="20px" />
-                <strong>{adDetails.bedrooms}</strong> chambres
+                <strong>{adDetails.bedrooms}</strong> {adDetails.bedrooms > 1 ? 'chambres' : 'chambre'}
               </span>
             </div>
 

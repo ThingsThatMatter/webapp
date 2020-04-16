@@ -1,7 +1,7 @@
 import React, {useState} from 'react'
 import {Redirect,Link} from 'react-router-dom'
 
-import {Form, Input, Button, Row, Col, Spin } from 'antd'
+import {Layout, Form, Input, Button, Row, Col, Spin } from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import {connect} from 'react-redux'
@@ -9,7 +9,9 @@ import {useCookies} from 'react-cookie'
 
 import Spinner from './GlobalSpin'
 import Unauthorized401 from './Unauthorized401'
+import Sidebar from '../../components/Agent/Sidebar'
 
+const {Content} = Layout
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginTop: '8px' }} spin/>
 
 
@@ -63,7 +65,16 @@ function SignUp(props) {
     }
 
     if (props.agentLoginStatus.login_failed && !props.agentLoginStatus.logout) {
-        return <Unauthorized401 />
+        return (
+            <Layout>
+                <Sidebar/>
+                <Layout className='main-content'>
+                    <Content style={{ margin: '24px 16px 0' }}>
+                        <Unauthorized401 />
+                    </Content>
+                </Layout>
+            </Layout>
+        )
         
     } else {
         if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_request) {

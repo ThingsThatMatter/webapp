@@ -21,11 +21,11 @@ function CreateFormOne(props) {
 
 /* ---------------------------------------------------PREFILL FORM---------------------------------------------- */
     useEffect(() => {
-        if (props.formData.address) {
-            setStreet(props.formData.address)
-            setPostal(props.formData.postcode)
-            setPref(props.formData.typeAddress)
-            setCity(props.formData.city)
+        if (props.newAdFormData.address) {
+            setStreet(props.newAdFormData.address)
+            setPostal(props.newAdFormData.postcode)
+            setPref(props.newAdFormData.typeAddress)
+            setCity(props.newAdFormData.city)
         }
     }, [])
 
@@ -99,7 +99,7 @@ function CreateFormOne(props) {
 
 function mapStateToProps(state) {
     return { 
-        formData: state.formData,
+        newAdFormData: state.newAdFormData,
         edit: state.edit
     }
 }
@@ -107,7 +107,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         saveFormData : function(street, postal, city, pref, adID) { 
-            dispatch( {type: 'agent_newOfferSaveFormData', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
+            dispatch( {type: 'agent_newAdSaveFormData1', address: street, postcode: postal, city: city, typeAddress: pref, adID: adID } ) 
         }
     }
 }

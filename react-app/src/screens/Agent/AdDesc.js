@@ -288,11 +288,11 @@ function AdDesc(props) {
           </span>
           <span>
             <img src="../../../floor-plan.png" width="20px" />
-            <strong>{adDetails.rooms}</strong> pièces
+            <strong>{adDetails.rooms}</strong> {adDetails.rooms > 1 ? 'pièces' : 'pièce'}
           </span>
           <span>
             <img src="../../../bed.svg" width="20px" />
-            <strong>{adDetails.bedrooms}</strong> chambres
+            <strong>{adDetails.bedrooms}</strong> {adDetails.bedrooms > 1 ? 'chambres' : 'chambre'}
           </span>
         </div>
 
@@ -414,12 +414,12 @@ function AdDesc(props) {
 
 function mapDispatchToProps(dispatch) {
   return {
-      saveforEdit : function(adDetails) { 
-        dispatch( {type: 'agent_newOfferSaveForEdit', data: adDetails } ) 
-      },
-      edit : function() { 
-        dispatch( {type: 'agent_newOfferEdit'} )
-      }  
+    saveforEdit : function(adDetails) { 
+      dispatch( {type: 'agent_adSaveForEdit', data: adDetails } ) 
+    },
+    edit : function() { 
+      dispatch( {type: 'agent_adEdit'} )
+    }  
   }
 }
 

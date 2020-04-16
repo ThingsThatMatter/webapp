@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Redirect, Link} from 'react-router-dom'
-import { Form, Input, Button, Checkbox, Col, Row, Spin } from 'antd'
+import {Layout, Form, Input, Button, Checkbox, Col, Row, Spin } from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import Spinner from './GlobalSpin'
@@ -8,7 +8,9 @@ import Unauthorized401 from './Unauthorized401'
 
 import {connect} from 'react-redux'
 import {useCookies} from 'react-cookie'
+import UserNavHeader from '../../components/Buyer/UserNavHeader'
 
+const {Content} = Layout
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginTop: '8px' }} spin/>
 
 function Sign(props) {
@@ -105,7 +107,16 @@ function Sign(props) {
     }
 
     if (props.userLoginStatus.login_failed && !props.userLoginStatus.logout) {
-        return <Unauthorized401 />
+        return (
+            <Layout className="user-layout">
+                <UserNavHeader/> 
+                <Layout className='user-layout main-content'>
+                    <Content style={{ margin: '24px 16px 0' }}>
+                        <Unauthorized401 />
+                    </Content>
+                </Layout>
+            </Layout>    
+        )
         
     } else {
         if (typeof cookies.uT !== 'undefined' && props.userLoginStatus.login_request) {

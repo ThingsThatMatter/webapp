@@ -47,6 +47,7 @@ function mapDispatchToProps(dispatch){
         },
         loggedOut: function() {
             dispatch({ type: 'user_loggedOut' })
+            dispatch({type: 'user_clearInfo'})
         }
     }
 }

@@ -32,17 +32,17 @@ function CreateFormThree(props) {
 
 /*----------------------------------------------- PREPARE DATA AND COMPONENT ---------------------------------------------------*/
     useEffect(() => {
-        if(props.formData.files) {
-            setFileList(props.formData.files)
+        if(props.newAdFormData.files) {
+            setFileList(props.newAdFormData.files)
         }
 
-        if(props.edit === true) {
+        if(props.adEdit === true) {
             setFileList([])
-            setFilesDB(props.formData.files)
+            setFilesDB(props.newAdFormData.files)
         }
     }, [])
 
-    if (!props.formData.type) {
+    if (!props.newAdFormData.type) {
         return <Redirect to ='/pro/ad/new/step2' />
     }
 
@@ -51,7 +51,7 @@ function CreateFormThree(props) {
         <div key={e.id}>
             {e.name} 
             <DeleteOutlined
-                onClick = { () => deleteTempFile(props.formData.adID, e)}
+                onClick = { () => deleteTempFile(props.newAdFormData.adID, e)}
             />
         </div>
     )
@@ -61,7 +61,7 @@ function CreateFormThree(props) {
         <div key={e.id}>
             {e.name} 
             <DeleteOutlined
-                onClick = { () => deleteCloudFile(props.formData.adID, e)}
+                onClick = { () => deleteCloudFile(props.newAdFormData.adID, e)}
             />
         </div>
     ))
@@ -191,7 +191,7 @@ function CreateFormThree(props) {
                     multiple= {true}
                     showUploadList= {false}
                     beforeUpload={ file => checkUploadFormat(file)}
-                    action= {`/pro/ad/${props.formData.adID}/file`}
+                    action= {`/pro/ad/${props.newAdFormData.adID}/file`}
                     method= 'post'
                     headers= {{
                         'Authorization': `Bearer ${cookies.aT}`
@@ -229,8 +229,8 @@ function CreateFormThree(props) {
 
 function mapStateToProps(state) {
     return {
-        formData : state.formData,
-        edit : state.edit
+        newAdFormData : state.newAdFormData,
+        adEdit : state.adEdit
     }
 }
 
@@ -238,7 +238,7 @@ function mapDispatchToProps(dispatch) {
     return {
         saveFormData : function(fileList, filesDB) { 
             dispatch({
-                type: 'agent_newOfferSaveFormData3',
+                type: 'agent_newAdSaveFormData3',
                 files: fileList,
                 filesDB: filesDB 
             }) 

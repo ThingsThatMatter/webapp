@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import {Redirect,Link} from 'react-router-dom'
-import {Form, Input, Button, Row, Col, Checkbox, Spin} from 'antd'
+import {Layout, Form, Input, Button, Row, Col, Checkbox, Spin} from 'antd'
 import {LoadingOutlined} from '@ant-design/icons'
 
 import {connect} from 'react-redux'
@@ -8,7 +8,9 @@ import {useCookies} from 'react-cookie'
 
 import Spinner from './GlobalSpin'
 import Unauthorized401 from './Unauthorized401'
+import Sidebar from '../../components/Agent/Sidebar'
 
+const {Content} = Layout
 const logo = <LoadingOutlined style={{ fontSize: 22, color: "#355c7d", marginTop: '8px' }} spin/>
 
 function SignIn(props) {
@@ -27,32 +29,34 @@ function SignIn(props) {
     const handleSubmitSignin = async () => {
 
         setMsgErrorSignin(null)
-        setSigninLoad(true)
 
-        const checkAgent = await fetch('/pro/sign-in', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: `email=${email}&password=${password}&stayLoggedIn=${stayLoggedIn}`
-        })
+            setSigninLoad(true)
 
-        if (checkAgent.status === 500) {
-            setSigninLoad(false)
-            setMsgErrorSignin('Nous rencontrons des difficultés pour vous inscrire, veuillez réessayer.')
-        
-        } else {
-            const body = await checkAgent.json()
-            setSigninLoad(false)
-            if (checkAgent.status === 400) {
-                setMsgErrorSignin(body.details)
+            const checkAgent = await fetch('/pro/sign-in', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `email=${email}&password=${password}&stayLoggedIn=${stayLoggedIn}`
+            })
+
+            if (checkAgent.status === 500) {
+                setSigninLoad(false)
+                setMsgErrorSignin('Nous rencontrons des difficultés pour vous inscrire, veuillez réessayer.')
             
-            } else if (checkAgent.status === 200) {
-                const {lastname, firstname, email, id} = body.data.agentInfo
-                setCookie('aT', body.accessToken, {path:'/pro'})
-                props.loggedIn()
-                props.saveAgentInfo({lastname, firstname, email, id})
-                setToRedirect(true)
+            } else {
+                const body = await checkAgent.json()
+                setSigninLoad(false)
+                if (checkAgent.status === 400) {
+                    setMsgErrorSignin(body.details)
+                
+                } else if (checkAgent.status === 200) {
+                    const {lastname, firstname, email, id} = body.data.agentInfo
+                    setCookie('aT', body.accessToken, {path:'/pro'})
+                    props.loggedIn()
+                    props.saveAgentInfo({lastname, firstname, email, id})
+                    setToRedirect(true)
+                }
             }
-        }
+        // }
     }
 
     if (toRedirect) { // if login OK (from form) redirect to home
@@ -60,7 +64,16 @@ function SignIn(props) {
     }
        
     if (props.agentLoginStatus.login_failed && !props.agentLoginStatus.logout) {
-        return <Unauthorized401 />
+        return (
+            <Layout>
+                <Sidebar/>
+                <Layout className='main-content'>
+                    <Content style={{ margin: '24px 16px 0' }}>
+                        <Unauthorized401 />
+                    </Content>
+                </Layout>
+            </Layout>                
+        )
         
     } else {
         if (typeof cookies.aT !== 'undefined' && props.agentLoginStatus.login_request) {

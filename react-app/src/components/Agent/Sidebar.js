@@ -105,6 +105,7 @@ function mapDispatchToProps(dispatch) {
   return {
     loggedOut: function() {
           dispatch({ type: 'agent_loggedOut' })
+          dispatch({type: 'agent_clearInfo'})
       }
   }
 }

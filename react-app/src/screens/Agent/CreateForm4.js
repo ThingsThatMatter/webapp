@@ -20,14 +20,14 @@ function CreateFormFour(props) {
 /* ---------------------------------------------------PREFILL FORM---------------------------------------------- */
     useEffect(() => {
 
-        if(props.formData.price) {     // Display inputed info if user goes back from next form pages
-            setFeesPayer(props.formData.feesPayer)
-            setPrice(props.formData.price)
-            setFees(props.formData.fees)        
+        if(props.newAdFormData.price) {     // Display inputed info if user goes back from next form pages
+            setFeesPayer(props.newAdFormData.feesPayer)
+            setPrice(props.newAdFormData.price)
+            setFees(props.newAdFormData.fees)        
         }
     }, [])
 
-    if (!props.formData.type) {
+    if (!props.newAdFormData.type) {
         return <Redirect to ='/pro/ad/new/step2' />
     }
 
@@ -36,7 +36,7 @@ function CreateFormFour(props) {
 
         if(feesPayer !== "" && price !== 0 && fees !== 0) {
             props.saveFormData(feesPayer, price, fees)
-            if(props.edit === true) {
+            if(props.adEdit === true) {
                 setRedirToStep6(true)
             } else {
                 setRedirToStep5(true)
@@ -152,8 +152,8 @@ function CreateFormFour(props) {
 
 function mapStateToProps(state) {
     return { 
-        formData: state.formData,
-        edit: state.edit
+        newAdFormData: state.newAdFormData,
+        adEdit: state.adEdit
     }
 }
 
@@ -161,7 +161,7 @@ function mapDispatchToProps(dispatch) {
     return {
         saveFormData : function(feesPayer, price, fees) { 
             dispatch({
-                type: 'agent_newOfferSaveFormData4',
+                type: 'agent_newAdSaveFormData4',
                 feesPayer : feesPayer,
                 price: price,
                 fees: fees

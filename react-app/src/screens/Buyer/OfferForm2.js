@@ -76,8 +76,8 @@ useEffect(() => {
             </div>
             <div className="annonce-infos-buyer">
                 <span className="annonce-area"><img src="../../../expand.svg" width="20px"/> {props.newOfferAd.area} <span>&nbsp;m2</span></span>
-                <span className="annonce-room"><img src="../../../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;pièces</span></span>
-                <span className="annonce-bedroom"><img src="../../../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;chambres</span></span>
+                <span className="annonce-room"><img src="../../../floor-plan.png" width="20px"/> {props.newOfferAd.rooms} <span>&nbsp;{props.newOfferAd.rooms > 1 ? 'pièces' : 'pièce'}</span></span>
+                <span className="annonce-bedroom"><img src="../../../bed.svg" width="20px"/> {props.newOfferAd.bedrooms} <span>&nbsp;{props.newOfferAd.bedrooms > 1 ? 'chambres' : 'chambre'}</span></span>
             </div>
             <div className="annonce-status-buyer">
                 {visitMessage}

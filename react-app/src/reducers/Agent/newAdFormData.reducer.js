@@ -1,8 +1,8 @@
-export default function(formData = {}, action) {
+export default function(newAdFormData = {}, action) {
   
-    if(action.type === 'agent_newOfferSaveFormData') {
-      var newData = {
-        ...formData,
+    if(action.type === 'agent_newAdSaveFormData1') {
+      return {
+        ...newAdFormData,
         address: action.address,
         postcode: action.postcode,
         city: action.city,
@@ -10,12 +10,10 @@ export default function(formData = {}, action) {
         adID: action.adID
       }
 
-      return newData;
-
-    } else if(action.type === 'agent_newOfferSaveFormData2') {
+    } else if(action.type === 'agent_newAdSaveFormData2') {
         
-        var newData = {
-            ...formData,
+        return {
+            ...newAdFormData,
             type : action.typeBien,
             area : action.area,
             rooms : action.rooms,
@@ -28,26 +26,23 @@ export default function(formData = {}, action) {
             dpe : action.dpe,
             photosDB : action.photosDB
         }
-        return newData;
 
-    } else if(action.type === 'agent_newOfferSaveFormData3') {
-        var newData = {
-            ...formData,
+    } else if(action.type === 'agent_newAdSaveFormData3') {
+        return {
+            ...newAdFormData,
             files: action.files,
             filesDB: action.filesDB
         }
-        return newData;
 
-    } else if(action.type === 'agent_newOfferSaveFormData4') {
-        var newData = {
-            ...formData,
+    } else if(action.type === 'agent_newAdSaveFormData4') {
+        return {
+            ...newAdFormData,
             feesPayer : action.feesPayer,
             price: action.price,
             fees: action.fees
         }
-        return newData;
     
-    } else if (action.type === 'agent_newOfferSaveFormData5') {
+    } else if (action.type === 'agent_newAdSaveFormData5') {
         const timeSlots = action.timeSlots.map( e => {
           const {start, end, priv} = e
           return {
@@ -58,25 +53,19 @@ export default function(formData = {}, action) {
           }
         })
 
-        var newData = {
-            ...formData,
+        return {
+            ...newAdFormData,
             timeSlots,
             color: action.color
         }
-        return newData;
   
-    } else if (action.type == 'agent_newOfferClear') {
-        
-        const newData = {}
-        return newData;
+    } else if (action.type == 'agent_clearNewAd') {
+        return {}
 
-    } else if (action.type == 'agent_newOfferSaveForEdit') {
-
-      let newData = {...formData,...action.data};
-
-      return newData;
+    } else if (action.type == 'agent_adSaveForEdit') {
+      return {...newAdFormData,...action.data}
       
     } else {
-        return formData;
+        return newAdFormData
     }
 }
