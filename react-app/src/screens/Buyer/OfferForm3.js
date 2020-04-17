@@ -72,16 +72,8 @@ function OfferForm3(props) {
     })
 
     /* Date Formatting */
-    const dateCreate = (date) => {
-        var year = date.slice(0,4)
-        var month = Number(date.slice(5,7))-1
-        var day = date.slice(8,10)
-        var hour = date.slice(11,13)
-        var min = date.slice(14,16)
-        return new Date(year, month, day, hour, min)
-    }
 
-    const visitStartDate= dateCreate(props.newOfferAd.timeSlots[0].start)
+    const visitStartDate= new Date(props.newOfferAd.timeSlots[0].start)
     const visitMessage = 
         <p className="annonce-messages-buyer">
             Visite effectuée le {visitStartDate.toLocaleDateString('fr-FR')} à {visitStartDate.toLocaleTimeString('fr-FR')}

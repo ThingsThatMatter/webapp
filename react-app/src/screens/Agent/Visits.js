@@ -3,6 +3,8 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
+import momentTimezonePlugin from '@fullcalendar/moment-timezone'
+
 
 import {RightOutlined, LeftOutlined, DownOutlined, WarningOutlined} from '@ant-design/icons'
 import {Menu, Dropdown, Modal, DatePicker, TimePicker, Select, Button, Popconfirm, message, Radio, Alert} from 'antd'
@@ -105,8 +107,8 @@ function Visits() {
           }
           return {
             title: e.title,
-            start: e.start,
-            end: e.end,
+            start: new Date(e.start), // transform the string received from back to an actual date (to display it local timezone)
+            end: new Date(e.end),
             backgroundColor,
             textColor,
             borderColor,
@@ -273,6 +275,7 @@ function Visits() {
         }
       })
       slots = JSON.stringify(slots)
+  
 
     // DB Call to save timeslots
     if (appointmentModalMode === 'create') {
@@ -364,7 +367,7 @@ function Visits() {
     setPostTimeSlotError('')
   }
 
-  async function confirm() {
+  const confirm = async () => {
     
     setAppointmentModalDeleteLoading(true)
 
@@ -499,7 +502,7 @@ function Visits() {
       <FullCalendar
         /* Global Settings */
         ref={calendar}
-        plugins={[ dayGridPlugin, timeGrid, interaction ]}
+        plugins={[ dayGridPlugin, timeGrid, interaction, momentTimezonePlugin ]}
         defaultView="timeGridWeek"
         locale= 'fr'
         header={{
@@ -513,7 +516,7 @@ function Visits() {
         events={myEvents}
 
         /* Time Settings */
-        timeZone='UTC'
+        timeZone='Europe/Paris'
         firstDay= {1}
         hiddenDays={[0]}
         allDaySlot={false}
@@ -547,14 +550,14 @@ function Visits() {
         selectable= {true}
         navLinks= {true}
         navLinkDayClick="timeGridDay"
-        select={(info) => {
+        select={ info => {
           setAppointmentModalEventDate(info.start.toISOString().slice(0,10))
           setAppointmentModalEventHour1(info.start.toTimeString().slice(0,5))
           setAppointmentModalEventHour2(info.end.toTimeString().slice(0,5))
           setAppointmentModalMode("create")
           setAppointmentModalVisible(true)
         }}
-        eventClick= { (info) => {
+        eventClick= { info => {
           setAppointmentModalEventDate(info.event.start.toISOString().slice(0,10))
           setAppointmentModalEventHour1(info.event.start.toTimeString().slice(0,5))
           setAppointmentModalEventHour2(info.event.end.toTimeString().slice(0,5))
@@ -566,6 +569,7 @@ function Visits() {
           setAppointmentModalVisible(true)
         }}    
       />
+      <p className='timezone-info'>Fuseau horaire : France Métropolitaine </p>
 
       <Modal
           title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}

@@ -100,7 +100,6 @@ function CreateFormSix(props) {
     )
 
     const allPhotos = [...imagesUpload, ...imagesDB]
-    console.log(allPhotos)
 
 /* --------------------------------------------------POST & UPDATE AD----------------------------------------------- */
     const postNewAd = async() => {

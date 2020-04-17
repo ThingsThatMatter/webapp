@@ -61,28 +61,25 @@ export default function TimeslotPicker(props) {
 
             timeslots = timeslots.filter( e => {
 
-                const year = e.start.slice(0,4)
-                let month = Number(e.start.slice(5,7))-1
-                const day = e.start.slice(8,10)
-                const hour1 = e.start.slice(11,13)
-                const min1 = e.start.slice(14,16)
-
-                const fullDate = new Date(year, month, day, hour1, min1)
+                const fullDate = new Date(e.start)
                 const now = new Date()
                 now.setHours(now.getHours() + 1)
-
-                return fullDate.getTime() > now.getTime()
+                return fullDate.getTime() > now.getTime() // remove past timeslots
             })
 
             const daySlots = []
 
             for (let i=0 ; i < timeslots.length ; i++) {
 
-                const year = timeslots[i].start.slice(0,4)
-                let month = Number(timeslots[i].start.slice(5,7))-1
-                const day = timeslots[i].start.slice(8,10)
-                const hour1 = timeslots[i].start.slice(11,13)
-                const min1 = timeslots[i].start.slice(14,16)
+                const start = new Date(timeslots[i].start)
+                const startDate = start.toLocaleDateString()
+                const startHour = start.toLocaleTimeString()
+
+                const year = startDate.slice(6,10)
+                const month = Number(startDate.slice(3,5))-1
+                const day = startDate.slice(0,2)
+                const hour1 = startHour.slice(0,2)
+                const min1 = startHour.slice(3,5)
 
                 const date = new Date(year, month, day)
 
@@ -190,7 +187,7 @@ export default function TimeslotPicker(props) {
                 :  
                     <div className="sidebar-calendar-content">
                         <p>Aucun créneau de visite</p>
-                        <Button type="primary">Contacter mon agent</Button>
+                        <Button type="primary" className="contact-agent">Contacter mon agent</Button>
                     </div>
                 }
             </div>

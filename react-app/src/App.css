@@ -1107,6 +1107,16 @@ h1.userTitle  {
   line-height: 170%;
 }
 
+.sidebar-offer-nodoc {
+  font-size: 12px !important;
+  color: #888;
+  line-height: 170%;
+}
+
+.sidebar-offer-nodoc {
+
+}
+
 .sidebar-buyer p {
   font-size: 18px;
 }
@@ -1348,4 +1358,18 @@ a[data-goto]:hover {
 }
 .fc-timeGridDay-view .fc-time-grid .fc-slats td {
   background-color: #fff;
+}
+
+.timezone-info {
+  text-align: right;
+  font-size: 12px;
+  font-style: italic;
+  padding-right: 8px;
+  margin-bottom: 1em;
+}
+
+.contact-agent {
+  white-space: normal;
+  height: fit-content;
+  padding: 8px 8px !important;
 }

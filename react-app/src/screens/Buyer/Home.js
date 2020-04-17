@@ -25,19 +25,10 @@ function Home() {
 
 /* Ad Cards */
 
-    const dateCreate = (date) => {
-        var year = date.slice(0,4)
-        var month = Number(date.slice(5,7))-1
-        var day = date.slice(8,10)
-        var hour = date.slice(11,13)
-        var min = date.slice(14,16)
-        return new Date(year, month, day, hour, min)
-    }
-
     //sort
     let adsCopy = [...adsListFromDb]
     adsCopy = adsCopy.sort((a,b) => {
-        return (dateCreate(b.creationDate) - dateCreate(a.creationDate))
+        return (new Date(b.creationDate) - new Date(a.creationDate))
     })
     //rend
 
@@ -57,7 +48,7 @@ function Home() {
 
             let offerMessage
             let offerStatusMess
-            const offerDate = dateCreate(e.offers[0].creationDate)
+            const offerDate = new Date(e.offers[0].creationDate)
             const offerStatus = statusTranslate(e.offers[0].status)
             offerMessage = 
                 <p className="annonce-messages-buyer">
@@ -97,8 +88,8 @@ function Home() {
         adsVisits = adsVisits.map( (e,i) => {
             
             let visitMessage
-            var visitEndDate = dateCreate(e.timeSlots[0].end)
-            var visitStartDate = dateCreate(e.timeSlots[0].start)
+            var visitEndDate = new Date(e.timeSlots[0].end)
+            var visitStartDate = new Date(e.timeSlots[0].start)
             if (visitEndDate > new Date() ) {
                 visitMessage = 
                     <p className="annonce-messages-buyer">

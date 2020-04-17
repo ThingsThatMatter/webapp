@@ -221,6 +221,15 @@ function AdDesc(props) {
       }}
     >
       <div className="agent-section">
+        <Link
+          className="go-back"
+          to={`/pro`}
+          style={{ margin: "0px 0px 0.5em 0px" }}
+          onClick={() => message.destroy()}
+        >
+          &lt; Retour aux biens
+        </Link>
+
         <h1 className="pageTitle">{adDetails.title}</h1>
 
         <div className="agent-action">

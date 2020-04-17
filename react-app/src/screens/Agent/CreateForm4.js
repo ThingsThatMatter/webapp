@@ -120,15 +120,13 @@ function CreateFormFour(props) {
                 </label>
                 <span style={{marginLeft: "1%", fontWeight: 700}}>%</span>
 
-                <p className='formLabel'>Prix du bien incluant les honoraires</p>
-                <label >
-                    <InputNumber
-                        formatter={value => String(value).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')}
-                        value={price*fees/100+price} 
-                    />
+                <p className='formLabel'>Prix calculé du bien incluant les honoraires</p>
+                <label style={{fontWeight:700, color: '#355c7d'}}>
+                    <span>
+                        {String(Math.round(price*fees/100+price)).replace(/\B(?=(\d{3})+(?!\d))/g, ' ')} €
+                    </span>
                 </label>
-                <span style={{marginLeft: "1%", fontWeight: 700}}>€</span>
-                
+
             </form>
             {formError}
 

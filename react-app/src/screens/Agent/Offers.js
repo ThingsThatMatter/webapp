@@ -245,7 +245,6 @@ function Offers() {
                         return (
                             <Col key = {i} 
                                 onClick={ () => {
-                                    console.log(f)
                                     showModal()
                                     setOfferModalProperties(f)
                                     setAdModalProperties(e)

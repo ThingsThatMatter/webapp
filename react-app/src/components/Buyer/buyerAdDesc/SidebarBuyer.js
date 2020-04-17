@@ -23,15 +23,6 @@ function SidebarBuyer(props) {
 
 /* ------------------------------------------------FORMATING FUNCTIONS----------------------------------------------------------- */
 
-    const dateCreate = (date) => {
-        var year = date.slice(0,4)
-        var month = Number(date.slice(5,7))-1
-        var day = date.slice(8,10)
-        var hour = date.slice(11,13)
-        var min = date.slice(14,16)
-        return new Date(year, month, day, hour, min)
-    }
-
     /* Offer status translation */
     const statusInFrench = {
         'pending' : 'En attente',
@@ -73,8 +64,8 @@ function SidebarBuyer(props) {
                     setComponent(<TimeSlotPicker adId={props.adId} buyerToken={props.buyerToken} goToVisitParent={goToVisitInfo}/>)
                 }
                 else {
-                    var visitEndDate = dateCreate(ad.timeSlots[0].end)
-                    var visitStartDate = dateCreate(ad.timeSlots[0].start)
+                    var visitEndDate = new Date(ad.timeSlots[0].end)
+                    var visitStartDate = new Date(ad.timeSlots[0].start)
                     if (visitEndDate > new Date() ) {
                         setComponent(
                             <div className="sidebar-visit">
@@ -105,13 +96,16 @@ function SidebarBuyer(props) {
                                     </p>
                                     <div>
                                         <p style={{marginTop: '1em'}}>Documents</p>
-                                        {documents}
+                                        {documents
+                                            ? documents
+                                            : "L'agence n'a pas encore transmis les documents de ce bien"
+                                        }
                                     </div>
                                     <Button type="primary" onClick={ () => {setRedirectNewOffer(true)}}>Déposer une offre</Button>
                                 </div>
                             )
                         } else {
-                            const offerDate = dateCreate(ad.offers[0].creationDate)
+                            const offerDate = new Date(ad.offers[0].creationDate)
                             const offerStatus = statusTranslate(ad.offers[0].status)
                             setComponent(
                                 <div className="sidebar-recap">
@@ -120,7 +114,10 @@ function SidebarBuyer(props) {
                                     <p>Statut de l'offre<br/> <strong>{offerStatus}</strong></p>
                                     <div>
                                         <p style={{marginTop: '1em'}}>Documents</p>
-                                        {documents}
+                                        {documents.length > 0
+                                            ? documents
+                                            : <p className = 'sidebar-offer-nodoc'>L'agence n'a pas encore transmis les documents de ce bien</p>
+                                        }
                                     </div>
                                 </div>
                             )

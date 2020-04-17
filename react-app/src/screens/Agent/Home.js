@@ -65,17 +65,8 @@ function Home(props) {
   /* Ad card rending */
     //sort
   let adsCopy = [...adsToShow]
-  adsCopy = adsCopy.sort((a,b) => {
-    const dateCreate = (date) => {
-      var year = date.slice(0,4)
-      var month = Number(date.slice(5,7))-1
-      var day = date.slice(8,10)
-      var hour = date.slice(11,13)
-      var min = date.slice(14,16)
-      return new Date(year, month, day, hour, min)
-    }
-    return (dateCreate(b.creationDate) - dateCreate(a.creationDate))
-  })
+  adsCopy = adsCopy.sort((a,b) => new Date(b.creationDate) - new Date(a.creationDate))
+  
     //rend
     adsCopy = adsCopy.map( (e,i) => {
     return (

@@ -4,6 +4,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGrid from '@fullcalendar/timegrid'
 import interaction from '@fullcalendar/interaction'
+import momentTimezonePlugin from '@fullcalendar/moment-timezone'
 
 import {Button, Radio, Menu, Dropdown, Modal, DatePicker, TimePicker, Popconfirm, message} from 'antd'
 import {RightOutlined, LeftOutlined, DownOutlined} from '@ant-design/icons'
@@ -403,7 +404,7 @@ function CreateFormFive(props) {
           <FullCalendar
               /* Global Settings */
               ref={calendar}
-              plugins={[ dayGridPlugin, timeGrid, interaction ]}
+              plugins={[ dayGridPlugin, timeGrid, interaction, momentTimezonePlugin ]}
               defaultView="timeGridWeek"
               locale= 'fr'
               header={{
@@ -417,7 +418,7 @@ function CreateFormFive(props) {
               events={myEvents}
 
               /* Time Settings */
-              timeZone='UTC'
+              timeZone='Europe/Paris'
               firstDay= {1}
               hiddenDays={[0]}
               allDaySlot={false}
@@ -473,6 +474,7 @@ function CreateFormFive(props) {
                 }
               }}    
           />
+          <p className='timezone-info'>Fuseau horaire : France Métropolitaine </p>
 
           <Modal
             title={appointmentModalMode === "edit" ? `Modifier: ${appointmentModalEventProperty}` : "Nouveau Rendez-Vous"}
