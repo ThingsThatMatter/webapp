@@ -615,7 +615,6 @@ router.put('/ad/:ad_id/timeslot/:id_timeslot', authenticateAgent, async function
   try {
 
     let timeSlots = JSON.parse(req.body.timeslot)
-
     timeSlots = timeSlots.map(obj => {
       return { 
         booked: false,

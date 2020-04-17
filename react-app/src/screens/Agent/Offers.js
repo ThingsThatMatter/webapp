@@ -40,7 +40,8 @@ function Offers() {
         }
     }
 
-    /* Offer Cards */
+/* ----------------------------------------------PREPARE COMPONENT----------------------------------------------- */
+    /* Set data to be displayed */
     useEffect( () => {
         const dbFetch = async () => {
             const getAds = await fetch(`/pro/ads`, {
@@ -68,14 +69,157 @@ function Offers() {
     dbFetch()
     }, [displayOffers])
 
+
+    /* Price formatting */
+    const priceFormatter = new Intl.NumberFormat('fr', {
+        style: 'currency',
+        currency: 'EUR',
+        minimumFractionDigits: 0,
+        useGrouping: true
+    })
+
+    /* Offer cards */
+    let sortedOffers = offersList.map((e,i) => 
+
+        <div key={i} id={e._id} className='offer-section'>
+            <h2 className='title'>{e.title}</h2>
+            
+                <Row gutter={16} className="offer-carrousel">
+                    { e.offers.map( (f,i) => {
+                        const expirationDate = new Date(f.expirationDate)
+                        const now = new Date()
+                        let remainingDays = (expirationDate - now) / (1000 * 3600 * 24)
+                        
+                        remainingDays = remainingDays < 0 ? -1 : Math.trunc(remainingDays)
+
+                        let color
+                        let unclickable
+                        let picto
+                        let offerExpiration
+                        let offerExpirationColor
+                        
+                        // Offer color
+                        if (f.status === 'accepted') {
+                            color = '#6ce486'
+                        } else if (f.status === 'declined') {
+                            color = '#e86b43'
+                            unclickable='offer-unclickable'
+                        } else if (f.status === 'canceled') {
+                            color = '#e86b43'
+                            unclickable='offer-unclickable'
+                        } else if (f.status === 'pending') {
+                            if (remainingDays === -1) {
+                                color = "#777"
+                                unclickable='offer-opacity'
+                            } else {
+                            color = '#116BD9'
+                            }
+                        }
+
+                        // Price check
+                        if (f.amount >= e.price) {
+                            picto = <CheckCircleOutlined />
+                        }
+
+                        // Expiration date message
+                        if (f.status === 'pending') {
+                            if (remainingDays === -1) {
+                                offerExpiration = 'Offre expirée'
+                                offerExpirationColor = '#777'
+                            } else if (remainingDays === 0) {
+                                offerExpiration = 'L\'offre expire aujourd\'hui'
+                                offerExpirationColor = '#f67280'
+                            } else if (remainingDays === 1) {
+                                offerExpiration = 'L\'offre expire demain'
+                                offerExpirationColor = '#f67280'
+                            } else {
+                                offerExpiration = `L'offre expire dans ${remainingDays} jours`
+                            }
+                        }
+                        
+                        return (
+                            <Col key = {i} 
+                                onClick={ () => {
+                                    showModal()
+                                    setOfferModalProperties(f)
+                                    setAdModalProperties(e)
+                                    if (f.status === 'accepted') {
+                                        setOfferStatus('accepted')
+                                    } else {
+                                        if (f.status === 'pending' && remainingDays >= 0 ) {
+                                            setOfferStatus('pending')
+                                        } else {
+                                            setOfferStatus('expired')
+                                        }
+                                    }
+                                }}
+                                className={unclickable}
+                            >
+                                <div className="offre-element">
+                                    <div className="offre-amount"  style={{backgroundColor: color}}>
+                                    {picto}<span className="annonce-price"> {priceFormatter.format(f.amount)}</span>
+                                    </div>
+                                    <div className="offre-buyer">
+                                        <p className="offre-buyer-name">{f.firstName1} {f.lastName1}</p>
+                                    </div>
+                                    <div className="offre-money">
+                                        <p className="offre-contribution"><span>Apport : </span>{priceFormatter.format(f.contributionAmount)}</p>
+                                        <p className="offre-loan"><span>Emprunt : </span>{priceFormatter.format(f.loanAmount)}</p>
+                                    </div>
+                                    <div className="offre-bottom">
+                                        <span className="offre-details">reçue le {new Date(f.creationDate).toLocaleDateString('fr-FR')} <br/>à {new Date(f.creationDate).toLocaleTimeString('fr-FR')}</span>
+                                        <p className="offer-validity"  style={{color: offerExpirationColor}}>{offerExpiration}</p>
+                                    </div>
+                                </div>
+                            </Col>
+                        )
+                    })}
+                </Row>
+        </div>
+    )
+
+    /* Modal Footer*/
+
     let showModal = () => {
         setOfferModalVisible(true)
     }
-
     let hideModal = () => {
         setOfferError('')
         setOfferModalVisible(false)
     }
+
+    const modalFooter = 
+        <div className="modal-footer">
+            {offerError !=='' &&
+            <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
+                <WarningOutlined style={{marginRight: '2px'}}/>
+                <span style={{marginLeft: '2px'}}>
+                    {offerError}
+                </span>
+                </div>
+            }
+            {offerStatus === 'accepted' &&
+                <Button className="button-decline" loading={offerCancelLoading} onClick={() => handleCancelOffer()}>
+                    Annuler l'offre
+                </Button>
+            }
+            {offerStatus === 'pending' &&
+                <div className="modal-footer-buttons">
+                    <Button type="primary" className="button-decline" loading={offerDeclineLoading} onClick={() => handleDeclineOffer()}>
+                        Refuser l'offre
+                    </Button>
+                    <Button type="primary" className="button-validate" loading={offerAcceptLoading} onClick={() => handleAcceptOffer()}>
+                        Accepter l'offre
+                    </Button>
+                </div>
+            }
+            {offerStatus === 'expired' &&
+                <div>L'offre est expirée: impossible de l'accepter ou de la refuser</div>
+            }
+        </div>
+    
+
+  /* ----------------------------------------------ACTIONS----------------------------------------------- */
 
     // Accept offer
     const handleAcceptOffer = async () => {
@@ -179,101 +323,6 @@ function Offers() {
         }
     }
 
-    const modalFooter = 
-    <div className="modal-footer">
-        {offerError !=='' &&
-          <div style={{marginBottom: '8px', textAlign: 'center', color:'#f67280'}}>
-            <WarningOutlined style={{marginRight: '2px'}}/>
-            <span style={{marginLeft: '2px'}}>
-                {offerError}
-            </span>
-            </div>
-        }
-        {offerStatus === true
-        ?
-        <Button className="button-decline" loading={offerCancelLoading} onClick={handleCancelOffer}>
-            Annuler l'offre
-        </Button>
-        :
-        <div className="modal-footer-buttons">
-        <Button type="primary" className="button-decline" loading={offerDeclineLoading} onClick={handleDeclineOffer}>
-            Refuser l'offre
-        </Button>
-        <Button type="primary" className="button-validate" loading={offerAcceptLoading} onClick={handleAcceptOffer}>
-            Accepter l'offre
-        </Button>
-        </div>
-        }
-    </div>
-    
-
-    /* Price formatting */
-    const priceFormatter = new Intl.NumberFormat('fr', {
-        style: 'currency',
-        currency: 'EUR',
-        minimumFractionDigits: 0,
-        useGrouping: true
-    })
-
-    let sortedOffers = offersList.map((e,i) => {
-        return (
-        <div key={i} id={e._id} className='offer-section'>
-            <h2 className='title'>{e.title}</h2>
-            
-                <Row gutter={16} className="offer-carrousel">
-                    { e.offers.map( (f,i) => {
-                        let color
-                        let unclickable
-                        let picto
-                        if(f.status === 'accepted') {
-                            color = '#6ce486'
-                        }
-                        if(f.status === 'declined') {
-                            color = '#e86b43'
-                            unclickable='unclickable'
-                        } else if(f.status === 'canceled') {
-                            color = '#e86b43'
-                            unclickable='unclickable'
-                        } 
-                        if(f.amount === e.price) {
-                            picto = <CheckCircleOutlined />
-                        }
-                        if(f.status === 'pending') {
-                            color = '#116BD9'
-                        }
-                        
-                        return (
-                            <Col key = {i} 
-                                onClick={ () => {
-                                    showModal()
-                                    setOfferModalProperties(f)
-                                    setAdModalProperties(e)
-                                    {if(f.status === 'accepted') { setOfferStatus(true) } else { setOfferStatus(false) }}
-                                }}
-                                className={unclickable}
-                            >
-                                <div className="offre-element">
-                                    <div className="offre-amount" style={{backgroundColor: color}}>
-                                    {picto}<span className="annonce-price"> {priceFormatter.format(f.amount)}</span>
-                                    </div>
-                                    <div className="offre-buyer">
-                                        <p className="offre-buyer-name">{f.firstName1} {f.lastName1}</p>
-                                    </div>
-                                    <div className="offre-money">
-                                        <p className="offre-contribution"><span>Apport : </span>{priceFormatter.format(f.contributionAmount)}</p>
-                                        <p className="offre-loan"><span>Emprunt : </span>{priceFormatter.format(f.loanAmount)}</p>
-                                    </div>
-                                    <div className="offre-bottom">
-                                        <span className="offre-details">reçue le {new Date(f.creationDate).toLocaleDateString('fr-FR')} <br/>à {new Date(f.creationDate).toLocaleTimeString('fr-FR')}</span>
-                                    </div>
-                                </div>
-                            </Col>
-                        )
-                    })}
-                </Row>
-        </div>
-        )  
-    })
 
 
 /*----------------------------------------------- RENDER COMPONENT ---------------------------------------------------*/

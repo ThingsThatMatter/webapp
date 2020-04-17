@@ -415,8 +415,12 @@ router.post('/ad/:ad_id/offer', authenticateUser, async function(req, res) {
 
   try {
 
+    const now = new Date()
+    let expirationDate = new Date(now.setDate(now.getDate() + req.body.validityPeriod))
+
     let offer = {
-      creationDate: req.body.creationDate,
+      creationDate: new Date,
+      expirationDate: expirationDate,
       status: 'pending',
       user: req.userInfo.id,
       singleBuyer: req.body.singleBuyer,

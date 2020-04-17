@@ -38,6 +38,7 @@ const offerSchema = mongoose.Schema({
     notaryAddress: String,
     notaryEmail: String,
     validityPeriod: Number,
+    expirationDate: Date,
     location: String,
     comments: String,
     status: String /* pending, acceped, rejected, expired*/ 

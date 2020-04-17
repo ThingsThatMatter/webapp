@@ -491,8 +491,11 @@ cursor: pointer;
   margin-right: 5px;
 }
 
-.unclickable {
+.offer-unclickable {
   pointer-events: none;
+  opacity: 0.5;
+}
+.offer-opacity {
   opacity: 0.5;
 }
 
@@ -580,6 +583,11 @@ p.offre-buyer-name {
 }
 .offre-element button {
   margin: 0 auto 20px auto;
+}
+
+.offer-validity {
+  color: #888;
+  font-weight: 700;
 }
 
 /* formulaires */
